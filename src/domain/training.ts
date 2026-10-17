@@ -14,9 +14,13 @@ export interface TechniqueStep {
   options?: readonly string[];
   /** Pausa guiada em segundos (ex.: respirar e notar o corpo). */
   pauseSeconds?: number;
-  /** Espaço para escrever e pensar, opcional. Não fica guardado. */
-  reflect?: { prompt: string; placeholder: string };
+  /** Espaço para escrever e pensar, opcional. Só fica guardado se apontar para o Diário. */
+  reflect?: { prompt: string; placeholder: string; journal?: 'victory' };
+  /** A opção escolhida (de 0 a 10) fica guardada com este nome, para ver a evolução. */
+  score?: RulerScore;
 }
+
+export type RulerScore = 'importancia' | 'confianca';
 
 export interface Technique {
   id: string;
@@ -205,13 +209,13 @@ export const TECHNIQUES: readonly Technique[] = [
     title: 'De 0 a 10',
     why: 'Dar uma nota para a importância de mudar e para a confiança mostra onde você já está forte.',
     steps: [
-      { text: 'De 0 a 10, quanto é importante para você parar agora?', options: SCALE },
+      { text: 'De 0 a 10, quanto é importante para você parar agora?', options: SCALE, score: 'importancia' },
       {
         // A pergunta "por que não menos?" faz a pessoa dizer os próprios motivos, em vez de se defender.
         text: 'Por que não um número menor? O que fez você não escolher um mais baixo?',
         capture: { kind: 'razao', prompt: 'Não escolhi um número menor porque…', placeholder: 'não quero perder mais uma semana de trabalho' },
       },
-      { text: 'E de 0 a 10, quanto você confia que consegue?', options: SCALE },
+      { text: 'E de 0 a 10, quanto você confia que consegue?', options: SCALE, score: 'confianca' },
       {
         text: 'O que faria essa nota subir só um ponto?',
         reflect: { prompt: 'Minha confiança sobe se eu…', placeholder: 'tiver um plano para sexta à noite' },
@@ -274,7 +278,7 @@ export const TECHNIQUES: readonly Technique[] = [
       },
       {
         text: 'Três coisas boas de hoje, mesmo pequenas.',
-        reflect: { prompt: 'Coisas boas:', placeholder: 'o café, a conversa com minha irmã, dormir cedo' },
+        reflect: { prompt: 'Coisas boas:', placeholder: 'o café, a conversa com minha irmã, dormir cedo', journal: 'victory' },
       },
       {
         text: 'O que você fez hoje combinou com o que importa para você? Escolha uma coisa para repetir amanhã.',
@@ -310,4 +314,11 @@ export function techniqueOfTheDay(today: LocalDate, practicedIds: readonly strin
   if (untried) return untried;
   const i = ((daysBetween(start, today) % TECHNIQUES.length) + TECHNIQUES.length) % TECHNIQUES.length;
   return TECHNIQUES[i];
+}
+
+/** Notas da régua (importância e confiança) ao longo do tempo, da mais antiga para a mais nova. */
+export function rulerHistory(practices: readonly { techniqueId: string; date: string; scores?: Record<string, number> }[]) {
+  return practices
+    .filter((p) => p.techniqueId === 'regua' && p.scores && (p.scores.importancia !== undefined || p.scores.confianca !== undefined))
+    .map((p) => ({ date: p.date, importancia: p.scores!.importancia ?? null, confianca: p.scores!.confianca ?? null }));
 }
