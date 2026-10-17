@@ -9,8 +9,6 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 
 ## Próximos
 - Jogos, parte 4: mais tabuleiros e desafio do dia no Pares; rever Desvia, Rebate e A noite, um por rodada.
-- Terapias e vivências, parte 3: vivências para a família (Nar-Anon, Amor-Exigente) e modo "dia difícil" (só o básico da
-  rotina, sem cobrança).
 - Voz nas práticas guiadas: primeiro a do próprio celular (#7), depois áudio narrado publicado junto com o app (`docs/integracoes.md`).
 - Laboratório cruzando o Diário (gatilhos, quebras) com as noites sem usar.
 - Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
@@ -24,6 +22,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Terapias e vivências, parte 3: grupo "Trazer a família para perto" (conversar sem briga, um texto pronto
+  para mandar a quem gosta de você, com Nar-Anon e Amor-Exigente, e reconstruir a confiança) e modo "dia difícil" na
+  tela Hoje (só 4 passos curtos, vale só para o dia).
 - 2026-10-17 — Terapias e vivências, parte 2: "Parar e respirar" na Ajuda agora, régua de 0 a 10 com evolução no
   laboratório, revisão da noite indo para o Diário e "fique de olho" no Clima de hoje. 170 testes.
 - 2026-10-17 — Desenhos novos: 47 ícones do app, 24 símbolos dos jogos e o logo (ícone da tela inicial), feitos por

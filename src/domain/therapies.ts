@@ -84,6 +84,14 @@ export const APPROACHES: readonly Approach[] = [
     evidence: 'Num grande estudo com cocaína (NIDA, 1999), aconselhamento com grupos de apoio foi o que mais ajudou.',
     items: [t('rede')],
   },
+  {
+    id: 'familia',
+    title: 'Trazer a família para perto',
+    name: 'Terapia com a família (CRAFT) e grupos para familiares',
+    what: 'Contar, pedir ajuda do jeito certo e reconstruir a confiança. A família também tem onde se apoiar.',
+    evidence: 'Envolver a família ajuda a buscar e manter o tratamento. No CRAFT, cerca de 2 em cada 3 familiares treinados levaram a pessoa a buscar ajuda (Meyers e Smith).',
+    items: [t('conversa'), t('texto_familia'), t('combinados')],
+  },
 ];
 
 /** Ids das técnicas de uma abordagem, para contar quantas a pessoa já praticou. */

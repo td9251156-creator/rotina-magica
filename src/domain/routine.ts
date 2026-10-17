@@ -207,6 +207,21 @@ export function routineFor(style: RoutineStyle): readonly Period[] {
   return ROUTINE.map((p) => ({ ...p, steps: p.steps.map((s) => ({ ...s, ...SIMPLE[s.id] })) }));
 }
 
+/**
+ * Dia difícil: só o básico, uns 8 minutos no dia. Um passo curto por período e o fechamento da noite,
+ * para manter o fio da rotina sem cobrança (constância vale mais que intensidade).
+ */
+export const ESSENTIAL_STEP_IDS: readonly string[] = ['m_juramento', 't_gatilho', 'n_diario', 'n_khephra'];
+
+export function essentialRoutine(periods: readonly Period[]): Period[] {
+  return periods.map((p) => ({ ...p, steps: p.steps.filter((s) => ESSENTIAL_STEP_IDS.includes(s.id)) }));
+}
+
+/** O modo vale só para o dia em que foi ligado: amanhã a rotina volta inteira, sem a pessoa precisar lembrar. */
+export function isHardDay(markedOn: LocalDate | null, today: LocalDate): boolean {
+  return markedOn === today;
+}
+
 export const ALL_STEPS: readonly RoutineStep[] = ROUTINE.flatMap((p) => p.steps);
 
 export function findStep(id: string, style: RoutineStyle = 'magica'): RoutineStep | undefined {

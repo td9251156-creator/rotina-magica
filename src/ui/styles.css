@@ -543,3 +543,10 @@ h1, h2 { color: var(--title); }
 .mj__tools .chip:disabled { opacity: 0.4; }
 .mj__stuck { width: 100%; align-items: center; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .mj__tile { transition: none; } .mj__tile--hint, .mj__tile--shake { animation: none; } }
+
+/* Dia difícil e texto para mandar */
+.hardday__ask { background: none; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); padding: 12px; min-height: 44px; font: inherit; text-align: left; cursor: pointer; }
+.hardday__ask strong { color: var(--accent); font-weight: 600; }
+.hardday { border-color: var(--accent); }
+.sharebox { display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+.sharebox__text { white-space: pre-line; margin: 0; line-height: 1.5; }

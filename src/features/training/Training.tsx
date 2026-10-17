@@ -19,6 +19,7 @@ const APPROACH_ICONS: Record<string, IconId> = {
   atencao: 'ter_atencao',
   aceitacao: 'ter_aceitacao',
   apoio: 'ter_apoio',
+  familia: 'sos_falar',
 };
 
 /** Terapias e vivências: os exercícios agrupados pela terapia de onde vêm, cada grupo abre com um toque. */
@@ -230,6 +231,8 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
       {i === 0 && <p className="muted">{technique.why}</p>}
       <h1>{step.text}</h1>
 
+      {step.share && <ShareBox text={step.share} />}
+
       {step.pauseSeconds && !pauseDone[i] && (
         <Pause seconds={step.pauseSeconds} onEnd={() => setPauseDone((p) => ({ ...p, [i]: true }))} />
       )}
@@ -276,5 +279,27 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
         )}
       </div>
     </Screen>
+  );
+}
+
+/** Texto pronto para mandar: abre o compartilhar do celular ou copia. Nada sai sem o toque da pessoa. */
+function ShareBox({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const share = async () => {
+    try {
+      if (navigator.share) return await navigator.share({ text });
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      // A pessoa cancelou o compartilhar ou o navegador não deixou copiar: o texto segue na tela.
+    }
+  };
+  return (
+    <div className="sharebox">
+      <p className="sharebox__text">{text}</p>
+      <button type="button" className="btn btn--ghost" onClick={share}>
+        {copied ? 'Copiado' : 'Mandar ou copiar'}
+      </button>
+    </div>
   );
 }
