@@ -246,8 +246,8 @@ export function Routine() {
             <span className="item__icon">
               <TriangleIcon />
             </span>
-            <strong>Treinos de mente</strong>
-            <span className="muted small">Respostas prontas para a vontade</span>
+            <strong>Terapias e vivências</strong>
+            <span className="muted small">Exercícios das terapias que ajudam a parar</span>
           </button>
           <button type="button" className="tool" onClick={() => navigate('lab')}>
             <span className="item__icon">

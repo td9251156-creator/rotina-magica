@@ -335,10 +335,76 @@ describe('interface', () => {
     expect(repos.plan.list('razao')).toHaveLength(0);
   });
 
-  it('os treinos de mente têm entrada própria na tela inicial', async () => {
+  it('as terapias e vivências têm entrada própria na tela inicial', async () => {
     const { user } = open('');
-    await user.click(screen.getByRole('button', { name: /Treinos de mente/ }));
+    await user.click(screen.getByRole('button', { name: /Terapias e vivências/ }));
     expect(window.location.hash).toBe('#treino');
+  });
+});
+
+describe('terapias e vivências', () => {
+  it('agrupa os exercícios por terapia, com o nome de cada uma', async () => {
+    const { user } = open('#treino');
+    expect(screen.getByText('Encontrar seus motivos')).toBeInTheDocument();
+    expect(screen.getByText(/Entrevista motivacional · 0 de 3 feitos/)).toBeInTheDocument();
+    expect(screen.getByText(/Atenção plena/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /De 0 a 10/ }));
+    expect(window.location.hash).toBe('#treino/regua');
+  });
+
+  it('régua de 0 a 10: a nota libera o passo e o motivo vira razão no SOS', async () => {
+    const { repos, user } = open('#treino/regua');
+    expect(screen.getByRole('button', { name: 'Continuar' })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: '8' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.type(screen.getByRole('textbox'), 'não quero perder o emprego');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: '6' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText(/não fica guardado/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(repos.plan.list('razao').map((i) => i.text)).toEqual(['não quero perder o emprego']);
+    expect(screen.getByRole('button', { name: 'Mais vivências' })).toBeInTheDocument();
+  });
+
+  it('dar nome ao pensamento vira resposta para aquele pensamento', async () => {
+    const { repos, user } = open('#treino/nome');
+    await user.click(screen.getByRole('button', { name: 'Eu mereço depois do dia que tive' }));
+    await user.type(screen.getByRole('textbox'), 'Lá vem o "eu mereço"');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Pular' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(repos.plan.list('resposta')[0]).toMatchObject({ text: 'Lá vem o "eu mereço"', extra: { thought: 'Eu mereço depois do dia que tive' } });
+  });
+
+  it('a rede de apoio aparece no SOS', async () => {
+    const { user } = open('#treino/rede');
+    await user.type(screen.getByRole('textbox'), 'meu irmão');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    window.location.hash = '#sos';
+    expect(await screen.findByText('Quem você pode chamar')).toBeInTheDocument();
+    expect(screen.getByText('meu irmão')).toBeInTheDocument();
+  });
+
+  it('a frase gentil fica guardada para os dias difíceis', async () => {
+    const { repos, user } = open('#treino/amigo');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Pular' }));
+    await user.type(screen.getByRole('textbox'), 'Amanhã eu recomeço.');
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(repos.plan.list('gentileza').map((i) => i.text)).toEqual(['Amanhã eu recomeço.']);
+    expect(screen.getByText(/quando você registrar um dia difícil/)).toBeInTheDocument();
+  });
+
+  it('a prática guiada de 3 minutos toca ali mesmo e conta como prática', async () => {
+    const { repos, user } = open('#treino');
+    await user.click(screen.getByRole('button', { name: /Parar e respirar/ }));
+    expect(screen.getByText('Pare')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Terminei' }));
+    expect(repos.practices.list().map((p) => p.techniqueId)).toEqual(['sober']);
+    expect(screen.getByText('Terapias e vivências')).toBeInTheDocument();
   });
 });
 

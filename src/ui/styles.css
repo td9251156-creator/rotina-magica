@@ -462,3 +462,14 @@ h1, h2 { color: var(--title); }
 .tool .item__icon { flex: none; width: 40px; height: 40px; }
 .item__check { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
 .item--done .item__check { border-color: var(--ok); }
+/* Terapias e vivências */
+.setting > summary > .item__icon { flex: 0 0 40px; }
+.evidence { border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); padding-left: 8px; }
+.therapy { min-height: 72px; }
+.therapy__status { margin-top: 4px; align-self: flex-start; font-size: 0.75rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
+.therapy__status--new { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+.breath--pare { transform: scale(0.8); transition-duration: 0.6s; }
+.breath--observe, .breath--amplie { transform: scale(1.35); }
+.breath--respire { animation: breathe 10s ease-in-out infinite; }
+.breath--escolha { transform: scale(1.1); background: radial-gradient(circle, rgba(103, 187, 128, 0.5), rgba(103, 187, 128, 0.08)); border-color: var(--ok); }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.6); } }
