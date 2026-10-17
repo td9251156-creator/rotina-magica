@@ -1,10 +1,24 @@
 # Roteiro para narração gravada
 
-A voz do celular já fala este roteiro nas práticas. Para soar como uma meditação guiada gravada de verdade
-(voz humana grave, nomes vibrados por vários segundos), cada fase pode virar um arquivo de áudio que o app
-toca no lugar da voz do celular: `public/audio/practices/<arquivo>.mp3`, com os nomes abaixo. Se o arquivo
-não existir, a voz do celular assume. Copiado de `src/domain/routine.ts` (campo `guide`) em 2026-10-17:
-se o texto mudar lá, atualize aqui.
+A narração das práticas guiadas (`public/audio/practices/<arquivo>.mp3`) toca no lugar da voz do celular
+quando a pessoa liga "Ouvir a voz guiando"; sem o arquivo, a voz do celular assume. Os arquivos atuais
+foram gerados com voz neural (seção abaixo) e podem ser trocados por uma gravação humana com os mesmos
+nomes. O texto vem de `src/domain/routine.ts` (campo `guide`); um teste confere que este roteiro e os
+arquivos seguem o app.
+
+## Voz neural
+
+- **Modelo:** [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) v1.0 (hexgrad, licença Apache-2.0), voz
+  `pm_alex` (português do Brasil, masculina), rodando no computador de quem mantém, sem internet nem conta.
+  Arquivos: `onnx/model.onnx` e `voices/pm_alex.bin` de
+  [onnx-community/Kokoro-82M-v1.0-ONNX](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX)
+  (os mesmos arquivos também vêm nos pacotes npm `kokoro-js` e `kokoro-fp32*-shards`).
+- **Gerar:** `pip install kokoro-onnx soundfile`, ffmpeg com rubberband e libmp3lame, e
+  `python3 scripts/gerar-narracao.py --model model.onnx --voice pm_alex.bin` (`--only pilar` gera só uma prática).
+- **O que o script faz:** fala frase por frase, alarga as pausas das vírgulas, espalha as falas pela fase,
+  vibra os nomes (vogais longas esticadas três vezes, um pouco mais graves), deixa a voz mais grave com o
+  timbre preservado, põe um eco leve de sala e iguala o volume.
+- **Trocou um arquivo?** Suba `CACHE` em `public/sw.js`: quem já ouviu guarda o áudio antigo no celular.
 
 ## Como gravar (medido nos áudios de referência)
 
@@ -15,7 +29,7 @@ se o texto mudar lá, atualize aqui.
 - **Duração:** o arquivo não pode passar do tempo da fase (indicado em cada título), senão é cortado.
 - **Fundo:** grave só a voz. O app toca o "Som de fundo" (acorde suave de dó menor com sétima, bem abaixo da voz)
   quando a pessoa liga.
-- **Formato:** MP3 mono, 64 a 96 kbps. Antes de publicar, confira a licença da voz (ver `docs/integracoes.md`).
+- **Formato:** MP3 mono. Antes de publicar, confira a licença da voz (ver `docs/integracoes.md`).
 - **Nunca** use trechos de áudios de terceiros: as referências serviram só para medir ritmo e fundo.
 
 ## Foco no triângulo (`triangulo`)

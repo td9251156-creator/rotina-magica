@@ -14,15 +14,20 @@ export function stopNarratedAudio(): void {
   current = null;
 }
 
-/** Tenta tocar um arquivo local; retorna false quando o navegador não tem áudio disponível. */
-export function playNarratedAudio(practiceId: string, phaseIndex: number): Promise<boolean> {
+/**
+ * Tenta tocar um arquivo local, a partir de `from` segundos (quando a voz é ligada no meio da fase);
+ * retorna false quando o arquivo não existe ou o navegador não toca áudio.
+ */
+export function playNarratedAudio(practiceId: string, phaseIndex: number, from = 0): Promise<boolean> {
   if (typeof Audio === 'undefined') return Promise.resolve(false);
   stopNarratedAudio();
   const audio = new Audio(narratedAudioUrl(practiceId, phaseIndex));
   current = audio;
   audio.preload = 'auto';
-  return audio
-    .play()
+  if (from > 0) audio.currentTime = from;
+  const playing = audio.play() as Promise<void> | undefined;
+  if (!playing) return Promise.resolve(false);
+  return playing
     .then(() => true)
     .catch(() => {
       if (current === audio) current = null;
