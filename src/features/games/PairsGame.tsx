@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { HINT_COST, SHUFFLE_COST, SYMBOLS, canMatch, deal, findPair, isFree, pairPoints, reshuffle, type LayoutId, type Tile } from '@/domain/games/mahjong';
 import { createRng } from '@/domain/games/rng';
+import type { Sign } from '@/domain/games/symbols';
+import { Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
 
 const MODES: { id: LayoutId; title: string; detail: string }[] = [
@@ -11,7 +13,8 @@ const MODES: { id: LayoutId; title: string; detail: string }[] = [
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 /** Pares: escolhe o tamanho e joga. */
-export function PairsGame({ onFinish, seed }: { onFinish: (o: GameOutcome) => void; seed?: number }) {
+/** Com `signs`, as peças mostram planetas e signos em vez dos desenhos de natureza. */
+export function PairsGame({ onFinish, seed, signs }: { onFinish: (o: GameOutcome) => void; seed?: number; signs?: Sign[] }) {
   const [layout, setLayout] = useState<LayoutId | null>(null);
   if (!layout)
     return (
@@ -27,12 +30,13 @@ export function PairsGame({ onFinish, seed }: { onFinish: (o: GameOutcome) => vo
         </div>
       </section>
     );
-  return <PairsBoard layout={layout} seed={seed ?? Date.now()} onFinish={onFinish} />;
+  return <PairsBoard layout={layout} seed={seed ?? Date.now()} onFinish={onFinish} signs={signs} />;
 }
 
-function PairsBoard({ layout, seed, onFinish }: { layout: LayoutId; seed: number; onFinish: (o: GameOutcome) => void }) {
+function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed: number; onFinish: (o: GameOutcome) => void; signs?: Sign[] }) {
   const rng = useMemo(() => createRng(seed), [seed]);
-  const [board, setBoard] = useState<Tile[]>(() => deal(layout, rng));
+  const [board, setBoard] = useState<Tile[]>(() => deal(layout, rng, signs?.length));
+  const nameOf = (t: Tile) => (signs ? signs[t.symbol].name : SYMBOLS[t.symbol]);
   const total = useRef(board.length);
   const [selected, setSelected] = useState<number | null>(null);
   const [hint, setHint] = useState<number[]>([]);
@@ -129,7 +133,7 @@ function PairsBoard({ layout, seed, onFinish }: { layout: LayoutId; seed: number
   const ordered = [...board].sort((a, b) => a.z - b.z || a.y - b.y || a.x - b.x);
 
   return (
-    <div className="mj">
+    <div className={`mj${signs ? ' mj--occult' : ''}`}>
       <div className="mj__bar">
         <span>
           <strong>{score}</strong> pontos
@@ -138,7 +142,13 @@ function PairsBoard({ layout, seed, onFinish }: { layout: LayoutId; seed: number
           {board.length / 2} pares · {fmt(elapsed)}
         </span>
       </div>
-      <div className="mj__board" style={{ width: maxX * u + depth * 3, height: maxY * u * 1.25 + depth * 3 }}>
+      <div
+        className="mj__board"
+        style={{
+          width: maxX * u + depth * 3,
+          height: maxY * u * 1.25 + depth * 3,
+        }}
+      >
         {ordered.map((t) => {
           const isFreeTile = free.has(t.id);
           const cls = [
@@ -153,7 +163,7 @@ function PairsBoard({ layout, seed, onFinish }: { layout: LayoutId; seed: number
               key={t.id}
               type="button"
               className={cls}
-              aria-label={`${SYMBOLS[t.symbol]}${isFreeTile ? '' : ', presa'}`}
+              aria-label={`${nameOf(t)}${isFreeTile ? '' : ', presa'}`}
               aria-pressed={selected === t.id}
               onClick={() => tap(t)}
               style={{
@@ -161,12 +171,14 @@ function PairsBoard({ layout, seed, onFinish }: { layout: LayoutId; seed: number
                 top: t.y * u * 1.25 + (3 - t.z) * depth,
                 width: 2 * u,
                 height: 2 * u * 1.25,
-                fontSize: u * 1.15,
+                fontSize: signs ? u * 1.3 : u * 1.15,
+                color: signs?.[t.symbol].color,
                 zIndex: t.z * 100 + t.y,
-                boxShadow: selected === t.id ? undefined : `${2 + t.z * 2}px ${3 + t.z * 2}px 0 #8f7d55, ${3 + t.z * 3}px ${5 + t.z * 3}px ${6 + t.z * 3}px rgba(0, 0, 0, 0.4)`,
+                boxShadow:
+                  selected === t.id ? undefined : `${2 + t.z * 2}px ${3 + t.z * 2}px 0 var(--mj-side), ${3 + t.z * 3}px ${5 + t.z * 3}px ${6 + t.z * 3}px rgba(0, 0, 0, 0.4)`,
               }}
             >
-              {SYMBOLS[t.symbol]}
+              {signs ? <Glyph id={signs[t.symbol].id} /> : SYMBOLS[t.symbol]}
             </button>
           );
         })}
