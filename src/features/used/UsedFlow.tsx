@@ -13,7 +13,8 @@ type Step = 'when' | 'care' | 'questions' | 'adjust' | 'done';
  * que viram UM ajuste concreto no plano. Nada do progresso é apagado.
  */
 export function UsedFlow({ onDone }: { onDone: () => void }) {
-  const { write } = useData();
+  const { repos, write } = useData();
+  const kindWords = repos.plan.list('gentileza').at(-1)?.text;
   const startAtQuestions = window.location.hash.endsWith('/entender');
   const [step, setStep] = useState<Step>(startAtQuestions ? 'questions' : 'when');
   const [tags, setTags] = useState<string[]>([]);
@@ -145,9 +146,16 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
   return (
     <Screen title="Guardado.">
       <p>Recaída faz parte de quase toda recuperação. O que importa é o que você aprende com ela, e você acabou de fazer isso.</p>
+      {kindWords && (
+        <div className="letter">
+          <p className="eyebrow">Uma frase sua, para dias assim</p>
+          <p>{kindWords}</p>
+        </div>
+      )}
       <div className="actions">
-        <button type="button" className="btn btn--ghost" onClick={() => navigate('treino')}>
-          Ver treinos
+        {/* Depois de usar, a vergonha empurra para usar de novo: o exercício de autocompaixão vem primeiro. */}
+        <button type="button" className="btn btn--ghost" onClick={() => navigate('treino', kindWords ? undefined : 'amigo')}>
+          {kindWords ? 'Ver vivências' : 'Um exercício para agora'}
         </button>
         <button type="button" className="btn" onClick={onDone}>
           Voltar ao início

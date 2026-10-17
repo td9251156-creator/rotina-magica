@@ -66,7 +66,7 @@ export function App() {
   if (!done || route.name === 'primeiro-uso') return <Onboarding onDone={home} />;
   if (route.name === 'treino')
     return route.param ? (
-      <TrainingSession id={route.param} onDone={home} onBack={() => navigate('treino')} />
+      <TrainingSession id={route.param} onDone={home} onMore={() => navigate('treino')} onBack={() => navigate('treino')} />
     ) : (
       <TrainingList onOpen={(id) => navigate('treino', id)} onBack={home} />
     );

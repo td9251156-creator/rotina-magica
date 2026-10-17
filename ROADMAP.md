@@ -8,6 +8,10 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas; artigo contando como o app foi feito.
 
 ## Próximos
+- Terapias e vivências, parte 2: "Parar e respirar" também na Ajuda agora; notas da régua de 0 a 10 guardadas para ver a
+  evolução no laboratório; revisão da noite ligada ao Diário; escolhas que parecem inocentes no Clima de hoje.
+- Terapias e vivências, parte 3: vivências para a família (Nar-Anon, Amor-Exigente) e modo "dia difícil" (só o básico da
+  rotina, sem cobrança).
 - Voz nas práticas guiadas: primeiro a do próprio celular (#7), depois áudio narrado publicado junto com o app (`docs/integracoes.md`).
 - Laboratório cruzando o Diário (gatilhos, quebras) com as noites sem usar.
 - Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
@@ -21,6 +25,8 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Terapias e vivências, parte 1: exercícios agrupados por terapia (entrevista motivacional, TCC e prevenção
+  de recaída, atenção plena, ACT, rede de apoio), 7 vivências novas e a prática guiada "Parar e respirar". 141 testes.
 - 2026-10-17 — Visual e facilidade de uso: Ajustes curtos (itens que abrem e fecham), passos da rotina num cartão só com
   check mais visível, barra de progresso por período, data no topo, ferramentas em grade, aba ativa destacada, botão
   Instalar, "Falar com alguém agora" no topo da Ajuda agora e técnicas com nomes simples. 132 testes.

@@ -25,6 +25,8 @@ export function readKit(repos: Repositories): KitEntry[] {
   if (futuro) out.push({ label: 'Daqui a 6 meses', text: futuro.text });
   const reasons = repos.plan.list('razao').map((r) => r.text);
   if (reasons.length) out.push({ label: 'Por que você quer parar', text: reasons.join(' · ') });
+  const people = repos.plan.list('pessoa').map((p) => p.text);
+  if (people.length) out.push({ label: 'Quem você pode chamar', text: people.join(' · ') });
   return out;
 }
 

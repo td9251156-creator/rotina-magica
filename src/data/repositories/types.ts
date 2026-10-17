@@ -24,6 +24,8 @@ export const planItemKinds = [
   'futuro',
   /** Frase pronta para recusar uma oferta (extra.thought = a situação). */
   'recusa',
+  /** Frase gentil para si mesmo, para depois de um dia difícil (autocompaixão). */
+  'gentileza',
 ] as const;
 export type PlanItemKind = (typeof planItemKinds)[number];
 

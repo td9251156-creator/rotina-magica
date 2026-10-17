@@ -14,6 +14,8 @@ export interface TechniqueStep {
   options?: readonly string[];
   /** Pausa guiada em segundos (ex.: respirar e notar o corpo). */
   pauseSeconds?: number;
+  /** Espaço para escrever e pensar, opcional. Não fica guardado. */
+  reflect?: { prompt: string; placeholder: string };
 }
 
 export interface Technique {
@@ -39,6 +41,8 @@ export const OFFER_SITUATIONS = [
   'Alguém oferece pessoalmente',
   'Um amigo insiste: "só um pouco, pra relaxar"',
 ] as const;
+
+const SCALE = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] as const;
 
 export const VALUES = ['Saúde', 'Família', 'Dinheiro e independência', 'Trabalho', 'Respeito por mim', 'Liberdade', 'Amizades'] as const;
 
@@ -170,6 +174,125 @@ export const TECHNIQUES: readonly Technique[] = [
       },
       { text: 'Feche os olhos 30 segundos e imagine um dia em que você viveu de acordo com isso.', pauseSeconds: 30 },
       { text: 'Essa razão vai aparecer no SOS, junto com as outras.' },
+    ],
+  },
+  // Entrevista motivacional: balança da decisão e régua de importância e confiança.
+  {
+    id: 'balanca',
+    title: 'Os dois lados da balança',
+    why: 'Olhar com honestidade o que o uso dá e o que ele tira ajuda a decidir, sem pressão de ninguém.',
+    steps: [
+      {
+        text: 'Sem julgamento: o que usar te dá de bom? Todo mundo usa por algum motivo.',
+        reflect: { prompt: 'O que o uso me dá:', placeholder: 'energia, coragem, esquecer o dia' },
+      },
+      {
+        text: 'E o que o uso te custa? Pense em dinheiro, sono, trabalho, pessoas e saúde.',
+        reflect: { prompt: 'O que o uso me custa:', placeholder: 'o salário some, durmo mal, minto em casa' },
+      },
+      {
+        text: 'Agora imagine alguns meses sem usar. O que fica melhor?',
+        reflect: { prompt: 'O que melhora se eu parar:', placeholder: 'dinheiro sobrando, acordar bem' },
+      },
+      {
+        text: 'Olhando os dois lados, o que pesa mais para você?',
+        capture: { kind: 'razao', prompt: 'O que mais pesa para eu parar:', placeholder: 'não quero mais acordar devendo' },
+      },
+    ],
+  },
+  {
+    id: 'regua',
+    title: 'De 0 a 10',
+    why: 'Dar uma nota para a importância de mudar e para a confiança mostra onde você já está forte.',
+    steps: [
+      { text: 'De 0 a 10, quanto é importante para você parar agora?', options: SCALE },
+      {
+        // A pergunta "por que não menos?" faz a pessoa dizer os próprios motivos, em vez de se defender.
+        text: 'Por que não um número menor? O que fez você não escolher um mais baixo?',
+        capture: { kind: 'razao', prompt: 'Não escolhi um número menor porque…', placeholder: 'não quero perder mais uma semana de trabalho' },
+      },
+      { text: 'E de 0 a 10, quanto você confia que consegue?', options: SCALE },
+      {
+        text: 'O que faria essa nota subir só um ponto?',
+        reflect: { prompt: 'Minha confiança sobe se eu…', placeholder: 'tiver um plano para sexta à noite' },
+      },
+    ],
+  },
+  // Prevenção de recaída (Marlatt): decisões aparentemente irrelevantes.
+  {
+    id: 'decisoes',
+    title: 'Escolhas que parecem inocentes',
+    why: 'A recaída costuma começar horas antes, com escolhas pequenas que parecem não ter nada a ver.',
+    steps: [
+      {
+        text: 'Alguns exemplos: passar pela rua de quem vende, sacar dinheiro "só por garantia", aceitar "só uma cerveja", guardar o contato "para emergência".',
+      },
+      {
+        text: 'Qual escolha pequena costuma vir antes, no seu caso?',
+        capture: { kind: 'sinal_alerta', prompt: 'Uma escolha que me deixa mais perto:', placeholder: 'sacar dinheiro na sexta "por garantia"' },
+      },
+      { text: 'Quando perceber essa escolha, pare e troque por outra. Notar cedo é quando fica mais fácil mudar o rumo.' },
+    ],
+  },
+  // Autocompaixão: diminui a vergonha que empurra para usar de novo (efeito de violação da abstinência).
+  {
+    id: 'amigo',
+    title: 'Como você falaria com um amigo',
+    why: 'Culpa e vergonha empurram para usar de novo. Ser gentil consigo ajuda a voltar mais rápido.',
+    steps: [
+      { text: 'Pense num dia difícil recente, com ou sem uso. Repare no que você disse para si mesmo depois.' },
+      { text: 'Agora imagine um amigo contando esse mesmo dia para você. O que você diria para ele?', pauseSeconds: 30 },
+      {
+        text: 'Escreva essa frase para você, do mesmo jeito.',
+        capture: { kind: 'gentileza', prompt: 'Num dia difícil, eu me digo:', placeholder: 'Foi um dia pesado. Amanhã eu recomeço, e não estou sozinho.' },
+      },
+    ],
+  },
+  // Terapia de aceitação e compromisso: desfusão ("estou tendo o pensamento de que…", folhas no rio).
+  {
+    id: 'nome',
+    title: 'Ver o pensamento de fora',
+    why: 'Pensamento não é ordem. Dar um nome a ele e deixar passar tira a força sem precisar brigar.',
+    steps: [
+      {
+        text: 'Escolha o pensamento que mais aparece. Diga devagar: "Estou tendo o pensamento de que…" e complete com ele.',
+        options: PERMISSIVE_THOUGHTS,
+        capture: { kind: 'resposta', prompt: 'Que nome você dá para essa história?', placeholder: 'Lá vem a história do "eu mereço" de novo' },
+      },
+      { text: 'Imagine folhas descendo um rio. Coloque o pensamento numa folha e deixe ir. Se vier outro, outra folha.', pauseSeconds: 60 },
+      { text: 'O pensamento pode voltar. Você não precisa obedecer nem expulsar: reconheça o nome e siga com o que importa.' },
+    ],
+  },
+  {
+    id: 'revisao',
+    title: 'Revisão da noite',
+    why: 'Olhar o dia com calma, sem dar nota, mostra o que funcionou e lembra do que importa.',
+    steps: [
+      {
+        text: 'O que aconteceu de mais importante hoje? Só lembre, sem julgar.',
+        reflect: { prompt: 'Hoje…', placeholder: 'trabalhei, tive vontade às 19h e saí para caminhar' },
+      },
+      {
+        text: 'Três coisas boas de hoje, mesmo pequenas.',
+        reflect: { prompt: 'Coisas boas:', placeholder: 'o café, a conversa com minha irmã, dormir cedo' },
+      },
+      {
+        text: 'O que você fez hoje combinou com o que importa para você? Escolha uma coisa para repetir amanhã.',
+        reflect: { prompt: 'Amanhã eu repito:', placeholder: 'sair do trabalho direto para a academia' },
+      },
+    ],
+  },
+  {
+    id: 'rede',
+    title: 'Sua rede de apoio',
+    why: 'Ninguém precisa fazer isso sozinho. Saber quem chamar antes facilita pedir ajuda na hora.',
+    steps: [
+      {
+        text: 'Pense em uma ou duas pessoas que você pode chamar quando a vontade vier, mesmo sem contar tudo.',
+        capture: { kind: 'pessoa', prompt: 'Quem eu posso chamar:', placeholder: 'meu irmão; o Rafa do futebol' },
+      },
+      { text: 'Uma mensagem curta já é um pedido de ajuda: "pode falar agora?". Se der, combine isso com essa pessoa hoje.' },
+      { text: 'Grupos também ajudam. Os Narcóticos Anônimos (NA) têm reuniões de graça, presenciais e online. O CAPS AD atende pelo SUS, sem encaminhamento.' },
     ],
   },
 ];

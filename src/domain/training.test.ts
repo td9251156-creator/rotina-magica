@@ -1,3 +1,4 @@
+import { addDays } from './dates';
 import { TECHNIQUES, findTechnique, techniqueOfTheDay } from './training';
 
 describe('treino diário', () => {
@@ -12,7 +13,7 @@ describe('treino diário', () => {
     const b = techniqueOfTheDay('2026-10-17', all, '2026-10-16');
     expect(a.id).toBe(TECHNIQUES[0].id);
     expect(b.id).toBe(TECHNIQUES[1].id);
-    expect(techniqueOfTheDay(`2026-10-${16 + TECHNIQUES.length}`, all, '2026-10-16').id).toBe(a.id);
+    expect(techniqueOfTheDay(addDays('2026-10-16', TECHNIQUES.length), all, '2026-10-16').id).toBe(a.id);
   });
 
   it('toda técnica tem passos e ids únicos', () => {

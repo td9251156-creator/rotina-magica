@@ -19,6 +19,9 @@ const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
   { kind: 'futuro', label: 'Futuro' },
   { kind: 'barreira', label: 'Barreiras' },
   { kind: 'razao', label: 'Razões' },
+  { kind: 'pessoa', label: 'Quem você pode chamar' },
+  { kind: 'sinal_alerta', label: 'Escolhas que deixam você mais perto' },
+  { kind: 'gentileza', label: 'Frases para um dia difícil' },
 ];
 
 function download(name: string, content: string, type: string) {
@@ -219,7 +222,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
 
       <p className="eyebrow group">Ajuda agora</p>
       <Setting title="Seu kit" hint="O que aparece na Ajuda agora">
-        <p className="small muted">O que aparece no SOS. Vem dos treinos e do primeiro uso.</p>
+        <p className="small muted">O que aparece no SOS. Vem das vivências e do primeiro uso.</p>
         {KIT_KINDS.map(({ kind, label }) => {
           const items = repos.plan.list(kind);
           if (!items.length) return null;

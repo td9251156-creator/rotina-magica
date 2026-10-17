@@ -8,7 +8,7 @@
 import { daysBetween, type LocalDate } from './dates';
 
 export type PeriodId = 'manha' | 'tarde' | 'noite';
-export type PracticeId = 'respiracao' | 'triangulo' | 'quebra' | 'pilar' | 'relaxar' | 'juramento';
+export type PracticeId = 'respiracao' | 'triangulo' | 'quebra' | 'pilar' | 'relaxar' | 'sober' | 'juramento';
 export type RoutineStyle = 'magica' | 'simples';
 
 export interface RoutineStep {
@@ -311,6 +311,20 @@ export const PRACTICES: Record<PracticeId, Practice> = {
         { label: `Solte · ${part}`, seconds: 15, hint: 'Solte de uma vez e repare na diferença.' },
       ]),
       { label: 'Corpo inteiro', seconds: 30, hint: 'Respire devagar. O corpo todo pesado e solto.' },
+    ],
+  },
+  // Espaço de respiração da prevenção de recaída com atenção plena (MBRP, Bowen): Pare, Observe, Respire,
+  // Amplie, Responda. Feito para o meio de uma situação difícil, em 3 minutos.
+  sober: {
+    id: 'sober',
+    title: 'Parar e respirar',
+    summary: 'Três minutos para sair do piloto automático: pare, observe, respire, amplie, escolha.',
+    phases: [
+      { label: 'Pare', seconds: 10, hint: 'Onde você estiver, pare o que está fazendo.' },
+      { label: 'Observe', seconds: 45, hint: 'O que o corpo sente? Que emoção está aí? Que pensamento? Só repare, sem brigar.' },
+      { label: 'Respire', seconds: 60, hint: 'Atenção no ar entrando e saindo. Se a mente fugir, volte com calma.' },
+      { label: 'Amplie', seconds: 40, hint: 'Sinta o corpo inteiro, os pés no chão, o lugar onde você está.' },
+      { label: 'Escolha', seconds: 25, hint: 'Com mais calma: qual é o próximo passo que cuida de você?' },
     ],
   },
   juramento: { id: 'juramento', title: 'Meu compromisso', summary: 'Ler em voz alta.', phases: [] },
