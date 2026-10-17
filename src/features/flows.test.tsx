@@ -511,3 +511,34 @@ function cleanupAndOpenHome(repos: ReturnType<typeof ready>) {
   open('', repos);
 }
 
+
+describe('terapias e vivências, parte 3', () => {
+  it('dia difícil deixa só o básico, vale só hoje e dá para voltar', async () => {
+    const { repos, user } = open('#');
+    await user.click(screen.getByRole('button', { name: /Fazer só o básico hoje/ }));
+    expect(repos.settings.get('hardDay', null)).toBe(toLocalDate(new Date()));
+    expect(screen.getByRole('img', { name: '0 de 4 passos hoje' })).toBeInTheDocument();
+    expect(screen.getByText(/Hoje é só o básico/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Voltar à rotina completa' }));
+    expect(repos.settings.get('hardDay', null)).toBeNull();
+    expect(screen.queryByRole('img', { name: '0 de 4 passos hoje' })).not.toBeInTheDocument();
+  });
+
+  it('dia difícil marcado ontem não vale hoje', () => {
+    const repos = ready();
+    repos.settings.set('hardDay', addDays(toLocalDate(new Date()), -1));
+    open('#', repos);
+    expect(screen.getByRole('button', { name: /Fazer só o básico hoje/ })).toBeInTheDocument();
+  });
+
+  it('o texto para a família pode ser copiado e aparece entre as vivências', async () => {
+    const { user } = open('#treino/texto_familia');
+    await user.click(screen.getByRole('button', { name: 'Mandar ou copiar' }));
+    expect(screen.getByRole('button', { name: 'Copiado' })).toBeInTheDocument();
+    expect(await navigator.clipboard.readText()).toMatch(/Nar-Anon e o Amor-Exigente/);
+
+    window.location.hash = '#treino';
+    expect(await screen.findByText('Trazer a família para perto')).toBeInTheDocument();
+  });
+});

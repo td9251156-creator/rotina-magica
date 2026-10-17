@@ -4,7 +4,7 @@ import { needsBackup } from '@/domain/backup-nudge';
 import { isCareMode } from '@/domain/care';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { forecastFor, forecastText } from '@/domain/forecast';
-import { DEFAULT_OATH, lastWeekCount, periodFor, routineDays, routineFor, type RoutineStep, type RoutineStyle } from '@/domain/routine';
+import { DEFAULT_OATH, essentialRoutine, isHardDay, lastWeekCount, periodFor, routineDays, routineFor, type RoutineStep, type RoutineStyle } from '@/domain/routine';
 import { useInstall } from '@/platform/install';
 import { navigate } from '@/router';
 import { Chevron, Icon } from '@/ui/icons';
@@ -34,7 +34,8 @@ export function Routine() {
   const lastBackup = repos.settings.get<string | null>('lastBackupAt', null);
   const backupDue = needsBackup(today, startDate, lastBackup ? toLocalDate(new Date(lastBackup)) : null, repos.settings.get<string | null>('backupSnoozeUntil', null));
   const chosenStyle = repos.settings.get<RoutineStyle | null>('routineStyle', null);
-  const ROUTINE = routineFor(chosenStyle ?? 'magica');
+  const hard = isHardDay(repos.settings.get<string | null>('hardDay', null), today);
+  const ROUTINE = hard ? essentialRoutine(routineFor(chosenStyle ?? 'magica')) : routineFor(chosenStyle ?? 'magica');
   const ALL_STEPS = ROUTINE.flatMap((p) => p.steps);
   const forecast = forecastFor({
     today,
@@ -71,12 +72,26 @@ export function Routine() {
           <span>de {ALL_STEPS.length}</span>
         </div>
         <div className="today__text">
-          <p>{GREETING[current]}</p>
+          <p>{hard ? 'Dia difícil. Hoje é só o básico, e isso já conta.' : GREETING[current]}</p>
           <p className="muted small">
             {lastWeekCount(active, today)} de 7 dias na semana · {days} {days === 1 ? 'dia' : 'dias'} de rotina no total
           </p>
         </div>
       </section>
+
+      {hard ? (
+        <section className="card hardday">
+          <h2>Só o básico hoje</h2>
+          <p className="small muted">Quatro passos curtos, uns 8 minutos. Amanhã a rotina volta inteira sozinha.</p>
+          <button type="button" className="btn btn--ghost" onClick={() => write((r) => r.settings.set('hardDay', null))}>
+            Voltar à rotina completa
+          </button>
+        </section>
+      ) : (
+        <button type="button" className="hardday__ask" onClick={() => write((r) => r.settings.set('hardDay', today))}>
+          Dia pesado? <strong>Fazer só o básico hoje</strong>
+        </button>
+      )}
 
       <section className={`forecast forecast--${forecast?.level ?? 'aprendendo'}`} aria-label="Clima de hoje">
         <span className="forecast__dot" aria-hidden="true" />

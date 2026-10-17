@@ -18,6 +18,8 @@ export interface TechniqueStep {
   reflect?: { prompt: string; placeholder: string; journal?: 'victory' };
   /** A opção escolhida (de 0 a 10) fica guardada com este nome, para ver a evolução. */
   score?: RulerScore;
+  /** Texto pronto para a pessoa mandar ou mostrar a alguém (só sai do celular se ela tocar em compartilhar). */
+  share?: string;
 }
 
 export type RulerScore = 'importancia' | 'confianca';
@@ -45,6 +47,17 @@ export const OFFER_SITUATIONS = [
   'Alguém oferece pessoalmente',
   'Um amigo insiste: "só um pouco, pra relaxar"',
 ] as const;
+
+/** Texto para a família: como ajudar sem vigiar nem brigar (CRAFT), e onde a família também acha apoio. */
+export const FAMILY_TEXT = [
+  'Estou tentando parar de usar e queria te contar como você pode me ajudar.',
+  '- Não precisa vigiar nem dar bronca. Perguntar como foi o meu dia já ajuda.',
+  '- Se eu disser que estou com vontade, fique comigo uns 20 minutos, por mensagem ou por perto. A vontade passa.',
+  '- Se eu escorregar, não é o fim. Me ajude a voltar, sem briga.',
+  '- Fazer coisas juntos, principalmente à noite e no fim de semana, ajuda muito.',
+  '- Você também merece apoio: o Nar-Anon e o Amor-Exigente têm grupos de graça para familiares, e o CAPS AD também acolhe a família.',
+  'Valeu por estar comigo.',
+].join('\n');
 
 const SCALE = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] as const;
 
@@ -297,6 +310,47 @@ export const TECHNIQUES: readonly Technique[] = [
       },
       { text: 'Uma mensagem curta já é um pedido de ajuda: "pode falar agora?". Se der, combine isso com essa pessoa hoje.' },
       { text: 'Grupos também ajudam. Os Narcóticos Anônimos (NA) têm reuniões de graça, presenciais e online. O CAPS AD atende pelo SUS, sem encaminhamento.' },
+    ],
+  },
+  // Família: envolver quem está perto ajuda a buscar e manter o tratamento (CRAFT, de Meyers e Smith;
+  // terapia de casal comportamental). Família também tem grupos próprios (Nar-Anon, Amor-Exigente).
+  {
+    id: 'conversa',
+    title: 'Conversar sem briga',
+    why: 'Uma conversa preparada com calma tem mais chance de virar ajuda do que discussão.',
+    steps: [
+      { text: 'Escolha a pessoa e a hora: um momento tranquilo, sem pressa, longe de uma noite difícil ou de cabeça quente.' },
+      {
+        text: 'Fale de você, começando com "eu": "Eu estou tentando parar e tem dias que fica difícil."',
+        reflect: { prompt: 'O que eu quero contar:', placeholder: 'que estou tentando parar e que à noite é mais difícil' },
+      },
+      {
+        text: 'Peça uma coisa pequena e concreta. Um pedido claro é mais fácil de atender do que "me ajuda".',
+        reflect: { prompt: 'O que eu vou pedir:', placeholder: 'se eu mandar mensagem, me liga por 10 minutos' },
+      },
+      { text: 'Se a conversa esquentar, tudo bem parar: "Vamos continuar outra hora." Contar já foi um passo.' },
+    ],
+  },
+  {
+    id: 'texto_familia',
+    title: 'Um texto para quem gosta de você',
+    why: 'Quem está perto quer ajudar e muitas vezes não sabe como. Este texto explica por você.',
+    steps: [
+      { text: 'Leia o texto. Se fizer sentido, mande para alguém de confiança ou mostre na tela.', share: FAMILY_TEXT },
+      { text: 'A família também precisa de apoio. Nar-Anon e Amor-Exigente têm grupos de graça, presenciais e online. O CAPS AD também acolhe a família.' },
+    ],
+  },
+  {
+    id: 'combinados',
+    title: 'Reconstruir a confiança',
+    why: 'Confiança volta com combinados pequenos cumpridos, não com promessas grandes.',
+    steps: [
+      { text: 'Pense em alguém que ficou chateado ou preocupado com você. O que essa pessoa mais gostaria de ver?' },
+      {
+        text: 'Escolha um combinado pequeno, que dá para cumprir toda semana.',
+        reflect: { prompt: 'Meu combinado:', placeholder: 'avisar quando chegar em casa; jantar junto no domingo' },
+      },
+      { text: 'Se um dia não der, conte. Falar a verdade também reconstrói a confiança.' },
     ],
   },
 ];

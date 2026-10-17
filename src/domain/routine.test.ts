@@ -1,4 +1,4 @@
-import { ALL_STEPS, PRACTICES, findStep, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
+import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
   it('tem ids únicos e acha passos', () => {
@@ -33,5 +33,15 @@ describe('rotina', () => {
     expect(findStep('n_pilar', 'simples')).toMatchObject({ title: 'Relaxar o corpo', practice: 'relaxar' });
     expect(simples.some((s) => /pentagrama|saudação ao Sol/i.test(s.how.join(' ')))).toBe(false);
     expect(practiceSeconds(PRACTICES.relaxar)).toBe(130);
+  });
+
+  it('dia difícil: só o básico, em todos os períodos, e só no dia marcado', () => {
+    const essentials = essentialRoutine(routineFor('simples'));
+    expect(essentials.flatMap((p) => p.steps.map((s) => s.id))).toEqual([...ESSENTIAL_STEP_IDS]);
+    expect(essentials.every((p) => p.steps.length > 0)).toBe(true);
+    expect(essentials.flatMap((p) => p.steps).reduce((m, s) => m + s.minutes, 0)).toBeLessThanOrEqual(10);
+    expect(isHardDay('2026-10-17', '2026-10-17')).toBe(true);
+    expect(isHardDay('2026-10-16', '2026-10-17')).toBe(false);
+    expect(isHardDay(null, '2026-10-17')).toBe(false);
   });
 });
