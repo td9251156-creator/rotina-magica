@@ -443,4 +443,17 @@ describe('rodada 3', () => {
     await user.click(screen.getByRole('button', { name: 'Desfazer' }));
     expect(document.querySelectorAll('.mj__tile')).toHaveLength(34);
   });
+
+  it('Blocos: guarda a peça, pausa e termina pela pausa', async () => {
+    const { user } = open('#jogos/blocos');
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+    const hold = screen.getByRole('button', { name: 'Guardar a peça' });
+    await user.click(hold);
+    expect(screen.getByRole('button', { name: /^Guardada: / })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Pausar' }));
+    expect(screen.getByText('Pausado')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Terminar' }));
+    expect(await screen.findByText(/pontos|Novo recorde/)).toBeInTheDocument();
+  });
 });
+

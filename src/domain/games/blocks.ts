@@ -58,14 +58,35 @@ export interface Piece {
   y: number;
 }
 
+/** O que a última peça fez ao travar, para a tela comemorar. */
+export interface ClearEvent {
+  lines: number;
+  points: number;
+  /** Peças seguidas que limparam linha (0 = a primeira da sequência). */
+  combo: number;
+  /** Quatro linhas de uma vez logo depois de outras quatro. */
+  backToBack: boolean;
+}
+
 export interface BlocksState {
   board: Board;
   piece: Piece;
-  next: PieceType;
+  /** As próximas peças, na ordem (a primeira é a que vem já). */
+  next: PieceType[];
   bag: PieceType[];
+  /** Peça guardada para depois; dá para trocar uma vez por peça. */
+  hold: PieceType | null;
+  canHold: boolean;
   score: number;
   lines: number;
   level: number;
+  /** Sequência atual de peças que limparam linha; -1 quando não há. */
+  combo: number;
+  /** A última limpeza foi de quatro linhas (vale bônus se vier outra). */
+  lastWasTetris: boolean;
+  /** Conta as peças travadas: muda a cada trava, para a tela saber quando mostrar `lastClear`. */
+  locks: number;
+  lastClear: ClearEvent | null;
   /** Quantas vezes o tabuleiro encheu. No modo SOS o jogo recomeça sozinho em vez de acabar. */
   toppedOut: number;
   over: boolean;
@@ -109,23 +130,42 @@ export function clearLines(board: Board): { board: Board; cleared: number } {
 }
 
 const LINE_POINTS = [0, 100, 300, 500, 800];
+export const PREVIEW = 3;
+const COMBO_POINTS = 50;
 
 export function gravityMs(level: number): number {
   return Math.max(120, 800 - (level - 1) * 65);
 }
 
+function fillQueue(queue: PieceType[], bag: PieceType[], rng: Rng): { queue: PieceType[]; bag: PieceType[] } {
+  const out = [...queue];
+  let rest = bag;
+  while (out.length < PREVIEW) {
+    const t = takeNext(rest, rng);
+    out.push(t.type);
+    rest = t.bag;
+  }
+  return { queue: out, bag: rest };
+}
+
 export function newGame(seed: number): BlocksState {
   const rng = createRng(seed);
   const first = takeNext([], rng);
-  const second = takeNext(first.bag, rng);
+  const { queue, bag } = fillQueue([], first.bag, rng);
   return {
     board: emptyBoard(),
     piece: spawn(first.type, COLS),
-    next: second.type,
-    bag: second.bag,
+    next: queue,
+    bag,
+    hold: null,
+    canHold: true,
     score: 0,
     lines: 0,
     level: 1,
+    combo: -1,
+    lastWasTetris: false,
+    locks: 0,
+    lastClear: null,
     toppedOut: 0,
     over: false,
     seed: Math.floor(rng() * 2 ** 31),
@@ -148,6 +188,13 @@ export function rotatePiece(s: BlocksState): BlocksState {
   return s;
 }
 
+/** Pontos de uma limpeza: linhas × nível, mais bônus por sequência e por quatro linhas seguidas. */
+export function clearPoints(cleared: number, level: number, combo: number, backToBack: boolean): number {
+  if (!cleared) return 0;
+  const base = LINE_POINTS[cleared] * level;
+  return (backToBack ? Math.round(base * 1.5) : base) + COMBO_POINTS * Math.max(0, combo) * level;
+}
+
 function lock(s: BlocksState, endless: boolean): BlocksState {
   const board = s.board.map((r) => [...r]);
   let toppedOut = s.toppedOut;
@@ -158,35 +205,57 @@ function lock(s: BlocksState, endless: boolean): BlocksState {
   const { board: clearedBoard, cleared } = clearLines(board);
   const lines = s.lines + cleared;
   const level = 1 + Math.floor(lines / 10);
-  const score = s.score + LINE_POINTS[cleared] * s.level;
+  const combo = cleared ? s.combo + 1 : -1;
+  const backToBack = cleared === 4 && s.lastWasTetris;
+  const points = clearPoints(cleared, s.level, combo, backToBack);
   const rng = createRng(s.seed);
-  const nextTake = takeNext(s.bag, rng);
-  let piece = spawn(s.next, COLS);
+  const [nextType, ...rest] = s.next;
+  const { queue, bag } = fillQueue(rest, s.bag, rng);
+  const piece = spawn(nextType, COLS);
   let finalBoard = clearedBoard;
   let over = false;
   if (toppedOut === -1 || collides(clearedBoard, piece)) {
-    if (endless) {
-      finalBoard = emptyBoard();
-      piece = spawn(s.next, COLS);
-      toppedOut = s.toppedOut + 1;
-    } else {
-      over = true;
-      toppedOut = s.toppedOut + 1;
-    }
+    toppedOut = s.toppedOut + 1;
+    // No modo SOS o tabuleiro esvazia e o jogo segue; fora dele, a partida acaba.
+    if (endless) finalBoard = emptyBoard();
+    else over = true;
   }
   return {
     ...s,
     board: finalBoard,
     piece,
-    next: nextTake.type,
-    bag: nextTake.bag,
+    next: queue,
+    bag,
+    canHold: true,
     lines,
     level,
-    score,
+    score: s.score + points,
+    combo,
+    lastWasTetris: cleared ? cleared === 4 : s.lastWasTetris,
+    locks: s.locks + 1,
+    lastClear: cleared ? { lines: cleared, points, combo, backToBack } : null,
     toppedOut,
     over,
     seed: Math.floor(rng() * 2 ** 31),
   };
+}
+
+/** Guarda a peça atual (ou troca pela guardada). Uma vez por peça, para não virar fuga infinita. */
+export function holdPiece(s: BlocksState): BlocksState {
+  if (s.over || !s.canHold) return s;
+  if (s.hold !== null && collides(s.board, spawn(s.hold, COLS))) return s;
+  if (s.hold === null) {
+    const rng = createRng(s.seed);
+    const [nextType, ...rest] = s.next;
+    const { queue, bag } = fillQueue(rest, s.bag, rng);
+    return { ...s, hold: s.piece.type, piece: spawn(nextType, COLS), next: queue, bag, canHold: false, seed: Math.floor(rng() * 2 ** 31) };
+  }
+  return { ...s, hold: s.piece.type, piece: spawn(s.hold, COLS), canHold: false };
+}
+
+/** A peça está apoiada (a próxima descida trava). */
+export function grounded(s: BlocksState): boolean {
+  return collides(s.board, { ...s.piece, y: s.piece.y + 1 });
 }
 
 /** Um passo de gravidade: desce uma linha ou trava a peça. */
@@ -194,6 +263,12 @@ export function tick(s: BlocksState, endless = false): BlocksState {
   if (s.over) return s;
   const piece = { ...s.piece, y: s.piece.y + 1 };
   return collides(s.board, piece) ? lock(s, endless) : { ...s, piece };
+}
+
+/** Descer na mão vale 1 ponto por linha. */
+export function softDrop(s: BlocksState, endless = false): BlocksState {
+  if (s.over) return s;
+  return grounded(s) ? lock(s, endless) : { ...s, piece: { ...s.piece, y: s.piece.y + 1 }, score: s.score + 1 };
 }
 
 export function hardDrop(s: BlocksState, endless = false): BlocksState {

@@ -1,4 +1,4 @@
-import { COLS, ROWS, clearLines, collides, emptyBoard, hardDrop, move, newGame, rotate, rotatePiece, tick, type BlocksState } from './blocks';
+import { COLS, PREVIEW, ROWS, clearLines, clearPoints, collides, emptyBoard, hardDrop, holdPiece, move, newGame, rotate, rotatePiece, softDrop, tick, type BlocksState } from './blocks';
 
 describe('Blocos', () => {
   it('começa com tabuleiro vazio e peça no topo', () => {
@@ -10,7 +10,8 @@ describe('Blocos', () => {
 
   it('é reproduzível com a mesma semente', () => {
     expect(newGame(42).piece.type).toBe(newGame(42).piece.type);
-    expect(newGame(42).next).toBe(newGame(42).next);
+    expect(newGame(42).next).toEqual(newGame(42).next);
+    expect(newGame(42).next).toHaveLength(PREVIEW);
   });
 
   it('gira uma matriz 90 graus', () => {
@@ -66,5 +67,57 @@ describe('Blocos', () => {
     for (let i = 0; i < 60; i++) endless = hardDrop(endless, true);
     expect(endless.over).toBe(false);
     expect(endless.toppedOut).toBeGreaterThan(0);
+  });
+
+  it('mostra as próximas peças na ordem em que vêm', () => {
+    let s = newGame(11);
+    for (let i = 0; i < 10; i++) {
+      const [coming] = s.next;
+      s = hardDrop(s);
+      expect(s.piece.type).toBe(coming);
+      expect(s.next).toHaveLength(PREVIEW);
+    }
+  });
+
+  it('guarda a peça uma vez por vez e troca depois', () => {
+    const s = newGame(13);
+    const first = s.piece.type;
+    const coming = s.next[0];
+    const held = holdPiece(s);
+    expect(held.hold).toBe(first);
+    expect(held.piece.type).toBe(coming);
+    expect(holdPiece(held)).toBe(held);
+    const afterLock = hardDrop(held);
+    expect(afterLock.canHold).toBe(true);
+    const swapped = holdPiece(afterLock);
+    expect(swapped.piece.type).toBe(first);
+    expect(swapped.hold).toBe(afterLock.piece.type);
+  });
+
+  it('descer na mão vale ponto', () => {
+    const s = newGame(15);
+    const out = softDrop(s);
+    expect(out.piece.y).toBe(s.piece.y + 1);
+    expect(out.score).toBe(1);
+  });
+
+  it('sequência de linhas e quatro linhas seguidas rendem bônus', () => {
+    expect(clearPoints(1, 1, 0, false)).toBe(100);
+    expect(clearPoints(1, 1, 2, false)).toBe(200);
+    expect(clearPoints(4, 2, 0, true)).toBe(2400);
+    expect(clearPoints(0, 3, 5, true)).toBe(0);
+  });
+
+  it('conta a sequência e avisa o que a peça limpou', () => {
+    const base = newGame(17);
+    const board = emptyBoard();
+    board[ROWS - 1] = new Array(COLS).fill(1);
+    board[ROWS - 1][0] = 0;
+    const s: BlocksState = { ...base, board, piece: { type: 'O', shape: [[1]], x: 0, y: ROWS - 2 }, combo: 1 };
+    const out = hardDrop(s);
+    expect(out.combo).toBe(2);
+    expect(out.lastClear).toEqual({ lines: 1, points: 200, combo: 2, backToBack: false });
+    expect(out.locks).toBe(s.locks + 1);
+    expect(hardDrop(out).combo).toBe(-1);
   });
 });
