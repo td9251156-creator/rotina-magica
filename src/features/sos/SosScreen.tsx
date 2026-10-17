@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useData } from '@/data/provider';
 import type { GameId } from '@/domain/progression';
 import { toLocalDate } from '@/domain/dates';
 import { PRACTICES, type PracticeId } from '@/domain/routine';
 import { URGE_WAVE_MS, formatRemaining } from '@/domain/urge';
-import { BreakIcon, Chevron, KnotIcon, TriangleIcon, WindIcon } from '@/ui/icons';
+import type { IconId } from '@/ui/app-icons';
+import { Chevron, Icon } from '@/ui/icons';
 import { navigate } from '@/router';
 import { PracticePlayer } from '../routine/PracticePlayer';
 import { GameView } from '../games/Games';
@@ -17,10 +18,10 @@ const CALL_SOMEONE = 'Oi! Tá podendo falar um pouquinho?';
 type Stage = 'start' | 'playing' | 'practice' | 'after' | 'passou' | 'ainda_forte';
 
 // As três ferramentas da rotina: cortar, respirar, ocupar a mente com uma imagem.
-const WEAPONS: { id: PracticeId; title: string; Icon: () => ReactElement }[] = [
-  { id: 'quebra', title: 'Cortar o pensamento', Icon: BreakIcon },
-  { id: 'respiracao', title: 'Respiração quadrada', Icon: WindIcon },
-  { id: 'triangulo', title: 'Imagem do triângulo', Icon: TriangleIcon },
+const WEAPONS: { id: PracticeId; title: string; icon: IconId }[] = [
+  { id: 'quebra', title: 'Cortar o pensamento', icon: 'sos_cortar' },
+  { id: 'respiracao', title: 'Respiração quadrada', icon: 'sos_respirar' },
+  { id: 'triangulo', title: 'Imagem do triângulo', icon: 'sos_triangulo' },
 ];
 
 function Rating({ value, onPick, label }: { value: number | null; onPick: (n: number) => void; label: string }) {
@@ -200,10 +201,10 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
       )}
       {stage === 'start' && <p>Vamos atravessar isso juntos. Escolha uma ferramenta: em 3 minutos a vontade costuma baixar.</p>}
       <div className="list">
-        {WEAPONS.map(({ id, title, Icon }) => (
+        {WEAPONS.map(({ id, title, icon }) => (
           <button key={id} type="button" className="item__body item__body--solo" onClick={() => wield(id)}>
             <span className="item__icon">
-              <Icon />
+              <Icon id={icon} />
             </span>
             <span className="item__text">
               <strong>{title}</strong>
@@ -216,7 +217,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
 
       <button type="button" className="item__body item__body--solo" onClick={() => navigate('pensamento')}>
         <span className="item__icon">
-          <KnotIcon />
+          <Icon id="ferr_pensamento" />
         </span>
         <span className="item__text">
           <strong>Desatar o pensamento</strong>

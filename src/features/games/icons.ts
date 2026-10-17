@@ -1,12 +1,13 @@
 import type { GameId } from '@/domain/progression';
+import type { IconId } from '@/ui/app-icons';
 
-/** Um símbolo por jogo, para achar o jogo de olho, sem ler. */
-export const GAME_ICON: Record<GameId, string> = {
-  blocos: '▦',
-  pares: '❖',
-  arcanos: '✦',
-  desvia: '⇅',
-  rebate: '↯',
-  onda: '∿',
-  noite: '☾',
+/** Um ícone por jogo, para achar o jogo de olho, sem ler. */
+export const GAME_ICON: Record<GameId, IconId> = {
+  blocos: 'jogo_blocos',
+  pares: 'jogo_pares',
+  arcanos: 'jogo_arcanos',
+  desvia: 'jogo_desvia',
+  rebate: 'jogo_rebate',
+  onda: 'jogo_onda',
+  noite: 'jogo_noite',
 };

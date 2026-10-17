@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useState } from 'react';
 import type { PlanItemKind } from '@/data/repositories/types';
 import { useData } from '@/data/provider';
 import { toLocalDate } from '@/domain/dates';
@@ -7,17 +7,18 @@ import { APPROACHES, approachOf, techniqueIds, type TherapyItem } from '@/domain
 import { findTechnique, techniqueOfTheDay, type TechniqueStep } from '@/domain/training';
 import { navigate } from '@/router';
 import { Chip } from '@/ui/Chip';
-import { BoltIcon, Chevron, HeartIcon, ShieldIcon, SunIcon, WindIcon } from '@/ui/icons';
+import type { IconId } from '@/ui/app-icons';
+import { Chevron, Icon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
 import { PracticePlayer } from '../routine/PracticePlayer';
 
-const APPROACH_ICONS: Record<string, () => ReactElement> = {
-  motivacao: BoltIcon,
-  recaida: ShieldIcon,
-  atencao: WindIcon,
-  aceitacao: SunIcon,
-  apoio: HeartIcon,
+const APPROACH_ICONS: Record<string, IconId> = {
+  motivacao: 'ter_motivacao',
+  recaida: 'ter_recaida',
+  atencao: 'ter_atencao',
+  aceitacao: 'ter_aceitacao',
+  apoio: 'ter_apoio',
 };
 
 /** Terapias e vivências: os exercícios agrupados pela terapia de onde vêm, cada grupo abre com um toque. */
@@ -61,7 +62,7 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
     const n = times(item.id);
     return { title: t?.title ?? item.id, why: t?.why ?? '', status: n ? `feito ${n}×` : 'nova' };
   };
-  const DayIcon = APPROACH_ICONS[approachOf(ofTheDay.id)?.id ?? 'recaida'];
+  const dayIcon = APPROACH_ICONS[approachOf(ofTheDay.id)?.id ?? 'recaida'];
 
   return (
     <Screen title="Terapias e vivências" onBack={onBack}>
@@ -74,7 +75,7 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
         <span className="eyebrow">Sugestão de hoje · {approachOf(ofTheDay.id)?.title}</span>
         <span className="next__row">
           <span className="item__icon">
-            <DayIcon />
+            <Icon id={dayIcon} />
           </span>
           <span className="item__text">
             <strong>{ofTheDay.title}</strong>
@@ -87,9 +88,8 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
       {APPROACHES.map((a) => {
         const ids = techniqueIds(a);
         const done = ids.filter((id) => times(id) > 0).length;
-        const Icon = APPROACH_ICONS[a.id];
         return (
-          <Setting key={a.id} title={a.title} hint={`${a.name} · ${done} de ${ids.length} ${ids.length === 1 ? 'feito' : 'feitos'}`} icon={<Icon />}>
+          <Setting key={a.id} title={a.title} hint={`${a.name} · ${done} de ${ids.length} ${ids.length === 1 ? 'feito' : 'feitos'}`} icon={<Icon id={APPROACH_ICONS[a.id]} />}>
             <p className="small">{a.what}</p>
             <p className="small muted evidence">Base: {a.evidence}</p>
             <div className="list">

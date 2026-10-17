@@ -7,7 +7,7 @@ import { forecastFor, forecastText } from '@/domain/forecast';
 import { DEFAULT_OATH, lastWeekCount, periodFor, routineDays, routineFor, type RoutineStep, type RoutineStyle } from '@/domain/routine';
 import { useInstall } from '@/platform/install';
 import { navigate } from '@/router';
-import { BlocksIcon, BookIcon, Chevron, KnotIcon, TriangleIcon } from '@/ui/icons';
+import { Chevron, Icon } from '@/ui/icons';
 import { TonightCard } from '../evening/TonightCard';
 import { CareCard } from '../home/CareCard';
 import { MorningCard } from '../home/MorningCard';
@@ -230,28 +230,28 @@ export function Routine() {
         <div className="tools">
           <button type="button" className="tool" onClick={() => navigate('pensamento')}>
             <span className="item__icon">
-              <KnotIcon />
+              <Icon id="ferr_pensamento" />
             </span>
             <strong>Desatar um pensamento</strong>
             <span className="muted small">Quando a cabeça insiste</span>
           </button>
           <button type="button" className="tool" onClick={() => navigate('jogos')}>
             <span className="item__icon">
-              <BlocksIcon />
+              <Icon id="ferr_jogos" />
             </span>
             <strong>Jogos</strong>
             <span className="muted small">Cinco jogos curtos</span>
           </button>
           <button type="button" className="tool" onClick={() => navigate('treino')}>
             <span className="item__icon">
-              <TriangleIcon />
+              <Icon id="ferr_vivencias" />
             </span>
             <strong>Terapias e vivências</strong>
             <span className="muted small">Exercícios das terapias que ajudam a parar</span>
           </button>
           <button type="button" className="tool" onClick={() => navigate('lab')}>
             <span className="item__icon">
-              <BookIcon />
+              <Icon id="ferr_laboratorio" />
             </span>
             <strong>Seu laboratório</strong>
             <span className="muted small">O que funciona com você</span>

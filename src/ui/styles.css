@@ -323,7 +323,8 @@ button.tetris__box:disabled { opacity: 0.6; cursor: default; }
 .btn:active, .tile:active, .sos:active, .card--button:active { transform: scale(0.98); }
 .tiles > :last-child:nth-child(odd) { grid-column: span 2; }
 .tile__skill { display: flex; align-items: center; gap: 6px; }
-.tile__icon { font-size: 1.05rem; line-height: 1; }
+.tile__icon { font-size: 1.05rem; line-height: 1; display: inline-flex; }
+.tile__icon svg { width: 16px; height: 16px; }
 .tile__today { margin-left: auto; padding: 0 7px; font-size: 0.62rem; line-height: 1.7; border-radius: 999px; background: var(--accent); color: var(--bg); letter-spacing: 0.04em; }
 .tile--noite { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface) 60%); }
 .mission__item::after { content: '›'; margin-left: auto; color: var(--muted); font-size: 1.4rem; line-height: 1; }

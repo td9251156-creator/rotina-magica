@@ -1,22 +1,22 @@
-import type { ReactElement } from 'react';
 import type { RoutineStep } from '@/domain/routine';
-import { BookIcon, BreakIcon, MoonIcon, PillarIcon, ScrollIcon, ShieldIcon, SunIcon, WindIcon } from '@/ui/icons';
+import type { IconId } from '@/ui/app-icons';
+import { Icon } from '@/ui/icons';
 
-const BY_ID: Record<string, () => ReactElement> = {
-  m_ra: SunIcon,
-  m_asana: WindIcon,
-  m_rmp: ShieldIcon,
-  m_juramento: ScrollIcon,
-  t_ahathoor: SunIcon,
-  t_gatilho: BreakIcon,
-  n_tum: SunIcon,
-  n_rmp: ShieldIcon,
-  n_pilar: PillarIcon,
-  n_diario: BookIcon,
-  n_khephra: MoonIcon,
+/** Um ícone por passo; serve à rotina com ou sem ritual, que usam os mesmos ids. */
+const BY_ID: Record<string, IconId> = {
+  m_ra: 'passo_amanhecer',
+  m_asana: 'passo_respirar',
+  m_rmp: 'passo_protecao',
+  m_juramento: 'passo_compromisso',
+  t_ahathoor: 'passo_meio_dia',
+  t_gatilho: 'passo_vontade',
+  n_tum: 'passo_chegar',
+  n_rmp: 'passo_limpeza',
+  n_pilar: 'passo_luz',
+  n_diario: 'passo_escrever',
+  n_khephra: 'passo_fechar',
 };
 
 export function StepIcon({ step }: { step: RoutineStep }) {
-  const Icon = BY_ID[step.id] ?? SunIcon;
-  return <Icon />;
+  return <Icon id={BY_ID[step.id] ?? 'passo_amanhecer'} />;
 }
