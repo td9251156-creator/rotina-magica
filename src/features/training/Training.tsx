@@ -7,7 +7,6 @@ import { APPROACHES, approachOf, techniqueIds, type TherapyItem } from '@/domain
 import { findTechnique, techniqueOfTheDay, type TechniqueStep } from '@/domain/training';
 import { navigate } from '@/router';
 import { Chip } from '@/ui/Chip';
-import { HelpLinks } from '@/ui/HelpLinks';
 import { BoltIcon, Chevron, HeartIcon, ShieldIcon, SunIcon, WindIcon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
@@ -108,7 +107,6 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
                 );
               })}
             </div>
-            {a.id === 'apoio' && <HelpLinks />}
           </Setting>
         );
       })}

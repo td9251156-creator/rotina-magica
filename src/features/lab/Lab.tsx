@@ -4,7 +4,6 @@ import { alcoholLink, lastDays, moneyKept, planStats, riskiestWeekday, type Nigh
 import { computeProgress } from '@/domain/progress';
 import { GAME_INFO, type GameId } from '@/domain/progression';
 import { averageDrops, scoreStrategies } from '@/domain/strategies';
-import { HelpLinks } from '@/ui/HelpLinks';
 import { Screen } from '@/ui/Screen';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 
@@ -136,12 +135,6 @@ export function Lab({ onBack }: { onBack: () => void }) {
         </p>
       )}
       {topTags.length > 0 && <p className="card">O que mais veio antes de usar: {topTags.map(([t]) => t.toLowerCase()).join(', ')}.</p>}
-
-      <section>
-        <h2>Ajuda de gente</h2>
-        <p className="small muted">Quem tem acompanhamento tem mais chance de parar. Dá para começar sem marcar nada.</p>
-        <HelpLinks />
-      </section>
 
       {empty && (
         <p className="card muted">
