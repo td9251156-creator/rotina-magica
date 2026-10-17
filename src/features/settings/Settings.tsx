@@ -261,7 +261,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
       </Setting>
 
       <p className="small muted center">
-        Quer ajuda de gente também? O CAPS AD atende de graça pelo SUS, sem encaminhamento. CVV: 188, 24h.
+        Se precisar conversar: CVV 188, 24h, de graça.
       </p>
     </Screen>
   );
