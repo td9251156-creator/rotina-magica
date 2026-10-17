@@ -14,6 +14,7 @@
 - Terapias e vivências ganhou o grupo “Lidar com a vontade”, com “Surfar a vontade”, “Pensar o filme até o fim” e “Carta para mim de amanhã”; os passos usam a preferência de voz guiada existente.
 - A voz das práticas segue o ritmo dos três áudios de referência: falas curtas pela fase inteira, nomes vibrados, voz masculina quando houver e "Som de fundo" opcional. O roteiro para gravar a narração está em `docs/roteiro-narracao.md`.
 - Narração com voz neural (Kokoro, voz masculina) gerada para as quatro práticas guiadas e publicada com o app; toca sem internet depois da primeira vez.
+- Clima de hoje com lembrete antes da hora de risco (arquivo de agenda nos dias que pedem atenção); narração guardada para tocar sem internet; Laboratório com o texto do "Diário e noites" corrigido; prévia discreta do link.
 
 ## Em andamento
 
@@ -23,8 +24,6 @@
 
 ## Backlog
 
-- Laboratório cruzando Diário e noites sem usar.
-- Lembretes opcionais por mais de um período.
 - Desafios semanais e modos difíceis.
 - Ajustar textos e técnicas com o uso real.
 - Cenas de A noite que aprendem com o laboratório.

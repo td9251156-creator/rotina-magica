@@ -8,8 +8,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas; artigo contando como o app foi feito.
 
 ## Próximos
-- Jogos, parte 4: mais tabuleiros e desafio do dia no Pares; rever Desvia, Rebate e A noite, um por rodada.
-- Laboratório cruzando o Diário (gatilhos, quebras) com as noites sem usar.
+- Jogos, parte 4: rever A noite (Pares, Desvia, Rebate e Segura a onda já revistos).
 - Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
 - Desafios semanais e modos difíceis desbloqueados por nível.
 - Ajustar textos e técnicas com o uso real (o laboratório vai mostrar o que funciona).
@@ -21,6 +20,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Melhorias gerais: o Clima de hoje oferece um lembrete na agenda meia hora antes da hora de risco,
+  só nos dias que pedem atenção; com a voz ligada, a narração inteira fica guardada para tocar sem internet; texto do
+  "Diário e noites" no Laboratório corrigido; prévia discreta do link (descrição e imagem) para quem compartilha.
 - 2026-10-17 — Voz nas práticas, parte 2: narração com voz neural (Kokoro-82M, voz masculina `pm_alex`, Apache-2.0)
   gerada no computador para triângulo, Luz pelo corpo, relaxar e parar e respirar (24 arquivos, 2,2 MB), tocando
   sem internet depois da primeira vez. Gerador em `scripts/gerar-narracao.py`.

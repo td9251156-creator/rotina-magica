@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, intoneScript, phaseScript, spokenMs, LONG_PAUSE_MS, MAX_GAP_MS, INHALE_MS, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
+import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, narratedFiles, intoneScript, phaseScript, spokenMs, LONG_PAUSE_MS, MAX_GAP_MS, INHALE_MS, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
   it('tem ids únicos e acha passos', () => {
@@ -115,6 +115,7 @@ describe('rotina', () => {
     const md = readFileSync('docs/roteiro-narracao.md', 'utf8');
     const body = md.slice(md.search(/^## .*\(`\w+`\)$/m));
     expect(body.trim()).toBe(expected.join('\n').trim());
-    for (const f of readdirSync('public/audio/practices').filter((n) => n.endsWith('.mp3'))) expect(files).toContain(f);
+    expect(narratedFiles()).toEqual(files);
+    expect(readdirSync('public/audio/practices').filter((n) => n.endsWith('.mp3')).sort()).toEqual([...files].sort());
   });
 });

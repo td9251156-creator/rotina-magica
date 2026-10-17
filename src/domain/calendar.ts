@@ -7,19 +7,30 @@ function pad(n: number) {
   return String(n).padStart(2, '0');
 }
 
+const BYDAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+/** Segunda a sexta (0 = domingo). */
+export const WORKDAYS = [1, 2, 3, 4, 5];
+
 export function buildDailyReminderIcs({
   time,
   url,
   now,
   title = 'Rotina: como vai ser a noite?',
+  days = WORKDAYS,
 }: {
   time: string;
   url: string;
   now: Date;
   title?: string;
+  /** Dias da semana do alarme (0 = domingo). */
+  days?: readonly number[];
 }): string {
   const [h, m] = time.split(':').map(Number);
-  const start = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(h)}${pad(m)}00`;
+  // O primeiro alarme cai no primeiro dia escolhido a partir de hoje: a agenda espera o começo alinhado à regra.
+  const first = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  while (days.length && !days.includes(first.getDay())) first.setDate(first.getDate() + 1);
+  const start = `${first.getFullYear()}${pad(first.getMonth() + 1)}${pad(first.getDate())}T${pad(h)}${pad(m)}00`;
+  const byday = [...days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map((d) => BYDAY[d]);
   const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
   return [
@@ -32,7 +43,7 @@ export function buildDailyReminderIcs({
     `DTSTAMP:${stamp}`,
     `DTSTART:${start}`,
     'DURATION:PT10M',
-    'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
+    `RRULE:FREQ=WEEKLY;BYDAY=${byday.join(',')}`,
     `SUMMARY:${esc(title)}`,
     `DESCRIPTION:${esc(`Abra: ${url}`)}`,
     `URL:${url}`,
