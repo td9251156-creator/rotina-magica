@@ -3,6 +3,7 @@ import { useData } from '@/data/provider';
 import type { Repositories } from '@/data/repositories/types';
 import { ACTIVITIES } from '@/domain/evening';
 import { GAME_IDS, GAME_INFO, bestScore, type GameId } from '@/domain/progression';
+import { Icon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { symbolsOn, OCCULT_SIGNS } from '@/domain/games/symbols';
 import type { RoutineStyle } from '@/domain/routine';
@@ -93,7 +94,7 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
             <button key={g} type="button" className={`tile tile--${g}`} onClick={() => onOpen(g)}>
               <span className="tile__skill">
                 <span className="tile__icon" aria-hidden="true">
-                  {GAME_ICON[g]}
+                  <Icon id={GAME_ICON[g]} />
                 </span>
                 {GAME_INFO[g].skill}
               </span>

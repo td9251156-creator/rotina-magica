@@ -1,19 +1,19 @@
-import type { ReactElement } from 'react';
 import { navigate, type RouteName } from '@/router';
-import { BookIcon, GearIcon, HeartIcon, SunIcon } from './icons';
+import type { IconId } from './app-icons';
+import { Icon } from './icons';
 
-const TABS: { route: RouteName; label: string; Icon: () => ReactElement }[] = [
-  { route: 'home', label: 'Hoje', Icon: SunIcon },
-  { route: 'sos', label: 'Ajuda agora', Icon: HeartIcon },
-  { route: 'diario', label: 'Diário', Icon: BookIcon },
-  { route: 'ajustes', label: 'Ajustes', Icon: GearIcon },
+const TABS: { route: RouteName; label: string; icon: IconId }[] = [
+  { route: 'home', label: 'Hoje', icon: 'aba_hoje' },
+  { route: 'sos', label: 'Ajuda agora', icon: 'aba_ajuda' },
+  { route: 'diario', label: 'Diário', icon: 'aba_diario' },
+  { route: 'ajustes', label: 'Ajustes', icon: 'aba_ajustes' },
 ];
 
 /** Barra de baixo: as quatro áreas do app, sempre a um toque. */
 export function TabBar({ current }: { current: RouteName }) {
   return (
     <nav className="tabbar" aria-label="Navegação principal">
-      {TABS.map(({ route, label, Icon }) => (
+      {TABS.map(({ route, label, icon }) => (
         <button
           key={route}
           type="button"
@@ -22,7 +22,7 @@ export function TabBar({ current }: { current: RouteName }) {
           onClick={() => navigate(route)}
         >
           <span className="tabbar__icon">
-            <Icon />
+            <Icon id={icon} />
           </span>
           <span>{label}</span>
         </button>

@@ -47,6 +47,7 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-17 | Jogos refeitos em partes, um jogo bem feito por rodada. Parte 1: "Pares" (paciência estilo Mahjong, `domain/games/mahjong.ts`), sempre com solução (montado ao contrário), dica, embaralhar e desfazer. Cartão "Ajuda de gente" saiu do laboratório e das vivências | Pedido do autor: jogos que prendam e estimulem o cérebro (Tetris, Mahjong). Atenção sustentada e memória de trabalho ocupam o espaço da vontade, como o Tetris (Skorka-Brown) |
 | 2026-10-17 | Jogos, parte 2: Blocos com guardar peça, 3 próximas, combo, bônus de quatro linhas seguidas, pausa e meio segundo de ajuste antes de travar. Fora do SOS, o "Ajuda de gente" virou só "CVV 188" no rodapé de Ajustes (contatos de crise do SOS seguem) | Pedido do autor: jogo que prenda como um Tetris de verdade; e tirar o cartão de ajuda, mantendo o CVV discreto |
 | 2026-10-17 | Símbolos do ocultismo nos jogos (`gameSymbols`, segue `routineStyle` até a pessoa escolher): Pares com planetas e signos nas cores dos elementos, Blocos sobe a Árvore da Vida (um nível por esfera, de Malkuth a Kether) e jogo novo "Arcanos" (memória com os 22 Arcanos Maiores, correspondências da Golden Dawn, cada par traz uma ideia para a vida, sem adivinhação). Arcanos só aparece com os símbolos ligados | Pedido do autor. Memória de trabalho ocupada baixa a fissura (Kavanagh, intrusão elaborada). Desenhos ficam em `features/games/art.ts`, gerados por outra IA com `docs/prompt-simbolos.md` e conferidos por `art.test.ts` (só formas, sem script nem cor fixa) |
+| 2026-10-17 | Desenhos feitos por outra IA, com a lógica aqui: ícones do app em `src/ui/app-icons.ts` (por sentido: `aba_*`, `passo_*`, `ferr_*`, `sos_*`, `ter_*`, `jogo_*` e gerais), símbolos dos jogos em `features/games/art.ts` e logo em `public/icons/logo.svg` (gera os PNG do manifest). Prompts em `docs/prompt-icones.md` e `docs/prompt-simbolos.md`; `src/ui/svg-check.ts` recusa script, eventos e cor fixa | Pedido do autor: "faça a lógica, deixe o visual simples e um prompt para outra IA criar os símbolos" |
 | 2026-10-16 | Padrão de lembretes: 1 por dia, no fim do expediente | Maior risco é depois do trabalho, sozinho e entediado; a persona não soube dizer quantos tolera |
 
 ## Arquitetura
@@ -64,7 +65,7 @@ src/data/                  repositories/types.ts (interfaces), repositories/loca
                            provider.tsx (contexto useData), test-repos.ts (repositórios em memória p/ testes)
 src/platform/crypto.ts     PIN (PBKDF2) e cifra do backup (AES-GCM), via Web Crypto
 src/data/backup.ts, demo.ts backup com senha; dados de exemplo do modo ?demo
-src/ui/                    estilos (styles.css, tema noite e claro por variáveis) e componentes compartilhados (Setting = ajuste que abre e fecha)
+src/ui/                    estilos (styles.css, tema noite e claro por variáveis), ícones (app-icons.ts + Icon em icons.tsx) e componentes compartilhados (Setting = ajuste que abre e fecha)
 src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome)
 public/                    manifest.webmanifest, sw.js (offline), ícones
 .github/workflows/         ci.yml (PR) e pages.yml (publica a cada push na main); .github/dependabot.yml (mensal)
