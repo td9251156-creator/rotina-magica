@@ -4,6 +4,7 @@ import { alcoholLink, lastDays, moneyKept, planStats, riskiestWeekday, type Nigh
 import { computeProgress } from '@/domain/progress';
 import { GAME_INFO, type GameId } from '@/domain/progression';
 import { averageDrops, scoreStrategies } from '@/domain/strategies';
+import { rulerHistory } from '@/domain/training';
 import { Screen } from '@/ui/Screen';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 
@@ -45,7 +46,11 @@ export function Lab({ onBack }: { onBack: () => void }) {
   const topTags = Object.entries(lapseTags).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const gameNames = Object.fromEntries(Object.entries(GAME_INFO).map(([id, g]) => [`jogo:${id as GameId}`, g.title]));
   const drops = averageDrops(cravings).filter((d) => d.averageDrop > 0).slice(0, 4);
-  const empty = !drops.length && !stats.length && !crossed && !weekday && !alcohol;
+  const ruler = rulerHistory(repos.practices.list());
+  const firstConf = ruler.find((r) => r.confianca !== null)?.confianca ?? null;
+  const lastConf = [...ruler].reverse().find((r) => r.confianca !== null)?.confianca ?? null;
+  const dm = (d: string) => `${d.slice(8)}/${d.slice(5, 7)}`;
+  const empty = !drops.length && !stats.length && !crossed && !weekday && !alcohol && !ruler.length;
 
   return (
     <Screen title="Seu laboratório" onBack={onBack}>
@@ -107,6 +112,29 @@ export function Lab({ onBack }: { onBack: () => void }) {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {ruler.length > 0 && (
+        <section>
+          <h2>Sua régua de 0 a 10</h2>
+          <ul className="ticks">
+            {ruler
+              .slice(-5)
+              .reverse()
+              .map((r, k) => (
+                <li key={k}>
+                  {dm(r.date)} · importância <strong>{r.importancia ?? '–'}</strong> · confiança <strong>{r.confianca ?? '–'}</strong>
+                </li>
+              ))}
+          </ul>
+          {ruler.length > 1 && firstConf !== null && lastConf !== null && (
+            <p className="muted small">
+              {lastConf > firstConf
+                ? `Sua confiança subiu de ${firstConf} para ${lastConf}. Isso é prática dando resultado.`
+                : 'Notas sobem e descem com os dias. O que conta é continuar olhando para elas.'}
+            </p>
+          )}
         </section>
       )}
 

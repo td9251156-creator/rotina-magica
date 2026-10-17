@@ -133,6 +133,8 @@ export interface EveningRepository {
 export interface Practice extends Entity {
   date: LocalDate;
   techniqueId: string;
+  /** Notas dadas no exercício (ex.: régua de 0 a 10). Registros antigos não têm. */
+  scores?: Record<string, number>;
 }
 
 /** Uma partida de jogo. */
@@ -153,7 +155,7 @@ export interface GameRepository {
 }
 
 export interface PracticeRepository {
-  add(techniqueId: string, date: LocalDate): Practice;
+  add(techniqueId: string, date: LocalDate, scores?: Record<string, number>): Practice;
   list(): Practice[];
 }
 

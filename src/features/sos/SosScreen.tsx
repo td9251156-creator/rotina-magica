@@ -17,11 +17,12 @@ const SOS_BLOCKS_MS = 3 * 60 * 1000;
 const CALL_SOMEONE = 'Oi! Tá podendo falar um pouquinho?';
 type Stage = 'start' | 'playing' | 'practice' | 'after' | 'passou' | 'ainda_forte';
 
-// As três ferramentas da rotina: cortar, respirar, ocupar a mente com uma imagem.
+// As ferramentas: cortar, respirar, ocupar a mente com uma imagem e o espaço de respiração de 3 minutos (MBRP).
 const WEAPONS: { id: PracticeId; title: string; icon: IconId }[] = [
   { id: 'quebra', title: 'Cortar o pensamento', icon: 'sos_cortar' },
   { id: 'respiracao', title: 'Respiração quadrada', icon: 'sos_respirar' },
   { id: 'triangulo', title: 'Imagem do triângulo', icon: 'sos_triangulo' },
+  { id: 'sober', title: 'Parar e respirar', icon: 'ter_atencao' },
 ];
 
 function Rating({ value, onPick, label }: { value: number | null; onPick: (n: number) => void; label: string }) {

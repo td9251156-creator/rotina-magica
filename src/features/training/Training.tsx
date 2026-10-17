@@ -166,21 +166,35 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
   const setText = (text: string) => setAnswers({ ...answers, [i]: { ...answer, text } });
 
   const finish = () => {
+    const today = toLocalDate(new Date());
+    const scores: Record<string, number> = {};
     write((r) => {
       technique.steps.forEach((s, idx) => {
         const a = answers[idx];
         if (s.capture && a?.text.trim()) {
           r.plan.add({ kind: s.capture.kind, text: a.text.trim(), extra: a.option ? { thought: a.option } : null });
         }
+        if (s.score && a?.option !== undefined) scores[s.score] = Number(a.option);
+        // As coisas boas da revisão da noite entram como vitória no Diário de hoje, somadas ao que já estava lá.
+        if (s.reflect?.journal && a?.text.trim()) {
+          const e = r.journal.getByDate(today);
+          const victory = [e?.victory, a.text.trim()].filter(Boolean).join('; ');
+          r.journal.upsert({ date: today, craving: e?.craving ?? null, triggers: e?.triggers ?? [], breaks: e?.breaks ?? 0, trick: e?.trick ?? null, victory });
+        }
       });
-      r.practices.add(technique.id, toLocalDate(new Date()));
+      r.practices.add(technique.id, today, scores);
     });
     setFinished(true);
   };
 
   if (finished) {
     const kinds = technique.steps.flatMap((s) => (s.capture ? [s.capture.kind] : []));
-    const where = kinds.map((k) => SAVED_WHERE[k]).find(Boolean);
+    const toJournal = technique.steps.some((s, idx) => s.reflect?.journal && answers[idx]?.text.trim());
+    const scored = technique.steps.some((s) => s.score);
+    const where =
+      (toJournal && 'As coisas boas de hoje foram para o seu Diário.') ||
+      (scored && 'Suas notas ficam no laboratório, para você ver como mudam com o tempo.') ||
+      kinds.map((k) => SAVED_WHERE[k]).find(Boolean);
     return (
       <Screen title="Feito.">
         <p>
@@ -241,7 +255,7 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
         <label className="field">
           {step.reflect.prompt}
           <textarea rows={3} placeholder={step.reflect.placeholder} value={answer.text} onChange={(e) => setText(e.target.value)} />
-          <span className="small">Opcional. É só para você pensar: isto não fica guardado.</span>
+          <span className="small">{step.reflect.journal ? 'Opcional. Vai para o Diário de hoje.' : 'Opcional. É só para você pensar: isto não fica guardado.'}</span>
         </label>
       )}
 

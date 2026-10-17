@@ -1,5 +1,5 @@
 import { addDays } from './dates';
-import { TECHNIQUES, findTechnique, techniqueOfTheDay } from './training';
+import { TECHNIQUES, findTechnique, rulerHistory, techniqueOfTheDay } from './training';
 
 describe('treino diário', () => {
   it('começa pelas técnicas nunca praticadas, na ordem do catálogo', () => {
@@ -22,3 +22,21 @@ describe('treino diário', () => {
     expect(findTechnique('filme')?.title).toBe('O filme até o fim');
   });
 });
+
+describe('régua de 0 a 10', () => {
+  it('guarda importância e confiança e ignora registros sem nota', () => {
+    const regua = findTechnique('regua')!;
+    expect(regua.steps.filter((s) => s.score).map((s) => s.score)).toEqual(['importancia', 'confianca']);
+    const history = rulerHistory([
+      { techniqueId: 'regua', date: '2026-10-01' },
+      { techniqueId: 'regua', date: '2026-10-02', scores: { importancia: 8, confianca: 4 } },
+      { techniqueId: 'filme', date: '2026-10-03', scores: { importancia: 1 } },
+      { techniqueId: 'regua', date: '2026-10-09', scores: { confianca: 6 } },
+    ]);
+    expect(history).toEqual([
+      { date: '2026-10-02', importancia: 8, confianca: 4 },
+      { date: '2026-10-09', importancia: null, confianca: 6 },
+    ]);
+  });
+});
+

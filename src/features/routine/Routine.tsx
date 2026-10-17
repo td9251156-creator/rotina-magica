@@ -42,6 +42,9 @@ export function Routine() {
     cravings: repos.cravings.listBetween(addDays(today, -56), today),
     useDates: repos.useEvents.useDatesBetween(addDays(today, -56), today),
   });
+  // Uma "escolha que parece inocente" que a pessoa escreveu, trocando a cada dia.
+  const signals = repos.plan.list('sinal_alerta');
+  const signal = signals.length ? signals[Number(today.slice(8)) % signals.length] : null;
   const count = ALL_STEPS.filter((s) => done.has(s.id)).length;
   const days = routineDays(active);
   const [open, setOpen] = useState<Set<string>>(() => new Set([current]));
@@ -94,6 +97,7 @@ export function Routine() {
           ) : (
             <p className="muted small">Com alguns dias de diário, o app aprende quais dias e horários pedem mais cuidado. Tudo calculado aqui no celular.</p>
           )}
+          {signal && <p className="small forecast__signal">Fique de olho: {signal.text}</p>}
         </div>
       </section>
 

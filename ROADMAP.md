@@ -9,8 +9,6 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 
 ## Próximos
 - Jogos, parte 4: mais tabuleiros e desafio do dia no Pares; rever Desvia, Rebate e A noite, um por rodada.
-- Terapias e vivências, parte 2: "Parar e respirar" também na Ajuda agora; notas da régua de 0 a 10 guardadas para ver a
-  evolução no laboratório; revisão da noite ligada ao Diário; escolhas que parecem inocentes no Clima de hoje.
 - Terapias e vivências, parte 3: vivências para a família (Nar-Anon, Amor-Exigente) e modo "dia difícil" (só o básico da
   rotina, sem cobrança).
 - Voz nas práticas guiadas: primeiro a do próprio celular (#7), depois áudio narrado publicado junto com o app (`docs/integracoes.md`).
@@ -26,6 +24,8 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Terapias e vivências, parte 2: "Parar e respirar" na Ajuda agora, régua de 0 a 10 com evolução no
+  laboratório, revisão da noite indo para o Diário e "fique de olho" no Clima de hoje. 170 testes.
 - 2026-10-17 — Desenhos novos: 47 ícones do app, 24 símbolos dos jogos e o logo (ícone da tela inicial), feitos por
   outra IA a partir dos prompts em `docs/` e conferidos por teste.
 - 2026-10-17 — Jogos, parte 3: símbolos do ocultismo (liga e desliga em Jogos). Pares com planetas e signos, Blocos

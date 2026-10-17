@@ -239,8 +239,8 @@ export function createLocalRepositories({ storage, newId, now }: RepoDeps): Repo
     },
 
     practices: {
-      add(techniqueId, date) {
-        const row = { techniqueId, date, ...created() };
+      add(techniqueId, date, scores) {
+        const row = { techniqueId, date, ...(scores && Object.keys(scores).length ? { scores } : {}), ...created() };
         db.practices.push(row);
         save();
         return strip(row);
