@@ -79,7 +79,7 @@ export const TECHNIQUES: readonly Technique[] = [
   },
   {
     id: 'surfar',
-    title: 'Surfar a onda',
+    title: 'Surfar a vontade',
     why: 'A vontade sobe, chega no pico e passa. Observar sem obedecer enfraquece ela com o tempo.',
     steps: [
       { text: 'Lembre da última vez que a vontade veio. Onde você sente no corpo? Peito, estômago, mãos, boca?' },
@@ -90,7 +90,7 @@ export const TECHNIQUES: readonly Technique[] = [
   },
   {
     id: 'filme',
-    title: 'O filme até o fim',
+    title: 'Pensar o filme até o fim',
     why: 'A vontade mostra só os primeiros 10 minutos. Lembrar o resto do filme muda a decisão.',
     steps: [
       { text: 'Imagine uma noite em que você usa. Não pare na primeira parte: vá até as 3 da manhã e até o dia seguinte.' },
@@ -116,13 +116,13 @@ export const TECHNIQUES: readonly Technique[] = [
   },
   {
     id: 'futuro',
-    title: 'Um dia daqui a 6 meses',
-    why: 'Imaginar o futuro em detalhes faz ele pesar mais que a vontade de agora.',
+    title: 'Carta para mim de amanhã',
+    why: 'Escrever para o seu eu de amanhã fortalece a decisão de atravessar a vontade de hoje.',
     steps: [
-      { text: 'Feche os olhos. Daqui a 6 meses, uma noite de semana boa. Onde você está? Com quem? O que está fazendo?', pauseSeconds: 45 },
+      { text: 'Feche os olhos e imagine você amanhã, depois de atravessar esta vontade. Como acorda? O que gostaria de ouvir de você hoje?', pauseSeconds: 30 },
       {
-        text: 'Descreva essa cena em uma ou duas frases, no presente.',
-        capture: { kind: 'futuro', prompt: 'Daqui a 6 meses, numa noite boa, eu…', placeholder: 'estou voltando do treino, com dinheiro na conta, dormindo bem' },
+        text: 'Escreva uma carta curta para você de amanhã. Fale com gentileza e conte por que vale a pena esperar a onda passar.',
+        capture: { kind: 'futuro', prompt: 'Carta para mim de amanhã:', placeholder: 'Você conseguiu atravessar a vontade. Hoje você escolheu cuidar de si.' },
       },
     ],
   },

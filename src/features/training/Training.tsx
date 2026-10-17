@@ -12,11 +12,13 @@ import { Chevron, Icon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
 import { PracticePlayer } from '../routine/PracticePlayer';
+import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
 
 const APPROACH_ICONS: Record<string, IconId> = {
   motivacao: 'ter_motivacao',
   recaida: 'ter_recaida',
   atencao: 'ter_atencao',
+  vontade: 'ter_atencao',
   aceitacao: 'ter_aceitacao',
   apoio: 'ter_apoio',
   familia: 'sos_falar',
@@ -143,12 +145,13 @@ const SAVED_WHERE: Partial<Record<PlanItemKind, string>> = {
 };
 
 export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; onDone: () => void; onMore: () => void; onBack: () => void }) {
-  const { write } = useData();
+  const { repos, write } = useData();
   const technique = findTechnique(id);
   const [i, setI] = useState(0);
   const [answers, setAnswers] = useState<Record<number, { text: string; option?: string }>>({});
   const [pauseDone, setPauseDone] = useState<Record<number, boolean>>({});
   const [finished, setFinished] = useState(false);
+  const voice = canSpeak() && repos.settings.get('practiceVoice', false);
 
   if (!technique) {
     return (
@@ -165,6 +168,11 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
   const needsOption = !!step.options && !answer.option;
   const blocked = (step.capture && !answer.text.trim()) || needsOption;
   const setText = (text: string) => setAnswers({ ...answers, [i]: { ...answer, text } });
+
+  useEffect(() => {
+    if (voice) speak(step.text);
+    return () => stopSpeaking();
+  }, [i, voice, step.text]);
 
   const finish = () => {
     const today = toLocalDate(new Date());
@@ -230,6 +238,20 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
       </p>
       {i === 0 && <p className="muted">{technique.why}</p>}
       <h1>{step.text}</h1>
+      {canSpeak() && (
+        <button
+          type="button"
+          className="player__voice"
+          aria-pressed={voice}
+          onClick={() => {
+            if (voice) stopSpeaking();
+            else speak(step.text);
+            write((r) => r.settings.set('practiceVoice', !voice));
+          }}
+        >
+          {voice ? 'Voz ligada' : 'Ouvir este passo'}
+        </button>
+      )}
 
       {step.share && <ShareBox text={step.share} />}
 

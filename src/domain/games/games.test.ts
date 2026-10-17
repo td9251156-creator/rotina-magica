@@ -49,6 +49,14 @@ describe('Rebate', () => {
     expect(round.find((q) => q.thought === THOUGHTS[0].text)?.correct).toBe('Minha resposta');
   });
 
+  it('evita alternativa duplicada quando a resposta pessoal coincide com uma armadilha', () => {
+    const round = buildRound(createRng(4), { [THOUGHTS[0].text]: THOUGHTS[0].traps[0] }, THOUGHTS.length);
+    const question = round.find((q) => q.thought === THOUGHTS[0].text)!;
+    expect(question.options).toHaveLength(3);
+    expect(new Set(question.options).size).toBe(3);
+    expect(question.options).toContain(question.correct);
+  });
+
   it('pontua acerto com bônus de tempo e sequência', () => {
     expect(scoreAnswer(false, 8000, 3)).toBe(0);
     expect(scoreAnswer(true, 8000, 0)).toBe(150);

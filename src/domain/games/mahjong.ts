@@ -8,6 +8,7 @@
  * sempre tem solução.
  */
 import { shuffle, type Rng } from './rng';
+import type { LocalDate } from '../dates';
 
 export interface Slot {
   x: number;
@@ -34,9 +35,24 @@ export const LAYOUTS = {
   piramide: [...rect(0, 14, 0, 8, 0), ...rect(2, 12, 2, 6, 1), ...rect(4, 10, 4, 4, 2)],
   /** Partida curta: 34 peças em 3 camadas. */
   curta: [...rect(0, 10, 0, 6, 0), ...rect(2, 8, 2, 4, 1), ...rect(4, 6, 3, 3, 2)],
+  /** Jardim: 44 peças em 3 camadas, entre a partida curta e a pirâmide. */
+  jardim: [...rect(0, 12, 0, 6, 0), ...rect(2, 10, 2, 4, 1), ...rect(4, 8, 2, 4, 2)],
 } as const satisfies Record<string, Slot[]>;
 
 export type LayoutId = keyof typeof LAYOUTS;
+
+export interface DailyPairsChallenge {
+  layout: LayoutId;
+  seed: number;
+}
+
+/** Escolhe sempre o mesmo tabuleiro no mesmo dia, sem criar uma obrigação para a pessoa. */
+export function dailyPairsChallenge(date: LocalDate): DailyPairsChallenge {
+  const digits = date.replaceAll('-', '');
+  const seed = digits.split('').reduce((hash, digit) => (hash * 31 + Number(digit)) >>> 0, 7);
+  const layouts: LayoutId[] = ['curta', 'jardim', 'piramide'];
+  return { layout: layouts[seed % layouts.length], seed };
+}
 
 const overlaps = (a: Slot, b: Slot) => Math.abs(a.x - b.x) < 2 && Math.abs(a.y - b.y) < 2;
 

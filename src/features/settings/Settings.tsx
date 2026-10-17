@@ -38,6 +38,7 @@ function download(name: string, content: string, type: string) {
 export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: () => void }) {
   const { repos, write } = useData();
   const [time, setTime] = useState(() => repos.settings.get('workEndTime', '18:00'));
+  const [morningTime, setMorningTime] = useState(() => repos.settings.get('dailyReminders', '08:00'));
   const [spend, setSpend] = useState(() => String(repos.settings.get<number | null>('weeklySpending', null) ?? ''));
   const [msg, setMsg] = useState<string | null>(null);
   const [password, setPassword] = useState('');
@@ -59,6 +60,19 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
     download('rumo-lembrete.ics', buildDailyReminderIcs({ time: parsed ?? '18:00', url: appUrl, now: new Date() }), 'text/calendar');
     write((r) => r.settings.set('reminderAddedAt', new Date().toISOString()));
     setMsg('Abra o arquivo baixado e escolha sua agenda (Google Agenda). O alarme vai tocar de segunda a sexta.');
+  };
+
+  const addMorningReminder = () => {
+    const parsedMorning = parseTime(morningTime);
+    if (!parsedMorning) return;
+    download(
+      'rotina-lembrete-manha.ics',
+      buildDailyReminderIcs({ time: parsedMorning, url: appUrl, now: new Date(), title: 'Rotina: começar o dia' }),
+      'text/calendar',
+    );
+    write((r) => r.settings.set('dailyReminders', parsedMorning));
+    setMorningTime(parsedMorning);
+    setMsg('Lembrete da manhã baixado. Importe na sua agenda apenas se quiser mais um horário.');
   };
 
   const backup = async () => {
@@ -147,6 +161,17 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
             Adicionar na agenda
           </button>
         </div>
+      </Setting>
+      <Setting title="Lembrete da manhã (opcional)" hint="Um segundo horário, se ajudar sua rotina">
+        <p className="small muted">Você pode importar este lembrete além do da saída. Nada é criado sem você abrir o arquivo e confirmar na agenda.</p>
+        <label className="field">
+          Horário da manhã
+          <input inputMode="numeric" value={morningTime} onChange={(e) => setMorningTime(e.target.value)} />
+        </label>
+        {!parseTime(morningTime) && <p className="warn small">Não entendi esse horário. Tente 08:00.</p>}
+        <button type="button" className="btn" disabled={!parseTime(morningTime)} onClick={addMorningReminder}>
+          Adicionar lembrete da manhã
+        </button>
       </Setting>
 
       <p className="eyebrow group">Seus dados e privacidade</p>

@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { HINT_COST, SHUFFLE_COST, SYMBOLS, canMatch, deal, findPair, isFree, pairPoints, reshuffle, type LayoutId, type Tile } from '@/domain/games/mahjong';
+import { HINT_COST, SHUFFLE_COST, SYMBOLS, canMatch, dailyPairsChallenge, deal, findPair, isFree, pairPoints, reshuffle, type LayoutId, type Tile } from '@/domain/games/mahjong';
 import { createRng } from '@/domain/games/rng';
+import { toLocalDate } from '@/domain/dates';
 import type { Sign } from '@/domain/games/symbols';
 import { Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
 
 const MODES: { id: LayoutId; title: string; detail: string }[] = [
   { id: 'curta', title: 'Partida curta', detail: '34 peças · uns 3 minutos' },
+  { id: 'jardim', title: 'Jardim', detail: '44 peças · uns 5 minutos' },
   { id: 'piramide', title: 'Pirâmide', detail: '62 peças · uns 8 minutos' },
 ];
 
@@ -16,10 +18,23 @@ const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).p
 /** Com `signs`, as peças mostram planetas e signos em vez dos desenhos de natureza. */
 export function PairsGame({ onFinish, seed, signs }: { onFinish: (o: GameOutcome) => void; seed?: number; signs?: Sign[] }) {
   const [layout, setLayout] = useState<LayoutId | null>(null);
+  const [challengeSeed, setChallengeSeed] = useState<number | undefined>();
+  const challenge = dailyPairsChallenge(toLocalDate(new Date()));
   if (!layout)
     return (
       <section className="intro">
         <h2>Escolha a partida</h2>
+        <button
+          type="button"
+          className="option"
+          onClick={() => {
+            setLayout(challenge.layout);
+            setChallengeSeed(challenge.seed);
+          }}
+        >
+          <strong>Desafio de hoje</strong>
+          <span className="small muted">Uma partida igual para você repetir, se quiser · {challenge.layout}</span>
+        </button>
         <div className="stack">
           {MODES.map((m) => (
             <button key={m.id} type="button" className="option" onClick={() => setLayout(m.id)}>
@@ -30,7 +45,7 @@ export function PairsGame({ onFinish, seed, signs }: { onFinish: (o: GameOutcome
         </div>
       </section>
     );
-  return <PairsBoard layout={layout} seed={seed ?? Date.now()} onFinish={onFinish} signs={signs} />;
+  return <PairsBoard layout={layout} seed={challengeSeed ?? seed ?? Date.now()} onFinish={onFinish} signs={signs} />;
 }
 
 function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed: number; onFinish: (o: GameOutcome) => void; signs?: Sign[] }) {

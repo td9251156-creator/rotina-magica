@@ -30,7 +30,7 @@ export const APPROACHES: readonly Approach[] = [
     name: 'Entrevista motivacional',
     what: 'Sem sermão e sem pressão: você mesmo descobre por que e quando quer mudar.',
     evidence: 'Muito estudada em dependência de álcool e outras drogas (Miller e Rollnick).',
-    items: [t('balanca'), t('regua'), t('futuro')],
+    items: [t('balanca'), t('regua')],
   },
   {
     id: 'recaida',
@@ -40,7 +40,6 @@ export const APPROACHES: readonly Approach[] = [
     evidence: 'Uma das terapias com mais estudos para quem quer parar de usar cocaína (Carroll; Marlatt).',
     items: [
       t('se_entao'),
-      t('filme'),
       t('pensamentos'),
       {
         kind: 'atalho',
@@ -62,11 +61,15 @@ export const APPROACHES: readonly Approach[] = [
     name: 'Atenção plena (mindfulness)',
     what: 'Notar a vontade, o corpo e os pensamentos sem brigar e sem obedecer. A onda passa.',
     evidence: 'A prevenção de recaída com atenção plena reduziu o uso de drogas num estudo de 2014 (Bowen e colegas).',
-    items: [
-      { kind: 'pratica', id: 'sober' },
-      t('surfar'),
-      { kind: 'atalho', route: 'jogos', param: 'onda', title: 'Segura a onda', why: 'Jogo de respirar devagar, no ritmo da onda.' },
-    ],
+    items: [{ kind: 'pratica', id: 'sober' }, { kind: 'atalho', route: 'jogos', param: 'onda', title: 'Segura a onda', why: 'Jogo de respirar devagar, no ritmo da onda.' }],
+  },
+  {
+    id: 'vontade',
+    title: 'Lidar com a vontade',
+    name: 'TCC e atenção plena',
+    what: 'Observar a vontade sem obedecer, lembrar o filme inteiro e conversar com o seu eu de amanhã.',
+    evidence: 'Combina prevenção de recaída e atenção plena: notar a vontade, reduzir o automatismo e escolher o próximo passo.',
+    items: [t('surfar'), t('filme'), t('futuro')],
   },
   {
     id: 'aceitacao',

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useData } from '@/data/provider';
 import { phaseAt, practiceSeconds, phaseSpeech, type Practice } from '@/domain/routine';
 import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
+import { playNarratedAudio, stopNarratedAudio } from '@/platform/narrated-audio';
 import { vibrate } from '../games/record';
 
 function fmt(s: number) {
@@ -29,12 +30,25 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     else if (now.index !== lastPhase.current) {
       lastPhase.current = now.index;
       vibrate(25);
-      if (voice) speak(phaseSpeech(now.phase));
+      if (voice) {
+        void playNarratedAudio(practice.id, now.index).then((played) => {
+          if (!played) speak(phaseSpeech(now.phase));
+        });
+      }
     }
   }, [now, onDone, voice]);
-  useEffect(() => stopSpeaking, []);
+  useEffect(
+    () => () => {
+      stopSpeaking();
+      stopNarratedAudio();
+    },
+    [],
+  );
   const toggleVoice = () => {
-    if (voice) stopSpeaking();
+    if (voice) {
+      stopSpeaking();
+      stopNarratedAudio();
+    }
     else if (now) speak(phaseSpeech(now.phase));
     write((r) => r.settings.set('practiceVoice', !voice));
   };

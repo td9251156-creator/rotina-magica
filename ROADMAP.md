@@ -22,6 +22,22 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Jogos, parte 4: Pares ganhou o tabuleiro intermediário Jardim, com 44 peças e um desafio diário
+  opcional reproduzível pela data local, mantendo a garantia de partida solucionável.
+- 2026-10-17 — Jogos, parte 4: Desvia passou a limpar gestos cancelados pelo navegador e anunciar a carta
+  para leitores de tela, sem mudar a pontuação.
+- 2026-10-17 — Jogos, parte 4: Rebate passou a remover alternativas duplicadas quando a resposta pessoal
+  coincide com uma armadilha, mantendo três opções distintas.
+- 2026-10-17 — Jogos, parte 4: Segura a onda passou a capturar o ponteiro e tratar cancelamento, evitando
+  que sair visualmente do botão interrompa o ciclo.
+- 2026-10-17 — Voz nas práticas, parte 2 (preparação): o player aceita MP3s narrados estáticos e volta
+  automaticamente para a voz local quando eles não estão publicados.
+- 2026-10-17 — Laboratório: cruzamento entre notas de vontade do Diário e noites sem usar ou com uso,
+  exibido apenas com dados suficientes e sem sugerir causalidade.
+- 2026-10-17 — Lembretes: Ajustes ganhou um segundo lembrete opcional da manhã, em arquivo de agenda separado;
+  o lembrete da saída continua funcionando como antes.
+- 2026-10-17 — Terapias e vivências: criado o grupo “Lidar com a vontade”, com três exercícios curtos de
+  TCC e atenção plena; os passos podem ser lidos pela voz guiada já existente.
 - 2026-10-17 — Voz nas práticas guiadas (#7): botão "Ouvir a voz guiando" no player (respiração, triângulo, SOS…),
   com a voz do próprio celular, sem internet. Desligada por padrão; a escolha fica guardada (`practiceVoice`).
 - 2026-10-17 — Terapias e vivências, parte 3: grupo "Trazer a família para perto" (conversar sem briga, um texto pronto

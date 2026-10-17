@@ -18,6 +18,31 @@ export interface PlanStat {
   clean: number;
 }
 
+export interface CravingNightLink {
+  clean: { nights: number; averageCraving: number };
+  used: { nights: number; averageCraving: number };
+}
+
+/** Cruza notas do Diário com o resultado da noite, sem transformar associação em causa. */
+export function cravingNightLink(
+  nights: readonly Pick<NightRecord, 'date' | 'used'>[],
+  journal: readonly { date: LocalDate; craving: number | null }[],
+): CravingNightLink | null {
+  const outcome = new Map(nights.filter((n) => n.used !== null).map((n) => [n.date, n.used]));
+  const groups = { clean: [] as number[], used: [] as number[] };
+  for (const entry of journal) {
+    const used = outcome.get(entry.date);
+    if (entry.craving === null || used === undefined) continue;
+    groups[used ? 'used' : 'clean'].push(entry.craving);
+  }
+  if (groups.clean.length < 2 || groups.used.length < 2) return null;
+  const average = (values: number[]) => Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
+  return {
+    clean: { nights: groups.clean.length, averageCraving: average(groups.clean) },
+    used: { nights: groups.used.length, averageCraving: average(groups.used) },
+  };
+}
+
 /** Noites com plano escolhido e resultado conhecido, por plano. Mais testado primeiro. */
 export function planStats(nights: readonly NightRecord[]): PlanStat[] {
   const map = new Map<string, PlanStat>();

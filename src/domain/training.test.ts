@@ -19,7 +19,7 @@ describe('treino diário', () => {
   it('toda técnica tem passos e ids únicos', () => {
     expect(new Set(TECHNIQUES.map((t) => t.id)).size).toBe(TECHNIQUES.length);
     TECHNIQUES.forEach((t) => expect(t.steps.length).toBeGreaterThan(0));
-    expect(findTechnique('filme')?.title).toBe('O filme até o fim');
+    expect(findTechnique('filme')?.title).toBe('Pensar o filme até o fim');
   });
 });
 
@@ -39,4 +39,3 @@ describe('régua de 0 a 10', () => {
     ]);
   });
 });
-

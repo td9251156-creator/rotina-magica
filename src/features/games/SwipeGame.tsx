@@ -77,8 +77,18 @@ export function SwipeGame({ personalGood, onFinish }: { personalGood: string[]; 
           else if (dy > 60) decide('puxar');
           else setDy(0);
         }}
+        onPointerCancel={() => {
+          start.current = null;
+          setDy(0);
+        }}
       >
-        <div key={state.index} className="swipe__card" style={{ transform, transition: start.current !== null ? 'none' : undefined }}>
+        <div
+          key={state.index}
+          className="swipe__card"
+          role="img"
+          aria-label={`Carta: ${cue.text}`}
+          style={{ transform, transition: start.current !== null ? 'none' : undefined }}
+        >
           {cue.text}
         </div>
         <div className="swipe__timer" key={`t${state.index}`} style={{ animationDuration: `${cardTimeMs(state.index)}ms` }} />

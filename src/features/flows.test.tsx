@@ -346,7 +346,7 @@ describe('terapias e vivências', () => {
   it('agrupa os exercícios por terapia, com o nome de cada uma', async () => {
     const { user } = open('#treino');
     expect(screen.getByText('Encontrar seus motivos')).toBeInTheDocument();
-    expect(screen.getByText(/Entrevista motivacional · 0 de 3 feitos/)).toBeInTheDocument();
+    expect(screen.getByText(/Entrevista motivacional · 0 de 2 feitos/)).toBeInTheDocument();
     expect(screen.getByText(/Atenção plena/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /De 0 a 10/ }));
     expect(window.location.hash).toBe('#treino/regua');

@@ -32,6 +32,10 @@ describe('lembrete na agenda', () => {
     expect(ics).toContain('URL:https://x.github.io/recomeco/');
     expect(ics).not.toMatch(/coca|droga|uso/i);
     expect(ics.split('\r\n')[0]).toBe('BEGIN:VCALENDAR');
+    const morning = buildDailyReminderIcs({ time: '08:00', title: 'Rotina: começar o dia', url: 'https://x', now: new Date(2026, 9, 16, 10) });
+    expect(morning).toContain('DTSTART:20261016T080000');
+    expect(morning).toContain('SUMMARY:Rotina: começar o dia');
+    expect(morning).not.toMatch(/coca|droga|uso/i);
   });
 });
 

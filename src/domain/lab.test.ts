@@ -1,4 +1,4 @@
-import { alcoholLink, lastDays, moneyKept, planStats, riskiestWeekday } from './lab';
+import { alcoholLink, cravingNightLink, lastDays, moneyKept, planStats, riskiestWeekday } from './lab';
 
 describe('laboratório pessoal', () => {
   it('conta noites e noites sem uso por plano', () => {
@@ -35,5 +35,26 @@ describe('laboratório pessoal', () => {
 
   it('lista dias anteriores sem passar do início', () => {
     expect(lastDays('2026-10-16', 5, '2026-10-14')).toEqual(['2026-10-15', '2026-10-14']);
+  });
+
+  it('cruza vontade do diário com noites conhecidas, só com dados suficientes', () => {
+    const nights = [
+      { date: '2026-10-10', used: false },
+      { date: '2026-10-11', used: false },
+      { date: '2026-10-12', used: true },
+      { date: '2026-10-13', used: true },
+    ];
+    expect(
+      cravingNightLink(nights, [
+        { date: '2026-10-10', craving: 3 },
+        { date: '2026-10-11', craving: 5 },
+        { date: '2026-10-12', craving: 8 },
+        { date: '2026-10-13', craving: 7 },
+      ]),
+    ).toEqual({
+      clean: { nights: 2, averageCraving: 4 },
+      used: { nights: 2, averageCraving: 7.5 },
+    });
+    expect(cravingNightLink(nights.slice(0, 3), [{ date: '2026-10-10', craving: 3 }])).toBeNull();
   });
 });

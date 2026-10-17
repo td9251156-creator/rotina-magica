@@ -1,6 +1,6 @@
 import { useData } from '@/data/provider';
 import { addDays, toLocalDate } from '@/domain/dates';
-import { alcoholLink, lastDays, moneyKept, planStats, riskiestWeekday, type NightRecord } from '@/domain/lab';
+import { alcoholLink, cravingNightLink, lastDays, moneyKept, planStats, riskiestWeekday, type NightRecord } from '@/domain/lab';
 import { computeProgress } from '@/domain/progress';
 import { GAME_INFO, type GameId } from '@/domain/progression';
 import { averageDrops, scoreStrategies } from '@/domain/strategies';
@@ -27,6 +27,7 @@ export function Lab({ onBack }: { onBack: () => void }) {
     return { date, planItemId: choice?.planItemId ?? null, used, alcohol: checkin?.alcohol ?? null };
   });
   const stats = planStats(nights);
+  const journalNight = cravingNightLink(nights, repos.journal.listBetween(start, today));
   const weekday = riskiestWeekday(useDates);
   const alcohol = alcoholLink(nights);
   const money = moneyKept(repos.settings.get<number | null>('weeklySpending', null), progress.cleanDays);
@@ -112,6 +113,18 @@ export function Lab({ onBack }: { onBack: () => void }) {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {journalNight && (
+        <section>
+          <h2>Diário e noites</h2>
+          <p className="card">
+            A vontade média anotada foi <strong>{String(journalNight.clean.averageCraving).replace('.', ',')}</strong> nas{' '}
+            {journalNight.clean.nights} noites sem usar e <strong>{String(journalNight.used.averageCraving).replace('.', ',')}</strong>{' '}
+            nas {journalNight.used.nights} noites em que você usou.
+            <span className="muted small"> É uma associação dos seus registros, não uma explicação ou culpa.</span>
+          </p>
         </section>
       )}
 

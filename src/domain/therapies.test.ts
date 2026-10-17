@@ -17,6 +17,9 @@ describe('terapias e vivências', () => {
       });
     });
     expect(approachOf('balanca')?.name).toBe('Entrevista motivacional');
+    expect(approachOf('surfar')?.title).toBe('Lidar com a vontade');
+    expect(approachOf('filme')?.title).toBe('Lidar com a vontade');
+    expect(approachOf('futuro')?.title).toBe('Lidar com a vontade');
   });
 
   it('o espaço de respiração dura 3 minutos', () => {

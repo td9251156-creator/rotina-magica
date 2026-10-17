@@ -30,3 +30,10 @@ Ordem de preferência:
 
 Antes de inscrever o projeto num prêmio, confira as regras do evento: os prêmios valem para projetos inscritos num
 hackathon da MLH, e alguns eventos pedem que o trabalho seja feito durante o hackathon.
+
+## Áudio narrado estático
+
+O player aceita arquivos opcionais em `public/audio/practices/`, no formato
+`<id-da-pratica>-<indice-da-fase>.mp3`. Os arquivos são empacotados com o PWA e tocados sem internet;
+se um arquivo não existir ou falhar, a voz local do aparelho assume. Antes de publicar, confirme a licença
+da voz e inclua a atribuição exigida pelo serviço usado para gerar a narração.

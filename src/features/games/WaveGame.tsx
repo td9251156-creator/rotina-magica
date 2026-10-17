@@ -88,10 +88,13 @@ export function WaveGame({ onFinish }: { onFinish: (o: GameOutcome) => void }) {
       <button
         type="button"
         className="wave__pad"
-        onPointerDown={press}
-        onPointerUp={release}
-        onPointerLeave={release}
-        onContextMenu={(e) => e.preventDefault()}
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            press();
+          }}
+          onPointerUp={release}
+          onPointerCancel={release}
+          onContextMenu={(e) => e.preventDefault()}
         aria-label="Segure para puxar o ar, solte para expirar"
       >
         <span className="wave__circle" style={{ transform: `scale(${scale})` }} />

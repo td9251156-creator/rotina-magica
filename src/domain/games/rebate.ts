@@ -83,7 +83,8 @@ export function buildRound(rng: Rng, personal: Readonly<Record<string, string>> 
     .slice(0, size)
     .map((t) => {
       const correct = personal[t.text]?.trim() || t.strong;
-      return { thought: t.text, correct, options: shuffle([correct, ...t.traps], rng) };
+      const options = [...new Set([correct, ...t.traps, t.strong])].slice(0, 3);
+      return { thought: t.text, correct, options: shuffle(options, rng) };
     });
 }
 

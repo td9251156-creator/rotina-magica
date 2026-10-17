@@ -1,4 +1,4 @@
-import { LAYOUTS, canMatch, deal, findPair, isFree, reshuffle, type LayoutId, type Tile } from './mahjong';
+import { LAYOUTS, canMatch, dailyPairsChallenge, deal, findPair, isFree, reshuffle, type LayoutId, type Tile } from './mahjong';
 import { createRng } from './rng';
 
 /** Joga sozinho, sempre tirando o primeiro par livre; embaralha quando trava. */
@@ -64,5 +64,12 @@ describe('Pares (estilo Mahjong)', () => {
     const after = reshuffle(board, createRng(5));
     expect(after.map((t) => t.id)).toEqual(board.map((t) => t.id));
     expect(after.map((t) => t.symbol).sort()).toEqual(board.map((t) => t.symbol).sort());
+  });
+
+  it('desafio diário é reproduzível e usa um layout existente', () => {
+    const first = dailyPairsChallenge('2026-10-17');
+    expect(first).toEqual(dailyPairsChallenge('2026-10-17'));
+    expect(Object.keys(LAYOUTS)).toContain(first.layout);
+    expect(dailyPairsChallenge('2026-10-18').seed).not.toBe(first.seed);
   });
 });
