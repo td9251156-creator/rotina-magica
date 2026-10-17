@@ -50,6 +50,7 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-17 | Desenhos feitos por outra IA, com a lógica aqui: ícones do app em `src/ui/app-icons.ts` (por sentido: `aba_*`, `passo_*`, `ferr_*`, `sos_*`, `ter_*`, `jogo_*` e gerais), símbolos dos jogos em `features/games/art.ts` e logo em `public/icons/logo.svg` (gera os PNG do manifest). Prompts em `docs/prompt-icones.md` e `docs/prompt-simbolos.md`; `src/ui/svg-check.ts` recusa script, eventos e cor fixa | Pedido do autor: "faça a lógica, deixe o visual simples e um prompt para outra IA criar os símbolos" |
 | 2026-10-17 | Terapias e vivências, parte 2: "Parar e respirar" também na Ajuda agora; notas da régua de 0 a 10 guardadas no treino (`Practice.scores`, opcional: registros antigos seguem válidos) e mostradas no laboratório; as "coisas boas" da revisão da noite viram a vitória do Diário do dia; uma "escolha que parece inocente" (`sinal_alerta`) aparece no Clima de hoje | Pedido do autor. Ver a confiança subir reforça a autoeficácia (entrevista motivacional); notar sinais cedo é o centro da prevenção de recaída (Marlatt) |
 | 2026-10-17 | Terapias e vivências, parte 3: grupo da família (CRAFT; Nar-Anon e Amor-Exigente para familiares) com conversa sem briga, texto pronto para mandar (`TechniqueStep.share`, sai do celular só pelo toque da pessoa) e combinados; modo "dia difícil" (`hardDay` guarda a data: só vale naquele dia; `ESSENTIAL_STEP_IDS` = compromisso, se a vontade aparecer, diário e fechar o dia) | Pedido do autor. Envolver a família ajuda a buscar e manter o tratamento (Meyers e Smith); num dia ruim, manter o fio da rotina com pouco esforço evita o "já que estraguei, tanto faz" |
+| 2026-10-17 | Apoio financeiro só por doação voluntária (GitHub Sponsors primeiro; Pix aleatório, Ko-fi ou Apoia.se depois; editais de saúde e da universidade). Sem versão paga, anúncio nem pedido de dinheiro na Ajuda agora. Avaliação em `docs/apoio-financeiro.md`; `.github/FUNDING.yml` só depois que o autor ligar as contas | Pedido do autor. Cobrar quem está em recuperação vai contra o critério do projeto; contas e dados bancários são ação dele |
 | 2026-10-16 | Padrão de lembretes: 1 por dia, no fim do expediente | Maior risco é depois do trabalho, sozinho e entediado; a persona não soube dizer quantos tolera |
 
 ## Arquitetura
@@ -71,7 +72,7 @@ src/ui/                    estilos (styles.css, tema noite e claro por variávei
 src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome)
 public/                    manifest.webmanifest, sw.js (offline), ícones
 .github/workflows/         ci.yml (PR) e pages.yml (publica a cada push na main); .github/dependabot.yml (mensal)
-docs/                      visao-produto.md, integracoes.md (regras para serviços externos), student-pack.md, img/ do README
+docs/                      visao-produto.md, integracoes.md (regras para serviços externos), apoio-financeiro.md, student-pack.md, img/ do README
 .devcontainer/, .github/copilot-instructions.md   Codespaces e Copilot (Student Pack)
 ```
 Regras:
