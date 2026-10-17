@@ -8,8 +8,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas; artigo contando como o app foi feito.
 
 ## Próximos
-- Jogos, parte 2: Blocos no nível de um Tetris de verdade (próxima peça, guardar peça, sombra de onde cai, níveis de
-  velocidade). Parte 3: mais tabuleiros e desafio do dia no Pares; depois, um jogo novo por rodada.
+- Jogos, parte 3: mais tabuleiros e desafio do dia no Pares; depois, um jogo novo por rodada.
 - Terapias e vivências, parte 2: "Parar e respirar" também na Ajuda agora; notas da régua de 0 a 10 guardadas para ver a
   evolução no laboratório; revisão da noite ligada ao Diário; escolhas que parecem inocentes no Clima de hoje.
 - Terapias e vivências, parte 3: vivências para a família (Nar-Anon, Amor-Exigente) e modo "dia difícil" (só o básico da
@@ -27,6 +26,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Jogos, parte 2: Blocos como um Tetris de verdade: guardar peça, 3 próximas, sombra em contorno, combo e
+  quatro linhas seguidas com bônus, nível que acelera com aviso, pausa (sozinha ao sair do app), meio segundo para ajustar
+  a peça apoiada e blocos com relevo. Em Ajustes, de ajuda externa ficou só "CVV 188" discreto.
 - 2026-10-17 — Jogos, parte 1: "Pares", paciência estilo Mahjong com partida curta e pirâmide, dica, embaralhar e
   desfazer. Saiu o cartão "Ajuda de gente". 148 testes.
 - 2026-10-17 — Terapias e vivências, parte 1: exercícios agrupados por terapia (entrevista motivacional, TCC e prevenção
