@@ -91,7 +91,10 @@ export function createDemoRepositories(today = new Date()): Repositories {
     const score = Math.round((game === 'blocos' ? 900 : 400) * (0.6 + rng() * 0.8));
     repos.games.add({ date, gameId: game, score, xp: xpForGame(game, score), durationMs: 120000, extra: null });
     if (i % 4 === 1) repos.practices.add(['se_entao', 'surfar', 'filme', 'pensamentos', 'futuro', 'acesso'][i % 6], date);
+    // Régua de 0 a 10 de vez em quando, com a confiança subindo devagar.
+    if (i % 7 === 3) repos.practices.add('regua', date, { importancia: 8, confianca: 3 + Math.floor(i / 7) });
   });
+  repos.plan.add({ kind: 'sinal_alerta', text: 'sacar dinheiro na sexta "por garantia"', extra: null });
   clock = today;
   // Rotina e Diário: dias com parte da rotina feita e o diário da noite.
   const tricks = ['Só uma vez, ninguém vai saber', 'Você merece depois dessa semana', null];
