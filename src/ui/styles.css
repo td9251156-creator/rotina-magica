@@ -473,3 +473,22 @@ h1, h2 { color: var(--title); }
 .breath--respire { animation: breathe 10s ease-in-out infinite; }
 .breath--escolha { transform: scale(1.1); background: radial-gradient(circle, rgba(103, 187, 128, 0.5), rgba(103, 187, 128, 0.08)); border-color: var(--ok); }
 @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.6); } }
+/* Pares (estilo Mahjong) */
+.tile--pares { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), var(--surface) 60%); }
+.mj { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.mj__bar { width: 100%; display: flex; justify-content: space-between; align-items: baseline; }
+.mj__bar strong { font-family: var(--serif); font-size: 1.4rem; color: var(--accent); }
+.mj__board { position: relative; margin: 4px auto; }
+.mj__tile { position: absolute; padding: 0; display: grid; place-items: center; line-height: 1; cursor: pointer; border-radius: 8px;
+  background: linear-gradient(160deg, #fbf6ea, #e9dfc8); border: 1px solid #b9a77f; color: #1a1610;
+  box-shadow: 3px 4px 0 #8f7d55, 4px 6px 8px rgba(0, 0, 0, 0.35); transition: transform 120ms ease, filter 160ms ease, opacity 160ms ease; }
+.mj__tile--blocked { filter: brightness(0.62) saturate(0.6); }
+.mj__tile--sel { transform: translateY(-4px); background: linear-gradient(160deg, #fff4cf, #f0d68e); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent), 3px 8px 10px rgba(0, 0, 0, 0.4); }
+.mj__tile--hint { animation: mjpulse 0.8s ease-in-out 3; }
+.mj__tile--shake { animation: mjshake 0.3s; }
+@keyframes mjpulse { 50% { box-shadow: 0 0 0 4px var(--ok), 3px 4px 0 #8f7d55; } }
+@keyframes mjshake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.mj__tools { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.mj__tools .chip:disabled { opacity: 0.4; }
+.mj__stuck { width: 100%; align-items: center; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .mj__tile { transition: none; } .mj__tile--hint, .mj__tile--shake { animation: none; } }

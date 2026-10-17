@@ -44,6 +44,7 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-17 | Comunidade: issues "good first issue" e "help wanted", issues e PRs aceitos em inglês, Dependabot mensal (npm e Actions, sem versões major) | Atrair contribuidores externos e manter o projeto ativo para programas de código aberto. Commits dos mantenedores seguem em português |
 | 2026-10-17 | Rodada de visual: Ajustes em itens que abrem e fecham (com o essencial no título), passo da rotina num cartão só, barra de progresso por período, ferramentas em grade 2×2, botão "Instalar" do próprio app (`installDismissed`), "Falar com alguém agora" no topo da Ajuda agora e nomes simples nas técnicas | Pedido do autor: mais bonito, fácil e prático. Menos rolagem e alvos de toque ≥44 px; instalar dá o atalho "Agora" de 2 toques |
 | 2026-10-17 | "Terapias e vivências" (`#treino`): exercícios agrupados por abordagem com evidência em dependência (entrevista motivacional, TCC e prevenção de recaída, atenção plena/MBRP, ACT, rede de apoio), cada uma com o nome da terapia e a base. Feito em partes; a parte 1 trouxe balança da decisão, régua de 0 a 10, escolhas que parecem inocentes, autocompaixão (`gentileza`), ver o pensamento de fora, revisão da noite, rede de apoio (`pessoa`, aparece no SOS) e "Parar e respirar" (SOBER, 3 min) | Pedido do autor. Dos guias de magia que ele mandou, entrou só o que conversa com o tratamento (revisão da noite, constância, não usar a prática para fugir de problemas); ficaram fora corte com sangue, transe e projeção astral. Manejo de contingências segue fora (recompensas recusadas) |
+| 2026-10-17 | Jogos refeitos em partes, um jogo bem feito por rodada. Parte 1: "Pares" (paciência estilo Mahjong, `domain/games/mahjong.ts`), sempre com solução (montado ao contrário), dica, embaralhar e desfazer. Cartão "Ajuda de gente" saiu do laboratório e das vivências | Pedido do autor: jogos que prendam e estimulem o cérebro (Tetris, Mahjong). Atenção sustentada e memória de trabalho ocupam o espaço da vontade, como o Tetris (Skorka-Brown) |
 | 2026-10-16 | Padrão de lembretes: 1 por dia, no fim do expediente | Maior risco é depois do trabalho, sozinho e entediado; a persona não soube dizer quantos tolera |
 
 ## Arquitetura
@@ -54,7 +55,7 @@ src/domain/routine.ts      a rotina (Manhã/Tarde/Noite), práticas guiadas (fas
 src/domain/thinking.ts     armadilhas do pensamento (TCC), dicas do corpo, contagem
 src/domain/forecast.ts     Clima de hoje: previsão de risco com os dados do aparelho
 src/domain/training.ts     exercícios (técnicas em passos); therapies.ts agrupa por terapia, com a base de cada uma
-src/domain/games/          motores puros dos jogos (blocos, swipe=Desvia, rebate, wave=Segura a onda, story=A noite) e rng com semente
+src/domain/games/          motores puros dos jogos (blocos, mahjong=Pares, swipe=Desvia, rebate, wave=Segura a onda, story=A noite) e rng com semente
 src/features/<x>/          telas, componentes e testes de cada funcionalidade
 src/domain/                regras puras (sem React, sem armazenamento), 100% testável
 src/data/                  repositories/types.ts (interfaces), repositories/local.ts (localStorage),

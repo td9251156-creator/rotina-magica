@@ -5,6 +5,7 @@ import { ACTIVITIES } from '@/domain/evening';
 import { GAME_IDS, GAME_INFO, bestScore, type GameId } from '@/domain/progression';
 import { Screen } from '@/ui/Screen';
 import { BlocksGame } from './BlocksGame';
+import { PairsGame } from './PairsGame';
 import { RebateGame } from './RebateGame';
 import { recordGame, type GameOutcome, type RecordedGame } from './record';
 import { SwipeGame } from './SwipeGame';
@@ -14,6 +15,7 @@ import { WaveGame } from './WaveGame';
 
 export const HOW_TO: Record<GameId, string> = {
   blocos: 'Encaixe as peças para completar linhas. Toque no tabuleiro para girar, arraste para os lados, deslize para baixo para soltar. Ou use os botões.',
+  pares: 'Toque em duas peças iguais para tirar o par. Só valem peças livres: sem nada em cima e com um lado aberto (as presas ficam mais escuras). Pares seguidos e rápidos valem mais. Travou? Use a dica ou embaralhe.',
   desvia: 'Aparece uma frase. Se ela leva ao uso, empurre para cima (▲). Se é algo que você quer, puxe para baixo (▼). Quanto mais rápido, mais pontos.',
   rebate: 'Um pensamento tenta te convencer a usar. Escolha, antes do tempo acabar, a resposta que derruba ele.',
   noite: 'Uma noite de risco, do fim do expediente até dormir. Escolha o que fazer em cada momento e veja a vontade subir ou baixar. As opções usam o seu plano.',
@@ -41,6 +43,7 @@ export function GameView({ id, onFinish, durationMs }: { id: GameId; onFinish: (
   const { repos } = useData();
   const words = useMemo(() => personalWords(repos), [repos]);
   if (id === 'blocos') return <BlocksGame durationMs={durationMs} onFinish={onFinish} />;
+  if (id === 'pares') return <PairsGame onFinish={onFinish} />;
   if (id === 'desvia') return <SwipeGame personalGood={words.good} onFinish={onFinish} />;
   if (id === 'rebate') return <RebateGame personal={words.answers} onFinish={onFinish} />;
   if (id === 'noite') return <StoryGame personal={words.story} onFinish={onFinish} />;

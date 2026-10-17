@@ -421,10 +421,26 @@ describe('rodada 3', () => {
     expect(await screen.findByText('Não, parei. Valeu.')).toBeInTheDocument();
   });
 
-  it('SOS oferece chamar alguém e o laboratório mostra ajuda de gente', async () => {
+  it('SOS oferece chamar alguém; o laboratório não tem mais o cartão de ajuda de gente', async () => {
     open('#sos');
     expect(screen.getByRole('link', { name: 'Chamar alguém no WhatsApp' }).getAttribute('href')).toMatch(/^https:\/\/wa\.me\/\?text=/);
     window.location.hash = '#lab';
-    expect(await screen.findByRole('link', { name: /CAPS AD perto de você/ })).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(await screen.findByText(/laboratório/i)).toBeInTheDocument();
+    expect(screen.queryByText('Ajuda de gente')).not.toBeInTheDocument();
+  });
+
+  it('Pares: escolhe a partida e tira um par de peças livres', async () => {
+    const { user } = open('#jogos/pares');
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+    await user.click(screen.getByRole('button', { name: /Partida curta/ }));
+    expect(document.querySelectorAll('.mj__tile')).toHaveLength(34);
+    await user.click(screen.getByRole('button', { name: /Dica/ }));
+    const hinted = document.querySelectorAll('.mj__tile--hint');
+    expect(hinted).toHaveLength(2);
+    await user.click(hinted[0] as HTMLElement);
+    await user.click(hinted[1] as HTMLElement);
+    expect(document.querySelectorAll('.mj__tile')).toHaveLength(32);
+    await user.click(screen.getByRole('button', { name: 'Desfazer' }));
+    expect(document.querySelectorAll('.mj__tile')).toHaveLength(34);
   });
 });
