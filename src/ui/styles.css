@@ -430,6 +430,7 @@ h1, h2 { color: var(--title); }
 .forecast p { margin: 0.2rem 0; }
 /* sinal da pessoa no Clima de hoje */
 .forecast__signal { margin-top: 6px; color: var(--title); }
+.forecast__remind { margin-top: 0.5rem; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--accent); padding: 8px 14px; min-height: 44px; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .forecast__dot { flex: 0 0 14px; height: 14px; margin-top: 4px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); color: var(--muted); }
 .forecast--calmo .forecast__dot { background: var(--ok); color: var(--ok); }
 .forecast--atencao .forecast__dot { background: var(--accent); color: var(--accent); }

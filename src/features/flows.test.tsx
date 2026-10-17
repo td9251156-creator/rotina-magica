@@ -621,3 +621,46 @@ describe('voz nas práticas', () => {
     expect(screen.queryByRole('button', { name: 'Ouvir a voz guiando' })).not.toBeInTheDocument();
   });
 });
+
+describe('melhorias gerais', () => {
+  it('o Clima de hoje oferece um lembrete na agenda antes da hora de risco', async () => {
+    const repos = ready();
+    for (const n of [7, 14, 21]) {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      d.setHours(19, 20, 0, 0);
+      repos.cravings.add({ occurredAt: d.toISOString(), intensity: 7, intensityAfter: null, trigger: null, coping: 'comer', outcome: 'passou', note: null });
+    }
+    const files: Blob[] = [];
+    const url = URL as unknown as { createObjectURL?: (b: Blob) => string; revokeObjectURL?: (u: string) => void };
+    url.createObjectURL = (b) => (files.push(b), 'blob:x');
+    url.revokeObjectURL = () => {};
+    try {
+      const { user } = open('', repos);
+      await user.click(screen.getByRole('button', { name: /Avisar antes: .+ às 18h30/ }));
+      expect(await files[0].text()).toMatch(/RRULE:FREQ=WEEKLY;BYDAY=\w\w\r\n[\s\S]*SUMMARY:Rotina: preparar a noite/);
+      expect(screen.getByText(/Lembrete baixado para .+ às 18h30/)).toBeInTheDocument();
+    } finally {
+      delete url.createObjectURL;
+      delete url.revokeObjectURL;
+    }
+  });
+
+  it('com a voz ligada, a narração é guardada para tocar sem internet', async () => {
+    const fetched: string[] = [];
+    vi.stubGlobal('fetch', (u: string) => (fetched.push(u), Promise.resolve(new Response(''))));
+    const synth = { speak: () => {}, cancel: () => {}, getVoices: () => [] };
+    Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true });
+    vi.stubGlobal('SpeechSynthesisUtterance', class { text = ''; constructor(t: string) { this.text = t; } });
+    try {
+      const { user } = open('#rotina/n_pilar');
+      await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+      await user.click(screen.getByRole('button', { name: 'Ouvir a voz guiando' }));
+      await vi.waitFor(() => expect(fetched).toHaveLength(24));
+      expect(fetched[0]).toMatch(/audio\/practices\/triangulo-0\.mp3$/);
+    } finally {
+      vi.unstubAllGlobals();
+      delete (window as { speechSynthesis?: unknown }).speechSynthesis;
+    }
+  });
+});

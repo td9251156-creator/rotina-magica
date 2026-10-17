@@ -119,12 +119,14 @@ export function Lab({ onBack }: { onBack: () => void }) {
       {journalNight && (
         <section>
           <h2>Diário e noites</h2>
-          <p className="card">
-            A vontade média anotada foi <strong>{String(journalNight.clean.averageCraving).replace('.', ',')}</strong> nas{' '}
-            {journalNight.clean.nights} noites sem usar e <strong>{String(journalNight.used.averageCraving).replace('.', ',')}</strong>{' '}
-            nas {journalNight.used.nights} noites em que você usou.
-            <span className="muted small"> É uma associação dos seus registros, não uma explicação ou culpa.</span>
-          </p>
+          <div className="card">
+            <p>
+              A vontade média anotada foi <strong>{String(journalNight.clean.averageCraving).replace('.', ',')}</strong> nas{' '}
+              {journalNight.clean.nights} noites sem usar e <strong>{String(journalNight.used.averageCraving).replace('.', ',')}</strong>{' '}
+              nas {journalNight.used.nights} noites em que você usou.
+            </p>
+            <p className="muted small">É uma associação dos seus registros, não uma explicação ou culpa.</p>
+          </div>
         </section>
       )}
 

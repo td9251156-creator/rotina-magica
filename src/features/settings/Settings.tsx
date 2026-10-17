@@ -10,6 +10,7 @@ import { hashPin, isValidPin, randomBytes, toBase64 } from '@/platform/crypto';
 import { useInstall } from '@/platform/install';
 import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
+import { download } from '@/ui/download';
 
 const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
   { kind: 'se_entao', label: 'Se… então…' },
@@ -23,17 +24,6 @@ const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
   { kind: 'sinal_alerta', label: 'Escolhas que deixam você mais perto' },
   { kind: 'gentileza', label: 'Frases para um dia difícil' },
 ];
-
-function download(name: string, content: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: () => void }) {
   const { repos, write } = useData();

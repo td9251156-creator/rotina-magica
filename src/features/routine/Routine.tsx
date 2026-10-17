@@ -3,7 +3,9 @@ import { useData } from '@/data/provider';
 import { needsBackup } from '@/domain/backup-nudge';
 import { isCareMode } from '@/domain/care';
 import { addDays, toLocalDate } from '@/domain/dates';
-import { forecastFor, forecastText } from '@/domain/forecast';
+import { forecastFor, forecastText, riskReminder, riskReminderLabel } from '@/domain/forecast';
+import { buildDailyReminderIcs } from '@/domain/calendar';
+import { download } from '@/ui/download';
 import { DEFAULT_OATH, essentialRoutine, isHardDay, lastWeekCount, periodFor, routineDays, routineFor, type RoutineStep, type RoutineStyle } from '@/domain/routine';
 import { useInstall } from '@/platform/install';
 import { navigate } from '@/router';
@@ -37,12 +39,23 @@ export function Routine() {
   const hard = isHardDay(repos.settings.get<string | null>('hardDay', null), today);
   const ROUTINE = hard ? essentialRoutine(routineFor(chosenStyle ?? 'magica')) : routineFor(chosenStyle ?? 'magica');
   const ALL_STEPS = ROUTINE.flatMap((p) => p.steps);
-  const forecast = forecastFor({
+  const forecastInput = {
     today,
     journal: repos.journal.listBetween(addDays(today, -56), today),
     cravings: repos.cravings.listBetween(addDays(today, -56), today),
     useDates: repos.useEvents.useDatesBetween(addDays(today, -56), today),
-  });
+  };
+  const forecast = forecastFor(forecastInput);
+  const reminder = forecast ? riskReminder(forecastInput) : null;
+  const reminderKey = reminder && `${reminder.time} ${reminder.days.join(',')}`;
+  const reminderSaved = reminderKey !== null && repos.settings.get<string | null>('riskReminder', null) === reminderKey;
+  const addRiskReminder = () => {
+    if (!reminder || !reminderKey) return;
+    const url = window.location.href.split(/[?#]/)[0];
+    const ics = buildDailyReminderIcs({ ...reminder, url, now: new Date(), title: 'Rotina: preparar a noite' });
+    download('rotina-lembrete-risco.ics', ics, 'text/calendar');
+    write((r) => r.settings.set('riskReminder', reminderKey));
+  };
   // Uma "escolha que parece inocente" que a pessoa escreveu, trocando a cada dia.
   const signals = repos.plan.list('sinal_alerta');
   const signal = signals.length ? signals[Number(today.slice(8)) % signals.length] : null;
@@ -112,6 +125,14 @@ export function Routine() {
           ) : (
             <p className="muted small">Com alguns dias de diário, o app aprende quais dias e horários pedem mais cuidado. Tudo calculado aqui no celular.</p>
           )}
+          {reminder &&
+            (reminderSaved ? (
+              <p className="muted small">Lembrete baixado para {riskReminderLabel(reminder)}. Abra o arquivo para salvar na agenda.</p>
+            ) : (
+              <button type="button" className="forecast__remind" onClick={addRiskReminder}>
+                Avisar antes: {riskReminderLabel(reminder)}
+              </button>
+            ))}
           {signal && <p className="small forecast__signal">Fique de olho: {signal.text}</p>}
         </div>
       </section>

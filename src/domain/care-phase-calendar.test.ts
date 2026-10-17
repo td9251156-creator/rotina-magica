@@ -37,6 +37,13 @@ describe('lembrete na agenda', () => {
     expect(morning).toContain('SUMMARY:Rotina: começar o dia');
     expect(morning).not.toMatch(/coca|droga|uso/i);
   });
+
+  it('lembrete em dias escolhidos começa no primeiro desses dias', () => {
+    // 2026-10-16 é sexta: o primeiro sábado é dia 17; a regra lista os dias de segunda a domingo.
+    const ics = buildDailyReminderIcs({ time: '18:30', url: 'https://x', now: new Date(2026, 9, 16, 10), days: [0, 6] });
+    expect(ics).toContain('DTSTART:20261017T183000');
+    expect(ics).toContain('RRULE:FREQ=WEEKLY;BYDAY=SA,SU');
+  });
 });
 
 describe('ajuste depois do uso', () => {

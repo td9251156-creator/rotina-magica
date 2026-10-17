@@ -81,3 +81,35 @@ export function forecastText(f: Forecast): string {
   if (f.level === 'atencao') return `${days} pedem um pouco mais de atenção. Vale decidir cedo o que fazer à noite.`;
   return `${days} costumam ser ${calm} para você. Mantenha a rotina e aproveite.`;
 }
+
+export interface RiskReminder {
+  /** "HH:MM", meia hora antes da hora em que a vontade mais aperta. */
+  time: string;
+  /** Dias da semana (0 = domingo) que pedem atenção; todos, se nenhum se destaca. */
+  days: number[];
+}
+
+/**
+ * Um lembrete na agenda que chega antes da situação de risco, e não depois: meia hora antes do pico da
+ * vontade, nos dias da semana que a previsão marca como difíceis. É a ideia das intervenções "na hora
+ * certa" (JITAI, Nahum-Shani 2018) feita só com os dados do aparelho.
+ */
+export function riskReminder(input: ForecastInput): RiskReminder | null {
+  const week = Array.from({ length: 7 }, (_, k) => forecastFor({ ...input, today: addDays(input.today, k) }));
+  const peak = week[0]?.peakHour ?? null;
+  if (peak === null) return null;
+  const risky = week.filter((f) => f && f.level !== 'calmo').map((f) => WEEKDAYS.indexOf(f!.weekday));
+  const minutes = Math.max(0, peak * 60 - 30);
+  const two = (n: number) => String(n).padStart(2, '0');
+  return { time: `${two(Math.floor(minutes / 60))}:${two(minutes % 60)}`, days: risky.length ? risky.sort() : [0, 1, 2, 3, 4, 5, 6] };
+}
+
+/** "sextas e sábados às 18h30", "todo dia às 7h". */
+export function riskReminderLabel(r: RiskReminder): string {
+  const [h, m] = r.time.split(':').map(Number);
+  const hour = m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+  if (r.days.length === 7) return `todo dia às ${hour}`;
+  const names = [...r.days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map((d) => PLURAL[d].toLowerCase());
+  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} e ${names.at(-1)}` : names[0];
+  return `${list} às ${hour}`;
+}

@@ -2,6 +2,8 @@
  * Áudios narrados são arquivos estáticos opcionais. Enquanto eles não forem publicados,
  * a prática usa a voz local do aparelho como antes.
  */
+import { narratedFiles } from '@/domain/routine';
+
 let current: HTMLAudioElement | null = null;
 
 export function narratedAudioUrl(practiceId: string, phaseIndex: number): string {
@@ -33,4 +35,25 @@ export function playNarratedAudio(practiceId: string, phaseIndex: number, from =
       if (current === audio) current = null;
       return false;
     });
+}
+
+let prefetch: 'parado' | 'baixando' | 'pronto' = 'parado';
+
+/**
+ * Baixa toda a narração (cerca de 2 MB) quando a pessoa liga a voz, para o service worker guardar:
+ * assim a voz também funciona sem internet, inclusive na Ajuda agora. Um arquivo por vez, sem pressa.
+ */
+export async function prefetchNarration(): Promise<void> {
+  if (prefetch !== 'parado' || typeof fetch === 'undefined') return;
+  prefetch = 'baixando';
+  const base = import.meta.env.BASE_URL;
+  for (const file of narratedFiles()) {
+    try {
+      await fetch(`${base}audio/practices/${file}`);
+    } catch {
+      prefetch = 'parado'; // sem internet: tenta de novo na próxima prática com voz
+      return;
+    }
+  }
+  prefetch = 'pronto';
 }

@@ -601,6 +601,11 @@ export const PRACTICES: Record<PracticeId, Practice> = {
   juramento: { id: 'juramento', title: 'Meu compromisso', summary: 'Ler em voz alta.', phases: [] },
 };
 
+/** Arquivos de narração gravada (`<prática>-<fase>.mp3`): uma por fase das práticas com roteiro. */
+export function narratedFiles(): string[] {
+  return Object.values(PRACTICES).flatMap((p) => (p.phases.some((f) => f.guide) ? p.phases.map((_, i) => `${p.id}-${i}.mp3`) : []));
+}
+
 export function practiceSeconds(p: Practice): number {
   return p.phases.reduce((s, f) => s + f.seconds, 0);
 }

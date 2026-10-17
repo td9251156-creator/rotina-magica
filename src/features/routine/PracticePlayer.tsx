@@ -3,7 +3,7 @@ import { useData } from '@/data/provider';
 import { phaseAt, practiceSeconds, phaseScript, type Practice } from '@/domain/routine';
 import { canSpeak, speakLines, stopSpeaking } from '@/platform/voice';
 import { canPlayAmbient, startAmbient, stopAmbient } from '@/platform/ambient';
-import { playNarratedAudio, stopNarratedAudio } from '@/platform/narrated-audio';
+import { playNarratedAudio, prefetchNarration, stopNarratedAudio } from '@/platform/narrated-audio';
 import { vibrate } from '../games/record';
 
 function fmt(s: number) {
@@ -49,6 +49,10 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     },
     [],
   );
+  // Com a voz ligada, a narração inteira fica guardada no celular para tocar sem internet.
+  useEffect(() => {
+    if (voice) void prefetchNarration();
+  }, [voice]);
   useEffect(() => {
     if (!ambient) return;
     startAmbient();

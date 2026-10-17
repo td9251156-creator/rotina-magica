@@ -234,7 +234,8 @@ export type SettingKey =
   | 'gameSymbols'
   | 'hardDay'
   | 'practiceVoice'
-  | 'practiceAmbient';
+  | 'practiceAmbient'
+  | 'riskReminder';
 
 export interface Repositories {
   routine: RoutineRepository;
