@@ -59,7 +59,12 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
       stopSpeaking();
       stopNarratedAudio();
     }
-    else if (now) speakLines(phaseScript(now.phase));
+    else if (now) {
+      const { index, phase, left } = now;
+      void playNarratedAudio(practice.id, index, phase.seconds - left).then((played) => {
+        if (!played && lastPhase.current === index) speakLines(phaseScript(phase));
+      });
+    }
     write((r) => r.settings.set('practiceVoice', !voice));
   };
   if (!now) return null;

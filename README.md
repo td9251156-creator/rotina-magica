@@ -97,7 +97,7 @@ O Rotina Mágica é e vai continuar de graça, sem anúncios e sem coletar dados
 próximo e você pode, [apoie o projeto pelo GitHub Sponsors](https://github.com/sponsors/td9251156-creator).
 Como o dinheiro é usado e o que nunca vai mudar: [`docs/apoio-financeiro.md`](docs/apoio-financeiro.md).
 
-Licença [MIT](LICENSE).
+Licença [MIT](LICENSE). A narração das práticas foi gerada com [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Apache-2.0); veja [`docs/roteiro-narracao.md`](docs/roteiro-narracao.md).
 
 ---
 

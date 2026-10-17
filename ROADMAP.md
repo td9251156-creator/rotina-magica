@@ -9,7 +9,6 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 
 ## Próximos
 - Jogos, parte 4: mais tabuleiros e desafio do dia no Pares; rever Desvia, Rebate e A noite, um por rodada.
-- Voz nas práticas guiadas, parte 2: áudio narrado publicado junto com o app, para quem não tem voz em português no celular (`docs/integracoes.md`).
 - Laboratório cruzando o Diário (gatilhos, quebras) com as noites sem usar.
 - Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
 - Desafios semanais e modos difíceis desbloqueados por nível.
@@ -22,6 +21,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Voz nas práticas, parte 2: narração com voz neural (Kokoro-82M, voz masculina `pm_alex`, Apache-2.0)
+  gerada no computador para triângulo, Luz pelo corpo, relaxar e parar e respirar (24 arquivos, 2,2 MB), tocando
+  sem internet depois da primeira vez. Gerador em `scripts/gerar-narracao.py`.
 - 2026-10-17 — Práticas guiadas no ritmo dos áudios de referência: a voz acompanha a fase inteira em falas curtas
   (triângulo, Luz pelo corpo, relaxar, parar e respirar), vibra os nomes sílaba por sílaba, prefere voz masculina
   local e ganhou "Som de fundo" gerado no aparelho. Roteiro para gravar em `docs/roteiro-narracao.md`.

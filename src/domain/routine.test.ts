@@ -1,3 +1,4 @@
+import { readFileSync, readdirSync } from 'node:fs';
 import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, intoneScript, phaseScript, spokenMs, LONG_PAUSE_MS, MAX_GAP_MS, INHALE_MS, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
@@ -93,5 +94,27 @@ describe('rotina', () => {
     expect(last('triangulo')).toMatch(/abra os olhos/);
     expect(last('pilar')).toMatch(/abra os olhos/);
     expect(PRACTICES.pilar.phases.filter((f) => f.guide?.some((g) => typeof g !== 'string'))).toHaveLength(5);
+  });
+
+  it('o roteiro de gravação e os áudios narrados seguem o texto do app', () => {
+    // Mudou uma fala? Rode o mesmo formato abaixo em docs/roteiro-narracao.md e gere os áudios de novo
+    // (scripts/gerar-narracao.py), senão o áudio gravado diz uma coisa e a tela outra.
+    const expected: string[] = [];
+    const files: string[] = [];
+    for (const p of Object.values(PRACTICES)) {
+      if (!p.phases.some((f) => f.guide)) continue;
+      expected.push(`## ${p.title} (\`${p.id}\`)`, '');
+      p.phases.forEach((f, i) => {
+        files.push(`${p.id}-${i}.mp3`);
+        expected.push(`### \`${p.id}-${i}.mp3\` · ${f.label.replace(' · ', ', ')} · até ${f.seconds} s`, '');
+        for (const g of f.guide ?? [])
+          expected.push(typeof g === 'string' ? `- ${g}` : `- *(vibrar ${g.times} vezes, puxando o ar entre elas)* **${g.intone}**`);
+        expected.push('');
+      });
+    }
+    const md = readFileSync('docs/roteiro-narracao.md', 'utf8');
+    const body = md.slice(md.search(/^## .*\(`\w+`\)$/m));
+    expect(body.trim()).toBe(expected.join('\n').trim());
+    for (const f of readdirSync('public/audio/practices').filter((n) => n.endsWith('.mp3'))) expect(files).toContain(f);
   });
 });

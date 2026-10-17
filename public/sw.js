@@ -34,6 +34,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Áudio narrado: o navegador pede pedaços do arquivo (Range); guarda o arquivo inteiro para tocar sem internet.
+  if (/\.mp3$/.test(new URL(req.url).pathname)) {
+    event.respondWith(
+      caches.match(req.url).then(
+        (hit) =>
+          hit ||
+          fetch(req.url).then((res) => {
+            if (res.status === 200) {
+              const copy = res.clone();
+              caches.open(CACHE).then((c) => c.put(req.url, copy));
+            }
+            return res;
+          }),
+      ),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(req).then(
       (hit) =>
