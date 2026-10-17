@@ -455,5 +455,22 @@ describe('rodada 3', () => {
     await user.click(screen.getByRole('button', { name: 'Terminar' }));
     expect(await screen.findByText(/pontos|Novo recorde/)).toBeInTheDocument();
   });
+
+  it('Arcanos: aparece com os símbolos, vira cartas e some quando desliga', async () => {
+    const repos = ready();
+    repos.settings.set('routineStyle', 'magica');
+    const { user } = open('#jogos', repos);
+    await user.click(screen.getByRole('button', { name: /Arcanos/ }));
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+    await user.click(screen.getByRole('button', { name: /Partida curta/ }));
+    const backs = screen.getAllByRole('button', { name: 'Carta virada para baixo' });
+    expect(backs).toHaveLength(16);
+    await user.click(backs[0]);
+    expect(screen.getAllByRole('button', { name: 'Carta virada para baixo' })).toHaveLength(15);
+    await user.click(screen.getByRole('button', { name: /Voltar/ }));
+    await user.click(screen.getByRole('checkbox', { name: /Símbolos do ocultismo/ }));
+    expect(screen.queryByRole('button', { name: /Arcanos/ })).not.toBeInTheDocument();
+    expect(repos.settings.get('gameSymbols', null)).toBe(false);
+  });
 });
 

@@ -18,6 +18,7 @@ import {
   type BlocksState,
   type PieceType,
 } from '@/domain/games/blocks';
+import { sephirah } from '@/domain/games/symbols';
 import { formatRemaining } from '@/domain/urge';
 import type { GameOutcome } from './record';
 import { vibrate } from './record';
@@ -32,6 +33,8 @@ const CLEAR_NAMES = ['', 'Linha!', 'Duas linhas!', 'Três linhas!', 'Quatro linh
 interface Props {
   /** Com duração (modo SOS), o jogo não acaba quando enche: recomeça e o relógio manda. */
   durationMs?: number;
+  /** Com símbolos: cada nível é uma esfera da Árvore da Vida, de Malkuth a Kether. */
+  tree?: boolean;
   onFinish: (o: GameOutcome) => void;
 }
 
@@ -52,16 +55,25 @@ function Mini({ type, dim }: { type: PieceType | null; dim?: boolean }) {
   );
 }
 
-export function BlocksGame({ durationMs, onFinish }: Props) {
+export function BlocksGame({ durationMs, tree, onFinish }: Props) {
   const endless = durationMs !== undefined;
   const [state, setState] = useState<BlocksState>(() => newGame(Date.now() % 2147483647));
   const [startedAt] = useState(() => Date.now());
   const [now, setNow] = useState(startedAt);
   const [paused, setPaused] = useState(false);
-  const [toast, setToast] = useState<{ text: string; big: boolean; key: number } | null>(null);
+  const [toast, setToast] = useState<{
+    text: string;
+    big: boolean;
+    key: number;
+  } | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const finished = useRef(false);
-  const drag = useRef<{ x: number; y: number; t: number; moved: number } | null>(null);
+  const drag = useRef<{
+    x: number;
+    y: number;
+    t: number;
+    moved: number;
+  } | null>(null);
   const running = !state.over && !paused;
 
   const act = useCallback(
@@ -75,7 +87,11 @@ export function BlocksGame({ durationMs, onFinish }: Props) {
     (s: BlocksState) => {
       if (finished.current) return;
       finished.current = true;
-      onFinish({ score: s.score, durationMs: Date.now() - startedAt, extra: { lines: s.lines, level: s.level } });
+      onFinish({
+        score: s.score,
+        durationMs: Date.now() - startedAt,
+        extra: { lines: s.lines, level: s.level },
+      });
     },
     [onFinish, startedAt],
   );
@@ -117,15 +133,20 @@ export function BlocksGame({ durationMs, onFinish }: Props) {
     seen.current = { locks: state.locks, level: state.level };
     if (state.level > prev.level) {
       vibrate([30, 40, 30]);
-      setToast({ text: `Nível ${state.level} · mais rápido`, big: true, key: state.locks });
+      const name = tree ? `${sephirah(state.level).name}, ${sephirah(state.level).meaning}` : `Nível ${state.level}`;
+      setToast({ text: `${name} · mais rápido`, big: true, key: state.locks });
       return;
     }
     const c = state.lastClear;
     if (state.locks === prev.locks || !c) return;
     vibrate(c.lines === 4 ? [40, 30, 40] : 30);
     const extras = [c.backToBack ? 'em sequência' : '', c.combo > 0 ? `combo ×${c.combo + 1}` : ''].filter(Boolean).join(' · ');
-    setToast({ text: `${CLEAR_NAMES[c.lines]} +${c.points}${extras ? ` · ${extras}` : ''}`, big: c.lines === 4, key: state.locks });
-  }, [state.locks, state.level, state.lastClear]);
+    setToast({
+      text: `${CLEAR_NAMES[c.lines]} +${c.points}${extras ? ` · ${extras}` : ''}`,
+      big: c.lines === 4,
+      key: state.locks,
+    });
+  }, [state.locks, state.level, state.lastClear, tree]);
   useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(null), 1100);
@@ -261,6 +282,7 @@ export function BlocksGame({ durationMs, onFinish }: Props) {
           <div className="tetris__stat">
             <span className="tetris__label">Nível</span>
             <strong>{state.level}</strong>
+            {tree && <span className="tetris__sphere">{sephirah(state.level).name}</span>}
           </div>
           <div className="tetris__stat">
             <span className="tetris__label">Linhas</span>

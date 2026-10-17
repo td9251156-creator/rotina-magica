@@ -59,7 +59,7 @@ export function isFree(t: Slot, board: readonly Slot[]): boolean {
  * Dá símbolos às posições de forma que a partida tenha solução: tira pares de posições livres, uma
  * por vez, e dá a cada par o mesmo símbolo. Se travar, tenta de novo com outra ordem.
  */
-function assign(slots: readonly Slot[], rng: Rng, kinds = SYMBOLS.length): number[] | null {
+function assign(slots: readonly Slot[], rng: Rng, kinds: number = SYMBOLS.length): number[] | null {
   for (let attempt = 0; attempt < 200; attempt++) {
     const left = slots.map((s, i) => ({ ...s, i }));
     const symbols = new Array<number>(slots.length);
@@ -88,9 +88,10 @@ function assign(slots: readonly Slot[], rng: Rng, kinds = SYMBOLS.length): numbe
   return null;
 }
 
-export function deal(layout: LayoutId, rng: Rng): Tile[] {
+/** `kinds`: quantos símbolos diferentes o tema tem. */
+export function deal(layout: LayoutId, rng: Rng, kinds: number = SYMBOLS.length): Tile[] {
   const slots = LAYOUTS[layout];
-  const symbols = assign(slots, rng);
+  const symbols = assign(slots, rng, kinds);
   if (!symbols) throw new Error('layout sem solução');
   return slots.map((s, id) => ({ ...s, id, symbol: symbols[id] }));
 }

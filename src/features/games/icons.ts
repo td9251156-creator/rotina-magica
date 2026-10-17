@@ -4,6 +4,7 @@ import type { GameId } from '@/domain/progression';
 export const GAME_ICON: Record<GameId, string> = {
   blocos: '▦',
   pares: '❖',
+  arcanos: '✦',
   desvia: '⇅',
   rebate: '↯',
   onda: '∿',
