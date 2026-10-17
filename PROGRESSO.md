@@ -12,6 +12,7 @@
 - O Laboratório passou a cruzar notas de vontade do Diário com noites sem usar ou com uso, só quando há dados suficientes.
 - Ajustes passou a oferecer um segundo lembrete opcional da manhã, em arquivo de agenda separado.
 - Terapias e vivências ganhou o grupo “Lidar com a vontade”, com “Surfar a vontade”, “Pensar o filme até o fim” e “Carta para mim de amanhã”; os passos usam a preferência de voz guiada existente.
+- A voz das práticas segue o ritmo dos três áudios de referência: falas curtas pela fase inteira, nomes vibrados, voz masculina quando houver e "Som de fundo" opcional. O roteiro para gravar a narração está em `docs/roteiro-narracao.md`.
 
 ## Em andamento
 

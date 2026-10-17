@@ -562,6 +562,59 @@ describe('voz nas práticas', () => {
     }
   });
 
+  it('na Luz pelo corpo, a voz guia a fase com as falas do roteiro', async () => {
+    const spoken: string[] = [];
+    const synth = {
+      speak: (u: { text: string; onend?: () => void }) => {
+        spoken.push(u.text);
+        u.onend?.();
+      },
+      cancel: () => {},
+      getVoices: () => [],
+    };
+    Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true });
+    vi.stubGlobal('SpeechSynthesisUtterance', class { text: string; lang = ''; rate = 1; pitch = 1; voice = null; onend?: () => void; constructor(t: string) { this.text = t; } });
+    try {
+      const { user } = open('#rotina/n_pilar');
+      await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+      await user.click(screen.getByRole('button', { name: 'Ouvir a voz guiando' }));
+      expect(spoken[0]).toBe('De pé ou sentado');
+    } finally {
+      vi.unstubAllGlobals();
+      delete (window as { speechSynthesis?: unknown }).speechSynthesis;
+    }
+  });
+
+  it('liga o som de fundo gerado no aparelho e desliga ao sair', async () => {
+    const started: number[] = [];
+    let stopped = 0;
+    const param = () => ({ value: 0, setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {} });
+    const node = () => ({ connect() {} });
+    class FakeContext {
+      currentTime = 0;
+      destination = {};
+      resume = () => Promise.resolve();
+      createGain = () => ({ ...node(), gain: param() });
+      createBiquadFilter = () => ({ ...node(), type: '', frequency: param() });
+      createOscillator = () => {
+        const osc = { ...node(), frequency: param(), detune: param(), start: () => started.push(osc.frequency.value), stop: () => stopped++ };
+        return osc;
+      };
+    }
+    vi.stubGlobal('AudioContext', FakeContext);
+    try {
+      const { repos, user } = open('#rotina/n_pilar');
+      await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+      await user.click(screen.getByRole('button', { name: 'Som de fundo' }));
+      expect(repos.settings.get('practiceAmbient', false)).toBe(true);
+      expect(started).toContain(130.81);
+      await user.click(screen.getByRole('button', { name: 'Parar' }));
+      expect(stopped).toBe(started.length);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('sem voz no navegador, o botão nem aparece', async () => {
     const { user } = open('#rotina/m_asana');
     await user.click(screen.getByRole('button', { name: /Começar guiado/ }));

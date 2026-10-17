@@ -22,6 +22,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Práticas guiadas no ritmo dos áudios de referência: a voz acompanha a fase inteira em falas curtas
+  (triângulo, Luz pelo corpo, relaxar, parar e respirar), vibra os nomes sílaba por sílaba, prefere voz masculina
+  local e ganhou "Som de fundo" gerado no aparelho. Roteiro para gravar em `docs/roteiro-narracao.md`.
 - 2026-10-17 — Jogos, parte 4: Pares ganhou o tabuleiro intermediário Jardim, com 44 peças e um desafio diário
   opcional reproduzível pela data local, mantendo a garantia de partida solucionável.
 - 2026-10-17 — Jogos, parte 4: Desvia passou a limpar gestos cancelados pelo navegador e anunciar a carta

@@ -36,4 +36,5 @@ hackathon da MLH, e alguns eventos pedem que o trabalho seja feito durante o hac
 O player aceita arquivos opcionais em `public/audio/practices/`, no formato
 `<id-da-pratica>-<indice-da-fase>.mp3`. Os arquivos são empacotados com o PWA e tocados sem internet;
 se um arquivo não existir ou falhar, a voz local do aparelho assume. Antes de publicar, confirme a licença
-da voz e inclua a atribuição exigida pelo serviço usado para gerar a narração.
+da voz e inclua a atribuição exigida pelo serviço usado para gerar a narração. O texto de cada arquivo e o jeito
+de gravar (ritmo, pausas, nomes vibrados) estão em [`roteiro-narracao.md`](roteiro-narracao.md).
