@@ -9,7 +9,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 
 ## Próximos
 - Jogos, parte 4: mais tabuleiros e desafio do dia no Pares; rever Desvia, Rebate e A noite, um por rodada.
-- Voz nas práticas guiadas: primeiro a do próprio celular (#7), depois áudio narrado publicado junto com o app (`docs/integracoes.md`).
+- Voz nas práticas guiadas, parte 2: áudio narrado publicado junto com o app, para quem não tem voz em português no celular (`docs/integracoes.md`).
 - Laboratório cruzando o Diário (gatilhos, quebras) com as noites sem usar.
 - Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
 - Desafios semanais e modos difíceis desbloqueados por nível.
@@ -22,6 +22,8 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-17 — Voz nas práticas guiadas (#7): botão "Ouvir a voz guiando" no player (respiração, triângulo, SOS…),
+  com a voz do próprio celular, sem internet. Desligada por padrão; a escolha fica guardada (`practiceVoice`).
 - 2026-10-17 — Terapias e vivências, parte 3: grupo "Trazer a família para perto" (conversar sem briga, um texto pronto
   para mandar a quem gosta de você, com Nar-Anon e Amor-Exigente, e reconstruir a confiança) e modo "dia difícil" na
   tela Hoje (só 4 passos curtos, vale só para o dia).

@@ -542,3 +542,29 @@ describe('terapias e vivências, parte 3', () => {
     expect(await screen.findByText('Trazer a família para perto')).toBeInTheDocument();
   });
 });
+
+describe('voz nas práticas', () => {
+  it('liga a voz do celular, fala a fase e lembra da escolha', async () => {
+    const spoken: string[] = [];
+    const synth = { speak: (u: { text: string }) => spoken.push(u.text), cancel: () => {}, getVoices: () => [] };
+    Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true });
+    vi.stubGlobal('SpeechSynthesisUtterance', class { text: string; lang = ''; rate = 1; pitch = 1; voice = null; constructor(t: string) { this.text = t; } });
+    try {
+      const { repos, user } = open('#rotina/m_asana');
+      await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+      await user.click(screen.getByRole('button', { name: 'Ouvir a voz guiando' }));
+      expect(repos.settings.get('practiceVoice', false)).toBe(true);
+      expect(spoken.length).toBeGreaterThan(0);
+      expect(screen.getByRole('button', { name: 'Voz ligada' })).toHaveAttribute('aria-pressed', 'true');
+    } finally {
+      vi.unstubAllGlobals();
+      delete (window as { speechSynthesis?: unknown }).speechSynthesis;
+    }
+  });
+
+  it('sem voz no navegador, o botão nem aparece', async () => {
+    const { user } = open('#rotina/m_asana');
+    await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+    expect(screen.queryByRole('button', { name: 'Ouvir a voz guiando' })).not.toBeInTheDocument();
+  });
+});

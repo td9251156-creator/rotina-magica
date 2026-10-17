@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { phaseAt, practiceSeconds, type Practice } from '@/domain/routine';
+import { useData } from '@/data/provider';
+import { phaseAt, practiceSeconds, phaseSpeech, type Practice } from '@/domain/routine';
+import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
 import { vibrate } from '../games/record';
 
 function fmt(s: number) {
@@ -14,6 +16,9 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
   const lastPhase = useRef(-1);
   const total = practiceSeconds(practice);
   const now = phaseAt(practice, elapsed);
+  const { repos, write } = useData();
+  // Voz desligada por padrão: a pessoa pode estar em lugar público.
+  const voice = canSpeak() && repos.settings.get('practiceVoice', false);
 
   useEffect(() => {
     const id = setInterval(() => setElapsed((Date.now() - start.current) / 1000), 200);
@@ -24,8 +29,15 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     else if (now.index !== lastPhase.current) {
       lastPhase.current = now.index;
       vibrate(25);
+      if (voice) speak(phaseSpeech(now.phase));
     }
-  }, [now, onDone]);
+  }, [now, onDone, voice]);
+  useEffect(() => stopSpeaking, []);
+  const toggleVoice = () => {
+    if (voice) stopSpeaking();
+    else if (now) speak(phaseSpeech(now.phase));
+    write((r) => r.settings.set('practiceVoice', !voice));
+  };
   if (!now) return null;
 
   const label = now.phase.label;
@@ -57,6 +69,11 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
         <span style={{ width: `${Math.min(100, (elapsed / total) * 100)}%` }} />
       </div>
       <p className="muted small center">faltam {fmt(Math.max(0, total - elapsed))}</p>
+      {canSpeak() && (
+        <button type="button" className="player__voice" aria-pressed={voice} onClick={toggleVoice}>
+          {voice ? 'Voz ligada' : 'Ouvir a voz guiando'}
+        </button>
+      )}
       <div className="row">
         <button type="button" className="btn btn--ghost" onClick={onStop}>
           Parar

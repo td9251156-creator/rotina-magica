@@ -1,4 +1,4 @@
-import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
+import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
   it('tem ids únicos e acha passos', () => {
@@ -43,5 +43,10 @@ describe('rotina', () => {
     expect(isHardDay('2026-10-17', '2026-10-17')).toBe(true);
     expect(isHardDay('2026-10-16', '2026-10-17')).toBe(false);
     expect(isHardDay(null, '2026-10-17')).toBe(false);
+  });
+
+  it('a voz diz a instrução e a dica', () => {
+    expect(phaseSpeech({ label: 'Puxe o ar', seconds: 4 })).toBe('Puxe o ar');
+    expect(phaseSpeech({ label: 'Solte', seconds: 4, hint: 'devagar' })).toBe('Solte. devagar');
   });
 });
