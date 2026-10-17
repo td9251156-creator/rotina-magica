@@ -262,6 +262,11 @@ export interface PracticePhase {
   hint?: string;
 }
 
+/** O que a voz diz numa fase: a instrução e a dica, com pausa entre elas. */
+export function phaseSpeech(phase: PracticePhase): string {
+  return phase.hint ? `${phase.label}. ${phase.hint}` : phase.label;
+}
+
 export interface Practice {
   id: PracticeId;
   title: string;

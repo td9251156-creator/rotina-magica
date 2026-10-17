@@ -232,7 +232,8 @@ export type SettingKey =
   | 'theme'
   | 'installDismissed'
   | 'gameSymbols'
-  | 'hardDay';
+  | 'hardDay'
+  | 'practiceVoice';
 
 export interface Repositories {
   routine: RoutineRepository;
