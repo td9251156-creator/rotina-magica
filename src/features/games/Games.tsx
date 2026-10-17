@@ -14,7 +14,7 @@ import { StoryGame } from './StoryGame';
 import { WaveGame } from './WaveGame';
 
 export const HOW_TO: Record<GameId, string> = {
-  blocos: 'Encaixe as peças para completar linhas. Toque no tabuleiro para girar, arraste para os lados, deslize para baixo para soltar. Ou use os botões.',
+  blocos: 'Encaixe as peças para completar linhas. Toque no tabuleiro para girar, arraste para os lados, deslize para baixo para soltar e para cima para guardar a peça. Linhas seguidas rendem combo; quatro de uma vez rendem mais. A cada 10 linhas, sobe de nível e fica mais rápido.',
   pares: 'Toque em duas peças iguais para tirar o par. Só valem peças livres: sem nada em cima e com um lado aberto (as presas ficam mais escuras). Pares seguidos e rápidos valem mais. Travou? Use a dica ou embaralhe.',
   desvia: 'Aparece uma frase. Se ela leva ao uso, empurre para cima (▲). Se é algo que você quer, puxe para baixo (▼). Quanto mais rápido, mais pontos.',
   rebate: 'Um pensamento tenta te convencer a usar. Escolha, antes do tempo acabar, a resposta que derruba ele.',
