@@ -260,7 +260,15 @@ export interface PracticePhase {
   seconds: number;
   /** Texto menor, embaixo. */
   hint?: string;
+  /**
+   * O que a voz guia fala ao longo da fase, no lugar do título e da dica. Como nos áudios de
+   * meditação guiada de referência, a voz acompanha cerca de metade do tempo, em frases curtas.
+   */
+  guide?: readonly GuideLine[];
 }
+
+/** Uma fala da voz guia: texto comum, ou um nome vibrado devagar (sílabas separadas por hífen). */
+export type GuideLine = string | { intone: string; times: number };
 
 /** O que a voz diz numa fase: a instrução e a dica, com pausa entre elas. */
 export function phaseSpeech(phase: PracticePhase): string {
@@ -271,6 +279,8 @@ export interface SpokenLine {
   text: string;
   /** Silêncio depois da frase, em milissegundos. */
   pauseMs: number;
+  /** Sílaba de um nome vibrado: fala bem devagar e grave. */
+  intone?: boolean;
 }
 
 /** Pausa curta entre pedaços de uma frase e longa entre frases, no ritmo de uma meditação guiada. */
@@ -284,15 +294,56 @@ export const LONG_PAUSE_MS = 2200;
  */
 export function voiceScript(text: string): SpokenLine[] {
   const out: SpokenLine[] = [];
-  const re = /[^.,;:!?…]+[.,;:!?…]*/g;
+  const re = /[^.,;:!?…·]+[.,;:!?…·]*/g;
   for (const m of text.match(re) ?? []) {
     const piece = m.trim();
-    const words = piece.replace(/[.,;:!?…]+$/, '').trim();
+    const words = piece.replace(/[.,;:!?…·]+$/, '').trim();
     if (!words) continue;
     const long = /[.!?…;:]$/.test(piece);
     out.push({ text: words, pauseMs: long ? LONG_PAUSE_MS : SHORT_PAUSE_MS });
   }
   return out;
+}
+
+/** Tempo de fala estimado da voz do celular no ritmo das práticas (cerca de 12 letras por segundo). */
+export const SPEECH_MS_PER_CHAR = 85;
+/** Cada sílaba de um nome vibrado dura perto de um segundo. */
+export const INTONE_MS_PER_SYLLABLE = 900;
+/** Tempo para puxar o ar entre uma vibração e outra. */
+export const INHALE_MS = 1800;
+/** Nos áudios de referência, o silêncio quase nunca passa de 8 segundos. */
+export const MAX_GAP_MS = 8000;
+
+/** Um nome vibrado: sílaba por sílaba, `times` vezes, com tempo para puxar o ar entre elas. */
+export function intoneScript(name: string, times: number): SpokenLine[] {
+  const syllables = name.split(/[-\s]+/).filter(Boolean);
+  const out: SpokenLine[] = [];
+  for (let t = 0; t < times; t++)
+    syllables.forEach((text, i) => out.push({ text, pauseMs: i === syllables.length - 1 ? INHALE_MS : 150, intone: true }));
+  return out;
+}
+
+/** Duração estimada de um trecho falado, sem contar o silêncio depois da última frase. */
+export function spokenMs(lines: readonly SpokenLine[]): number {
+  return lines.reduce(
+    (ms, l, i) =>
+      ms + (l.intone ? INTONE_MS_PER_SYLLABLE : l.text.length * SPEECH_MS_PER_CHAR) + (i < lines.length - 1 ? l.pauseMs : 0),
+    0,
+  );
+}
+
+/**
+ * O roteiro falado de uma fase. Sem `guide`, fala o título e a dica. Com `guide`, espalha as falas
+ * pela fase inteira: o silêncio entre uma fala e outra é o que sobra do tempo, dividido por igual
+ * (entre 2,2 e 8 segundos), deixando uma folga no fim para a próxima fase não cortar a voz.
+ */
+export function phaseScript(phase: PracticePhase): SpokenLine[] {
+  if (!phase.guide?.length) return voiceScript(phaseSpeech(phase));
+  const blocks = phase.guide.map((g) => (typeof g === 'string' ? voiceScript(g) : intoneScript(g.intone, g.times)));
+  const speech = blocks.reduce((ms, b) => ms + spokenMs(b), 0);
+  const room = phase.seconds * 1000 * 0.9 - speech;
+  const gap = Math.round(Math.min(MAX_GAP_MS, Math.max(LONG_PAUSE_MS, room / blocks.length)));
+  return blocks.flatMap((b) => b.map((l, i) => (i === b.length - 1 ? { ...l, pauseMs: gap } : l)));
 }
 
 export interface Practice {
@@ -322,8 +373,38 @@ export const PRACTICES: Record<PracticeId, Practice> = {
     title: 'Foco no triângulo',
     summary: 'Olhos fechados e a mente ocupada com uma imagem. A vontade perde espaço.',
     phases: [
-      { label: 'Feche os olhos', seconds: 10, hint: 'Deixe os sons e o corpo em segundo plano.' },
-      { label: 'O triângulo', seconds: 170, hint: 'Imagine um triângulo vermelho brilhando, como fogo. Se a mente fugir, volte para ele.' },
+      {
+        label: 'Feche os olhos',
+        seconds: 30,
+        hint: 'Deixe os sons e o corpo em segundo plano.',
+        guide: [
+          'Sente-se com a coluna reta, os ombros soltos. Feche os olhos.',
+          'Puxe o ar fundo pelo nariz. E solte devagar.',
+          'Deixe os sons de fora em segundo plano.',
+        ],
+      },
+      {
+        label: 'O triângulo',
+        seconds: 150,
+        hint: 'Imagine um triângulo vermelho brilhando, como fogo. Se a mente fugir, volte para ele.',
+        guide: [
+          'Agora, na sua frente, imagine um triângulo.',
+          'Um triângulo vermelho, brilhando, como fogo.',
+          'Veja a ponta de cima. E os dois cantos de baixo.',
+          'As linhas retas, firmes, cheias de luz.',
+          'Não precisa ficar perfeito. Só olhe para ele.',
+          'Repare na cor. Um vermelho vivo, quente.',
+          'Se um pensamento aparecer, tudo bem. Deixe passar, e volte para o triângulo.',
+          'Percorra as linhas com a atenção. Subindo de um lado, descendo do outro.',
+          'Respire devagar. O triângulo continua ali.',
+          'A vontade pode vir, e pode ir embora. O triângulo fica.',
+          'Se a mente fugir, sem problema. É só voltar.',
+          'Veja o triângulo inteiro, de uma vez. Brilhando.',
+          'Fique com ele mais um pouco.',
+          'Agora deixe a imagem sumir, devagar.',
+          'Sinta o corpo, os pés no chão. Quando quiser, abra os olhos.',
+        ],
+      },
     ],
   },
   quebra: {
@@ -341,12 +422,84 @@ export const PRACTICES: Record<PracticeId, Practice> = {
     title: 'Luz pelo corpo',
     summary: 'A luz desce por cinco pontos do corpo.',
     phases: [
-      { label: 'Alto da cabeça', seconds: 60, hint: 'Uma luz branca acima da cabeça. Fale: EHEIEH.' },
-      { label: 'Garganta', seconds: 60, hint: 'A luz desce até a garganta. Fale: YHVH ELOHIM.' },
-      { label: 'Coração', seconds: 60, hint: "A luz no peito, quente. Fale: YHVH ELOAH V'DAATH." },
-      { label: 'Barriga', seconds: 60, hint: 'Logo abaixo do umbigo. Fale: SHADDAI EL CHAI.' },
-      { label: 'Pés', seconds: 60, hint: 'A luz chega aos pés e ao chão. Fale: ADONAI HA-ARETZ.' },
-      { label: 'Corpo inteiro', seconds: 60, hint: 'Deixe a luz envolver você, de cima a baixo.' },
+      // Os nomes vão escritos como se falam em português, para a voz do celular vibrar sílaba por sílaba.
+      {
+        label: 'Alto da cabeça',
+        seconds: 60,
+        hint: 'Uma luz branca acima da cabeça. Fale: EHEIEH.',
+        guide: [
+          'De pé ou sentado, com a coluna reta. Feche os olhos.',
+          'Puxe o ar fundo. E solte devagar.',
+          'Agora imagine, logo acima da cabeça, uma esfera de luz branca.',
+          'Uma luz limpa, muito brilhante.',
+          'Puxe o ar, e vibre o nome, sentindo a cabeça vibrar.',
+          { intone: 'É-rei-iê', times: 3 },
+          'A luz fica mais forte a cada vez.',
+        ],
+      },
+      {
+        label: 'Garganta',
+        seconds: 60,
+        hint: 'A luz desce até a garganta. Fale: YHVH ELOHIM.',
+        guide: [
+          'Agora a luz desce, como um raio, até a garganta.',
+          'Ali ela forma uma segunda esfera de luz.',
+          'Uma luz clara, brilhando no pescoço.',
+          'Puxe o ar, e vibre.',
+          { intone: 'Ie-o-vá E-lo-rím', times: 2 },
+          'Sinta a garganta vibrar com o som.',
+        ],
+      },
+      {
+        label: 'Coração',
+        seconds: 60,
+        hint: "A luz no peito, quente. Fale: YHVH ELOAH V'DAATH.",
+        guide: [
+          'A luz continua descendo, até o meio do peito.',
+          'Uma esfera quente, dourada, no lugar do coração.',
+          'Puxe o ar, e vibre.',
+          { intone: 'Ie-o-vá E-lo-á Ve-da-át', times: 2 },
+          'Sinta o calor se espalhar pelo peito.',
+        ],
+      },
+      {
+        label: 'Barriga',
+        seconds: 60,
+        hint: 'Logo abaixo do umbigo. Fale: SHADDAI EL CHAI.',
+        guide: [
+          'A luz desce mais, até logo abaixo do umbigo.',
+          'Uma esfera de luz, firme e tranquila.',
+          'Sinta essa luz bem no centro do corpo.',
+          'Puxe o ar, e vibre.',
+          { intone: 'Xa-dái El Rái', times: 2 },
+          'A barriga firme, a respiração calma.',
+        ],
+      },
+      {
+        label: 'Pés',
+        seconds: 60,
+        hint: 'A luz chega aos pés e ao chão. Fale: ADONAI HA-ARETZ.',
+        guide: [
+          'Agora a luz desce pelas pernas, até os pés.',
+          'Ela forma a última esfera, entre os pés e o chão.',
+          'Puxe o ar, e vibre.',
+          { intone: 'A-do-nái Ra-A-rets', times: 2 },
+          'Sinta os pés firmes no chão. Você está aqui, agora.',
+        ],
+      },
+      {
+        label: 'Corpo inteiro',
+        seconds: 60,
+        hint: 'Deixe a luz envolver você, de cima a baixo.',
+        guide: [
+          'Agora veja a coluna de luz inteira, da cabeça aos pés.',
+          'Ao soltar o ar, a luz desce pela frente do corpo. Ao puxar, ela sobe pelas costas.',
+          'Deixe a luz envolver você, de cima a baixo.',
+          'Calma e firmeza, da cabeça aos pés.',
+          'Agora deixe a imagem sumir, devagar. A calma fica.',
+          'Mexa os dedos. Quando quiser, abra os olhos.',
+        ],
+      },
     ],
   },
   relaxar: {
@@ -354,11 +507,33 @@ export const PRACTICES: Record<PracticeId, Practice> = {
     title: 'Relaxar o corpo',
     summary: 'Apertar e soltar, parte por parte (relaxamento muscular progressivo).',
     phases: [
-      ...['Pés e pernas', 'Barriga', 'Mãos e braços', 'Ombros', 'Rosto'].flatMap((part) => [
-        { label: `Aperte · ${part}`, seconds: 5, hint: 'Força média, sem dor.' },
-        { label: `Solte · ${part}`, seconds: 15, hint: 'Solte de uma vez e repare na diferença.' },
+      ...(
+        [
+          ['Pés e pernas', 'Aperte os pés e as pernas, sem dor.', 'Solte. As pernas pesadas, quentes.'],
+          ['Barriga', 'Aperte a barriga.', 'Solte. A barriga mole, a respiração mais funda.'],
+          ['Mãos e braços', 'Feche as mãos e aperte os braços.', 'Solte. As mãos abertas, os braços pesados.'],
+          ['Ombros', 'Suba os ombros até as orelhas.', 'Solte. Os ombros descem, longe das orelhas.'],
+          ['Rosto', 'Aperte os olhos e a boca.', 'Solte. A testa lisa, o queixo solto.'],
+        ] as const
+      ).flatMap(([part, squeeze, release]) => [
+        { label: `Aperte · ${part}`, seconds: 5, hint: 'Força média, sem dor.', guide: [squeeze] },
+        {
+          label: `Solte · ${part}`,
+          seconds: 15,
+          hint: 'Solte de uma vez e repare na diferença.',
+          guide: [release, 'Respire. E deixe soltar mais um pouco.'],
+        },
       ]),
-      { label: 'Corpo inteiro', seconds: 30, hint: 'Respire devagar. O corpo todo pesado e solto.' },
+      {
+        label: 'Corpo inteiro',
+        seconds: 30,
+        hint: 'Respire devagar. O corpo todo pesado e solto.',
+        guide: [
+          'Agora o corpo inteiro. Respire devagar.',
+          'Cada vez que o ar sai, você solta mais um pouco.',
+          'Fique assim, pesado e solto. Quando quiser, volte devagar.',
+        ],
+      },
     ],
   },
   // Espaço de respiração da prevenção de recaída com atenção plena (MBRP, Bowen): Pare, Observe, Respire,
@@ -368,11 +543,59 @@ export const PRACTICES: Record<PracticeId, Practice> = {
     title: 'Parar e respirar',
     summary: 'Três minutos para sair do piloto automático: pare, observe, respire, amplie, escolha.',
     phases: [
-      { label: 'Pare', seconds: 10, hint: 'Onde você estiver, pare o que está fazendo.' },
-      { label: 'Observe', seconds: 45, hint: 'O que o corpo sente? Que emoção está aí? Que pensamento? Só repare, sem brigar.' },
-      { label: 'Respire', seconds: 60, hint: 'Atenção no ar entrando e saindo. Se a mente fugir, volte com calma.' },
-      { label: 'Amplie', seconds: 40, hint: 'Sinta o corpo inteiro, os pés no chão, o lugar onde você está.' },
-      { label: 'Escolha', seconds: 25, hint: 'Com mais calma: qual é o próximo passo que cuida de você?' },
+      {
+        label: 'Pare',
+        seconds: 10,
+        hint: 'Onde você estiver, pare o que está fazendo.',
+        guide: ['Pare o que está fazendo.', 'Se der, feche os olhos.'],
+      },
+      {
+        label: 'Observe',
+        seconds: 45,
+        hint: 'O que o corpo sente? Que emoção está aí? Que pensamento? Só repare, sem brigar.',
+        guide: [
+          'Agora observe. O que o corpo está sentindo?',
+          'Um aperto, calor, o coração rápido. Só repare.',
+          'Que emoção está aí? Raiva, tédio, tristeza?',
+          'E que pensamento está passando? Só repare, sem brigar.',
+          'Nada precisa mudar agora. Você só está olhando.',
+        ],
+      },
+      {
+        label: 'Respire',
+        seconds: 60,
+        hint: 'Atenção no ar entrando e saindo. Se a mente fugir, volte com calma.',
+        guide: [
+          'Agora leve a atenção para a respiração.',
+          'O ar entrando. E saindo.',
+          'A barriga sobe, e desce.',
+          'Não precisa controlar. Só acompanhe.',
+          'Se a mente fugir, tudo bem. Volte com calma para o ar.',
+          'Sinta o ar fresco entrando, e morno saindo.',
+          'Inspirando. E soltando.',
+          'Mais uma vez. Inspirando. E soltando.',
+        ],
+      },
+      {
+        label: 'Amplie',
+        seconds: 40,
+        hint: 'Sinta o corpo inteiro, os pés no chão, o lugar onde você está.',
+        guide: [
+          'Agora abra a atenção para o corpo inteiro.',
+          'Os pés no chão. As mãos. O rosto.',
+          'O lugar onde você está, os sons em volta.',
+          'A vontade pode estar aqui. E você é maior do que ela.',
+        ],
+      },
+      {
+        label: 'Escolha',
+        seconds: 25,
+        hint: 'Com mais calma: qual é o próximo passo que cuida de você?',
+        guide: [
+          'Com mais calma, pergunte: qual é o próximo passo que cuida de você?',
+          'Pode ser pequeno. Um copo de água, uma mensagem, sair dali.',
+        ],
+      },
     ],
   },
   juramento: { id: 'juramento', title: 'Meu compromisso', summary: 'Ler em voz alta.', phases: [] },

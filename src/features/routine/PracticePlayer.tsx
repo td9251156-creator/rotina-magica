@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useData } from '@/data/provider';
-import { phaseAt, practiceSeconds, phaseSpeech, type Practice } from '@/domain/routine';
-import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
+import { phaseAt, practiceSeconds, phaseScript, type Practice } from '@/domain/routine';
+import { canSpeak, speakLines, stopSpeaking } from '@/platform/voice';
+import { canPlayAmbient, startAmbient, stopAmbient } from '@/platform/ambient';
 import { playNarratedAudio, stopNarratedAudio } from '@/platform/narrated-audio';
 import { vibrate } from '../games/record';
 
@@ -20,6 +21,8 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
   const { repos, write } = useData();
   // Voz desligada por padrão: a pessoa pode estar em lugar público.
   const voice = canSpeak() && repos.settings.get('practiceVoice', false);
+  // Som de fundo também começa desligado, pelo mesmo motivo.
+  const ambient = canPlayAmbient() && repos.settings.get('practiceAmbient', false);
 
   useEffect(() => {
     const id = setInterval(() => setElapsed((Date.now() - start.current) / 1000), 200);
@@ -31,8 +34,10 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
       lastPhase.current = now.index;
       vibrate(25);
       if (voice) {
-        void playNarratedAudio(practice.id, now.index).then((played) => {
-          if (!played) speak(phaseSpeech(now.phase));
+        const { index, phase } = now;
+        void playNarratedAudio(practice.id, index).then((played) => {
+          // A fase pode ter mudado enquanto o arquivo era procurado.
+          if (!played && lastPhase.current === index) speakLines(phaseScript(phase));
         });
       }
     }
@@ -44,12 +49,17 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     },
     [],
   );
+  useEffect(() => {
+    if (!ambient) return;
+    startAmbient();
+    return stopAmbient;
+  }, [ambient]);
   const toggleVoice = () => {
     if (voice) {
       stopSpeaking();
       stopNarratedAudio();
     }
-    else if (now) speak(phaseSpeech(now.phase));
+    else if (now) speakLines(phaseScript(now.phase));
     write((r) => r.settings.set('practiceVoice', !voice));
   };
   if (!now) return null;
@@ -83,11 +93,23 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
         <span style={{ width: `${Math.min(100, (elapsed / total) * 100)}%` }} />
       </div>
       <p className="muted small center">faltam {fmt(Math.max(0, total - elapsed))}</p>
-      {canSpeak() && (
-        <button type="button" className="player__voice" aria-pressed={voice} onClick={toggleVoice}>
-          {voice ? 'Voz ligada' : 'Ouvir a voz guiando'}
-        </button>
-      )}
+      <div className="player__sound">
+        {canSpeak() && (
+          <button type="button" className="player__voice" aria-pressed={voice} onClick={toggleVoice}>
+            {voice ? 'Voz ligada' : 'Ouvir a voz guiando'}
+          </button>
+        )}
+        {canPlayAmbient() && (
+          <button
+            type="button"
+            className="player__voice"
+            aria-pressed={ambient}
+            onClick={() => write((r) => r.settings.set('practiceAmbient', !ambient))}
+          >
+            {ambient ? 'Som de fundo ligado' : 'Som de fundo'}
+          </button>
+        )}
+      </div>
       <div className="row">
         <button type="button" className="btn btn--ghost" onClick={onStop}>
           Parar

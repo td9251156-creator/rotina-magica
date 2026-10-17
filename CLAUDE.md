@@ -52,6 +52,7 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-17 | Terapias e vivências, parte 3: grupo da família (CRAFT; Nar-Anon e Amor-Exigente para familiares) com conversa sem briga, texto pronto para mandar (`TechniqueStep.share`, sai do celular só pelo toque da pessoa) e combinados; modo "dia difícil" (`hardDay` guarda a data: só vale naquele dia; `ESSENTIAL_STEP_IDS` = compromisso, se a vontade aparecer, diário e fechar o dia) | Pedido do autor. Envolver a família ajuda a buscar e manter o tratamento (Meyers e Smith); num dia ruim, manter o fio da rotina com pouco esforço evita o "já que estraguei, tanto faz" |
 | 2026-10-17 | Apoio financeiro só por doação voluntária (GitHub Sponsors primeiro; Pix aleatório, Ko-fi ou Apoia.se depois; editais de saúde e da universidade). Sem versão paga, anúncio nem pedido de dinheiro na Ajuda agora. Avaliação em `docs/apoio-financeiro.md`; GitHub Sponsors ligado pelo autor; `.github/FUNDING.yml` e seção "Apoie" no README (outras contas entram no FUNDING.yml quando existirem) | Pedido do autor. Cobrar quem está em recuperação vai contra o critério do projeto; contas e dados bancários são ação dele |
 | 2026-10-17 | Voz nas práticas guiadas com a voz do próprio celular (Web Speech, `platform/voice.ts`), em frases curtas com silêncio entre elas (`voiceScript`: 0,9 s na vírgula, 2,2 s no ponto, ritmo medido num áudio de meditação guiada que o autor mandou como referência), opcional e desligada por padrão (`practiceVoice`); sem suporte, o botão some | Na vontade, ler é difícil e de olhos fechados não dá; a síntese do aparelho não manda dados para fora. Desligada por padrão porque a pessoa pode estar em lugar público |
+| 2026-10-17 | Práticas guiadas no ritmo dos três áudios de referência que o autor mandou (Cruz Cabalística, 4 Pentagramas, RMP): falas curtas pela fase inteira (`PracticePhase.guide`, ~40% do tempo com voz, silêncio de 2,2 a 8 s, `phaseScript`), nomes vibrados sílaba por sílaba (`intoneScript`), voz masculina local quando houver e "Som de fundo" gerado no aparelho (`platform/ambient.ts`, acorde de dó menor com sétima, como o fundo medido; `practiceAmbient`, desligado por padrão). Roteiro para gravar em `docs/roteiro-narracao.md`; os áudios de referência não entram no repositório | Guia contínuo ajuda quem está de olhos fechados ou com vontade; a voz do celular não vibra nomes como uma pessoa, então a semelhança completa depende de narração gravada |
 | 2026-10-16 | Padrão de lembretes: 1 por dia, no fim do expediente | Maior risco é depois do trabalho, sozinho e entediado; a persona não soube dizer quantos tolera |
 
 ## Arquitetura
@@ -70,10 +71,10 @@ src/data/                  repositories/types.ts (interfaces), repositories/loca
 src/platform/crypto.ts     PIN (PBKDF2) e cifra do backup (AES-GCM), via Web Crypto
 src/data/backup.ts, demo.ts backup com senha; dados de exemplo do modo ?demo
 src/ui/                    estilos (styles.css, tema noite e claro por variáveis), ícones (app-icons.ts + Icon em icons.tsx) e componentes compartilhados (Setting = ajuste que abre e fecha)
-src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome); voice.ts = voz das práticas
+src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome); voice.ts = voz das práticas; ambient.ts = som de fundo; narrated-audio.ts = MP3 gravado, se existir
 public/                    manifest.webmanifest, sw.js (offline), ícones
 .github/workflows/         ci.yml (PR) e pages.yml (publica a cada push na main); .github/dependabot.yml (mensal)
-docs/                      visao-produto.md, integracoes.md (regras para serviços externos), apoio-financeiro.md, student-pack.md, img/ do README
+docs/                      visao-produto.md, integracoes.md (regras para serviços externos), roteiro-narracao.md, apoio-financeiro.md, student-pack.md, img/ do README
 .devcontainer/, .github/copilot-instructions.md   Codespaces e Copilot (Student Pack)
 ```
 Regras:

@@ -1,4 +1,4 @@
-import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
+import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, intoneScript, phaseScript, spokenMs, LONG_PAUSE_MS, MAX_GAP_MS, INHALE_MS, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
   it('tem ids únicos e acha passos', () => {
@@ -57,5 +57,41 @@ describe('rotina', () => {
       { text: 'Segure', pauseMs: 900 },
     ]);
     expect(voiceScript('  ')).toEqual([]);
+    expect(voiceScript('Aperte · Rosto').map((l) => l.text)).toEqual(['Aperte', 'Rosto']);
+  });
+
+  it('nome vibrado: sílaba por sílaba, repetido, com tempo para puxar o ar', () => {
+    const lines = intoneScript('Xa-dái El Rái', 2);
+    expect(lines.map((l) => l.text)).toEqual(['Xa', 'dái', 'El', 'Rái', 'Xa', 'dái', 'El', 'Rái']);
+    expect(lines.every((l) => l.intone)).toBe(true);
+    expect(lines[3].pauseMs).toBe(INHALE_MS);
+  });
+
+  it('fase sem roteiro fala o título e a dica', () => {
+    const phase = { label: 'Inspire', seconds: 4 };
+    expect(phaseScript(phase)).toEqual(voiceScript('Inspire'));
+  });
+
+  it('as falas guiadas cabem em cada fase, com silêncios no ritmo dos áudios de referência', () => {
+    for (const p of Object.values(PRACTICES))
+      for (const phase of p.phases) {
+        if (!phase.guide) continue;
+        const script = phaseScript(phase);
+        expect(spokenMs(script), `${p.id} · ${phase.label}`).toBeLessThanOrEqual(phase.seconds * 950);
+        const gap = script[script.length - 1].pauseMs;
+        expect(gap).toBeGreaterThanOrEqual(LONG_PAUSE_MS);
+        expect(gap).toBeLessThanOrEqual(MAX_GAP_MS);
+      }
+  });
+
+  it('as práticas longas têm voz guiando do começo ao fim e terminam trazendo a pessoa de volta', () => {
+    for (const id of ['triangulo', 'pilar', 'relaxar', 'sober'] as const) {
+      const phases = PRACTICES[id].phases;
+      expect(phases.every((f) => f.guide?.length)).toBe(true);
+    }
+    const last = (id: 'triangulo' | 'pilar') => PRACTICES[id].phases.at(-1)?.guide?.at(-1);
+    expect(last('triangulo')).toMatch(/abra os olhos/);
+    expect(last('pilar')).toMatch(/abra os olhos/);
+    expect(PRACTICES.pilar.phases.filter((f) => f.guide?.some((g) => typeof g !== 'string'))).toHaveLength(5);
   });
 });
