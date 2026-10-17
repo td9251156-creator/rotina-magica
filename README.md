@@ -91,6 +91,12 @@ Vite + React + TypeScript, sem dependências de execução além do React. Regra
 `src/domain/`. Leia o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md).
 Ideias e problemas: abra uma issue. Andamento: [`ROADMAP.md`](ROADMAP.md). Guia técnico completo: [`CLAUDE.md`](CLAUDE.md).
 
+## Apoie
+
+O Rotina Mágica é e vai continuar de graça, sem anúncios e sem coletar dados. Se ele ajudou você ou alguém
+próximo e você pode, [apoie o projeto pelo GitHub Sponsors](https://github.com/sponsors/td9251156-creator).
+Como o dinheiro é usado e o que nunca vai mudar: [`docs/apoio-financeiro.md`](docs/apoio-financeiro.md).
+
 Licença [MIT](LICENSE).
 
 ---

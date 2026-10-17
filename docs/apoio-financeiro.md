@@ -48,10 +48,10 @@ contra o critério do projeto. O que pode ser pago, sem mexer no app:
 
 ## Primeiros passos sugeridos
 
-1. Ligar o GitHub Sponsors (só o autor pode: exige login e dados bancários).
-2. Depois que a página existir, o Claude adiciona `.github/FUNDING.yml` com o usuário do GitHub (e, se o autor
-   quiser, o link do Ko-fi ou do Apoia.se), e o botão "Sponsor" aparece no topo do repositório.
-3. Uma linha no README: "Este app é e vai continuar de graça. Se ele te ajudou e você pode, apoie o projeto."
+1. ~~Ligar o GitHub Sponsors~~ feito pelo autor em 2026-10-17.
+2. ~~`.github/FUNDING.yml` com o usuário do GitHub~~ feito: o botão "Sponsor" aparece no topo do repositório.
+   Ko-fi ou Apoia.se entram na mesma lista quando o autor criar as contas.
+3. ~~Seção "Apoie" no README~~ feito.
 4. Só se o autor decidir: um link discreto em Ajustes, nunca na Ajuda agora.
 5. Doações recebidas do exterior entram como rendimento no Brasil: guardar os comprovantes e declarar
    (carnê-leão). Na dúvida, falar com um contador.
