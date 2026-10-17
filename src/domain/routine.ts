@@ -267,6 +267,34 @@ export function phaseSpeech(phase: PracticePhase): string {
   return phase.hint ? `${phase.label}. ${phase.hint}` : phase.label;
 }
 
+export interface SpokenLine {
+  text: string;
+  /** Silêncio depois da frase, em milissegundos. */
+  pauseMs: number;
+}
+
+/** Pausa curta entre pedaços de uma frase e longa entre frases, no ritmo de uma meditação guiada. */
+export const SHORT_PAUSE_MS = 900;
+export const LONG_PAUSE_MS = 2200;
+
+/**
+ * Quebra o texto em frases curtas (poucas palavras por vez), com silêncio entre elas, como um
+ * guia de meditação falaria: pausa curta na vírgula e longa no ponto. A voz do celular não tem
+ * pausa própria, então o app fala pedaço por pedaço.
+ */
+export function voiceScript(text: string): SpokenLine[] {
+  const out: SpokenLine[] = [];
+  const re = /[^.,;:!?…]+[.,;:!?…]*/g;
+  for (const m of text.match(re) ?? []) {
+    const piece = m.trim();
+    const words = piece.replace(/[.,;:!?…]+$/, '').trim();
+    if (!words) continue;
+    const long = /[.!?…;:]$/.test(piece);
+    out.push({ text: words, pauseMs: long ? LONG_PAUSE_MS : SHORT_PAUSE_MS });
+  }
+  return out;
+}
+
 export interface Practice {
   id: PracticeId;
   title: string;

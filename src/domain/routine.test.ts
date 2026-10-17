@@ -1,4 +1,4 @@
-import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
+import { ALL_STEPS, ESSENTIAL_STEP_IDS, PRACTICES, essentialRoutine, findStep, isHardDay, phaseSpeech, voiceScript, lastWeekCount, periodFor, phaseAt, practiceSeconds, routineDays, routineFor } from './routine';
 
 describe('rotina', () => {
   it('tem ids únicos e acha passos', () => {
@@ -48,5 +48,14 @@ describe('rotina', () => {
   it('a voz diz a instrução e a dica', () => {
     expect(phaseSpeech({ label: 'Puxe o ar', seconds: 4 })).toBe('Puxe o ar');
     expect(phaseSpeech({ label: 'Solte', seconds: 4, hint: 'devagar' })).toBe('Solte. devagar');
+  });
+
+  it('a voz fala em frases curtas, com pausa curta na vírgula e longa no ponto', () => {
+    expect(voiceScript('Puxe o ar, devagar. Segure')).toEqual([
+      { text: 'Puxe o ar', pauseMs: 900 },
+      { text: 'devagar', pauseMs: 2200 },
+      { text: 'Segure', pauseMs: 900 },
+    ]);
+    expect(voiceScript('  ')).toEqual([]);
   });
 });
