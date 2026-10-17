@@ -472,5 +472,42 @@ describe('rodada 3', () => {
     expect(screen.queryByRole('button', { name: /Arcanos/ })).not.toBeInTheDocument();
     expect(repos.settings.get('gameSymbols', null)).toBe(false);
   });
+
+  it('Terapias, parte 2: a régua guarda as notas e o laboratório mostra', async () => {
+    const { repos, user } = open('#treino/regua');
+    await user.click(screen.getByRole('button', { name: '8' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.type(screen.getByRole('textbox'), 'quero acordar bem');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: '5' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(screen.getByText(/notas ficam no laboratório/)).toBeInTheDocument();
+    expect(repos.practices.list().at(-1)).toMatchObject({ techniqueId: 'regua', scores: { importancia: 8, confianca: 5 } });
+  });
+
+  it('Terapias, parte 2: as coisas boas da revisão da noite vão para o Diário', async () => {
+    const { repos, user } = open('#treino/revisao');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText('Opcional. Vai para o Diário de hoje.')).toBeInTheDocument();
+    await user.type(screen.getByRole('textbox'), 'o café com minha irmã');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(repos.journal.getByDate(toLocalDate(new Date()))?.victory).toBe('o café com minha irmã');
+  });
+
+  it('Terapias, parte 2: Parar e respirar na Ajuda agora e o sinal no Clima de hoje', async () => {
+    const repos = ready();
+    repos.plan.add({ kind: 'sinal_alerta', text: 'sacar dinheiro na sexta', extra: null });
+    open('#sos', repos);
+    expect(screen.getByRole('button', { name: /Parar e respirar/ })).toBeInTheDocument();
+    cleanupAndOpenHome(repos);
+    expect(screen.getByText('Fique de olho: sacar dinheiro na sexta')).toBeInTheDocument();
+  });
 });
+
+function cleanupAndOpenHome(repos: ReturnType<typeof ready>) {
+  document.body.innerHTML = '';
+  open('', repos);
+}
 

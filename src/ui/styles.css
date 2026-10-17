@@ -428,6 +428,8 @@ h1, h2 { color: var(--title); }
 /* Clima de hoje */
 .forecast { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
 .forecast p { margin: 0.2rem 0; }
+/* sinal da pessoa no Clima de hoje */
+.forecast__signal { margin-top: 6px; color: var(--title); }
 .forecast__dot { flex: 0 0 14px; height: 14px; margin-top: 4px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); color: var(--muted); }
 .forecast--calmo .forecast__dot { background: var(--ok); color: var(--ok); }
 .forecast--atencao .forecast__dot { background: var(--accent); color: var(--accent); }
