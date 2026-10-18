@@ -1,0 +1,270 @@
+[
+ {
+  "path": "cues/inspire.mp3",
+  "text": "Inspire"
+ },
+ {
+  "path": "cues/segure.mp3",
+  "text": "Segure"
+ },
+ {
+  "path": "cues/expire.mp3",
+  "text": "Expire"
+ },
+ {
+  "path": "cues/espere.mp3",
+  "text": "Espere"
+ },
+ {
+  "path": "cues/corte.mp3",
+  "text": "Corte"
+ },
+ {
+  "path": "cues/diga-quem-manda-na-minha-vida-sou-eu.mp3",
+  "text": "Diga. \"Quem manda na minha vida sou eu.\""
+ },
+ {
+  "path": "training/se_entao-0.mp3",
+  "text": "Pense no momento mais difícil: chegar em casa depois do trabalho, sozinho, sem nada pra fazer."
+ },
+ {
+  "path": "training/se_entao-1.mp3",
+  "text": "Complete com uma ação concreta, que dá para começar em 1 minuto."
+ },
+ {
+  "path": "training/se_entao-2.mp3",
+  "text": "Leia em voz alta duas vezes. Essa frase vai aparecer quando você precisar."
+ },
+ {
+  "path": "training/surfar-0.mp3",
+  "text": "Lembre da última vez que a vontade veio. Onde você sente no corpo? Peito, estômago, mãos, boca?"
+ },
+ {
+  "path": "training/surfar-1.mp3",
+  "text": "Respire devagar, soltando o ar mais longo do que puxou. Só observe, como quem olha uma onda."
+ },
+ {
+  "path": "training/surfar-2.mp3",
+  "text": "Repare: a sensação muda, mexe de lugar, diminui. Você não precisa fazer nada com ela."
+ },
+ {
+  "path": "training/surfar-3.mp3",
+  "text": "Na próxima vontade de verdade, o SOS faz isso com você por 15 minutos."
+ },
+ {
+  "path": "training/filme-0.mp3",
+  "text": "Imagine uma noite em que você usa. Não pare na primeira parte: vá até as 3 da manhã e até o dia seguinte."
+ },
+ {
+  "path": "training/filme-1.mp3",
+  "text": "Escreva como essa noite termina de verdade, com suas palavras."
+ },
+ {
+  "path": "training/filme-2.mp3",
+  "text": "Na hora da vontade, o SOS te mostra esse final."
+ },
+ {
+  "path": "training/pensamentos-0.mp3",
+  "text": "Qual desses pensamentos aparece mais para você?"
+ },
+ {
+  "path": "training/pensamentos-1.mp3",
+  "text": "Você pode voltar aqui e responder aos outros. Cada resposta entra no seu SOS."
+ },
+ {
+  "path": "training/futuro-0.mp3",
+  "text": "Feche os olhos e imagine você amanhã, depois de atravessar esta vontade. Como acorda? O que gostaria de ouvir de você hoje?"
+ },
+ {
+  "path": "training/futuro-1.mp3",
+  "text": "Escreva uma carta curta para você de amanhã. Fale com gentileza e conte por que vale a pena esperar a onda passar."
+ },
+ {
+  "path": "training/acesso-0.mp3",
+  "text": "Escolha uma barreira que você consegue fazer hoje. Exemplos: arquivar ou silenciar o contato, baixar o limite de PIX à noite no app do banco, não levar dinheiro, voltar por outro caminho."
+ },
+ {
+  "path": "training/acesso-1.mp3",
+  "text": "Escreva a barreira que vai fazer."
+ },
+ {
+  "path": "training/acesso-2.mp3",
+  "text": "Faça agora, se der. Levar 2 minutos hoje pode salvar uma noite."
+ },
+ {
+  "path": "training/corpo-0.mp3",
+  "text": "Agora: você está com fome? Cansado? Irritado? Sozinho? Repare em qual pesa mais."
+ },
+ {
+  "path": "training/corpo-1.mp3",
+  "text": "O que resolve o que mais pesa, em 10 minutos?"
+ },
+ {
+  "path": "training/recusar-0.mp3",
+  "text": "Um \"não\" que funciona é curto, firme, sem desculpa longa. Depois você muda de assunto ou vai embora."
+ },
+ {
+  "path": "training/recusar-1.mp3",
+  "text": "Qual oferta é mais provável para você?"
+ },
+ {
+  "path": "training/recusar-2.mp3",
+  "text": "Fale em voz alta três vezes, com voz firme, como se a pessoa estivesse na sua frente."
+ },
+ {
+  "path": "training/recusar-3.mp3",
+  "text": "O que mais protege: apagar ou bloquear o contato de quem vende. Se ainda não fez, pense em fazer hoje."
+ },
+ {
+  "path": "training/fim_de_semana-0.mp3",
+  "text": "Pense na próxima sexta ou sábado à noite. O que costuma acontecer quando não tem nada marcado?"
+ },
+ {
+  "path": "training/fim_de_semana-1.mp3",
+  "text": "Marque algo com hora e lugar. Pode ser simples."
+ },
+ {
+  "path": "training/fim_de_semana-2.mp3",
+  "text": "Esse plano entra nas opções de \"Como vai ser sua noite?\". Escolha ele quando chegar o dia."
+ },
+ {
+  "path": "training/valores-0.mp3",
+  "text": "Qual destes pesa mais para você agora?"
+ },
+ {
+  "path": "training/valores-1.mp3",
+  "text": "Feche os olhos 30 segundos e imagine um dia em que você viveu de acordo com isso."
+ },
+ {
+  "path": "training/valores-2.mp3",
+  "text": "Essa razão vai aparecer no SOS, junto com as outras."
+ },
+ {
+  "path": "training/balanca-0.mp3",
+  "text": "Sem julgamento: o que usar te dá de bom? Todo mundo usa por algum motivo."
+ },
+ {
+  "path": "training/balanca-1.mp3",
+  "text": "E o que o uso te custa? Pense em dinheiro, sono, trabalho, pessoas e saúde."
+ },
+ {
+  "path": "training/balanca-2.mp3",
+  "text": "Agora imagine alguns meses sem usar. O que fica melhor?"
+ },
+ {
+  "path": "training/balanca-3.mp3",
+  "text": "Olhando os dois lados, o que pesa mais para você?"
+ },
+ {
+  "path": "training/regua-0.mp3",
+  "text": "De 0 a 10, quanto é importante para você parar agora?"
+ },
+ {
+  "path": "training/regua-1.mp3",
+  "text": "Por que não um número menor? O que fez você não escolher um mais baixo?"
+ },
+ {
+  "path": "training/regua-2.mp3",
+  "text": "E de 0 a 10, quanto você confia que consegue?"
+ },
+ {
+  "path": "training/regua-3.mp3",
+  "text": "O que faria essa nota subir só um ponto?"
+ },
+ {
+  "path": "training/decisoes-0.mp3",
+  "text": "Alguns exemplos: passar pela rua de quem vende, sacar dinheiro \"só por garantia\", aceitar \"só uma cerveja\", guardar o contato \"para emergência\"."
+ },
+ {
+  "path": "training/decisoes-1.mp3",
+  "text": "Qual escolha pequena costuma vir antes, no seu caso?"
+ },
+ {
+  "path": "training/decisoes-2.mp3",
+  "text": "Quando perceber essa escolha, pare e troque por outra. Notar cedo é quando fica mais fácil mudar o rumo."
+ },
+ {
+  "path": "training/amigo-0.mp3",
+  "text": "Pense num dia difícil recente, com ou sem uso. Repare no que você disse para si mesmo depois."
+ },
+ {
+  "path": "training/amigo-1.mp3",
+  "text": "Agora imagine um amigo contando esse mesmo dia para você. O que você diria para ele?"
+ },
+ {
+  "path": "training/amigo-2.mp3",
+  "text": "Escreva essa frase para você, do mesmo jeito."
+ },
+ {
+  "path": "training/nome-0.mp3",
+  "text": "Escolha o pensamento que mais aparece. Diga devagar: \"Estou tendo o pensamento de que…\" e complete com ele."
+ },
+ {
+  "path": "training/nome-1.mp3",
+  "text": "Imagine folhas descendo um rio. Coloque o pensamento numa folha e deixe ir. Se vier outro, outra folha."
+ },
+ {
+  "path": "training/nome-2.mp3",
+  "text": "O pensamento pode voltar. Você não precisa obedecer nem expulsar: reconheça o nome e siga com o que importa."
+ },
+ {
+  "path": "training/revisao-0.mp3",
+  "text": "O que aconteceu de mais importante hoje? Só lembre, sem julgar."
+ },
+ {
+  "path": "training/revisao-1.mp3",
+  "text": "Três coisas boas de hoje, mesmo pequenas."
+ },
+ {
+  "path": "training/revisao-2.mp3",
+  "text": "O que você fez hoje combinou com o que importa para você? Escolha uma coisa para repetir amanhã."
+ },
+ {
+  "path": "training/rede-0.mp3",
+  "text": "Pense em uma ou duas pessoas que você pode chamar quando a vontade vier, mesmo sem contar tudo."
+ },
+ {
+  "path": "training/rede-1.mp3",
+  "text": "Uma mensagem curta já é um pedido de ajuda: \"pode falar agora?\". Se der, combine isso com essa pessoa hoje."
+ },
+ {
+  "path": "training/rede-2.mp3",
+  "text": "Grupos também ajudam. Os Narcóticos Anônimos (NA) têm reuniões de graça, presenciais e online. O CAPS AD atende pelo SUS, sem encaminhamento."
+ },
+ {
+  "path": "training/conversa-0.mp3",
+  "text": "Escolha a pessoa e a hora: um momento tranquilo, sem pressa, longe de uma noite difícil ou de cabeça quente."
+ },
+ {
+  "path": "training/conversa-1.mp3",
+  "text": "Fale de você, começando com \"eu\": \"Eu estou tentando parar e tem dias que fica difícil.\""
+ },
+ {
+  "path": "training/conversa-2.mp3",
+  "text": "Peça uma coisa pequena e concreta. Um pedido claro é mais fácil de atender do que \"me ajuda\"."
+ },
+ {
+  "path": "training/conversa-3.mp3",
+  "text": "Se a conversa esquentar, tudo bem parar: \"Vamos continuar outra hora.\" Contar já foi um passo."
+ },
+ {
+  "path": "training/texto_familia-0.mp3",
+  "text": "Leia o texto. Se fizer sentido, mande para alguém de confiança ou mostre na tela."
+ },
+ {
+  "path": "training/texto_familia-1.mp3",
+  "text": "A família também precisa de apoio. Nar-Anon e Amor-Exigente têm grupos de graça, presenciais e online. O CAPS AD também acolhe a família."
+ },
+ {
+  "path": "training/combinados-0.mp3",
+  "text": "Pense em alguém que ficou chateado ou preocupado com você. O que essa pessoa mais gostaria de ver?"
+ },
+ {
+  "path": "training/combinados-1.mp3",
+  "text": "Escolha um combinado pequeno, que dá para cumprir toda semana."
+ },
+ {
+  "path": "training/combinados-2.mp3",
+  "text": "Se um dia não der, conte. Falar a verdade também reconstrói a confiança."
+ }
+]
