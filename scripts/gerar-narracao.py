@@ -364,9 +364,15 @@ def amostras(k) -> None:
 
     out = ROOT / 'public' / 'audio' / 'amostras'
     out.mkdir(parents=True, exist_ok=True)
-    voices = sorted(k.listed.values(), key=lambda v: (v['Locale'] != 'pt-BR', 'DragonHD' not in v['ShortName'], v['ShortName']))
+    # Além das nativas, as multilíngues de conversa (Andrew, Ava, Brian, Emma), que costumam soar mais humanas.
+    talk = ('Andrew', 'Ava', 'Brian', 'Emma')
+    voices = [
+        v for v in k.listed.values()
+        if v['Locale'] == 'pt-BR' or 'DragonHD' in v['ShortName'] or any(f'-{n}' in v['ShortName'] for n in talk)
+    ]
+    voices.sort(key=lambda v: (v['Locale'] != 'pt-BR', v['ShortName']))
     index = []
-    for v in voices[:24]:
+    for v in voices[:30]:
         try:
             k.use(v['ShortName'])
             a = master(np.concatenate([silence(0.3), fade(trim(k.say_phase(AMOSTRA, 2.0, k.speed)))]), True)
