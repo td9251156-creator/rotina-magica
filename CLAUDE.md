@@ -77,7 +77,7 @@ src/platform/crypto.ts     PIN (PBKDF2) e cifra do backup (AES-GCM), via Web Cry
 src/data/backup.ts, demo.ts backup com senha; dados de exemplo do modo ?demo
 src/ui/                    estilos (styles.css, tema noite e claro por variáveis), ícones (app-icons.ts + Icon em icons.tsx) e componentes compartilhados (Setting = ajuste que abre e fecha)
 src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome); voice.ts = voz das práticas; ambient.ts = som de fundo; narrated-audio.ts = MP3 gravado, se existir
-public/                    manifest.webmanifest, sw.js (offline), ícones
+public/                    manifest.webmanifest, sw.js (offline), ícones, illustrations/ (SVGs do primeiro uso e do Laboratório vazio, via `import.meta.env.BASE_URL`)
 .github/workflows/         ci.yml (PR) e pages.yml (publica a cada push na main); .github/dependabot.yml (mensal)
 docs/                      visao-produto.md, integracoes.md (regras para serviços externos), roteiro-narracao.md, apoio-financeiro.md, student-pack.md, img/ do README
 .devcontainer/, .github/copilot-instructions.md   Codespaces e Copilot (Student Pack)
