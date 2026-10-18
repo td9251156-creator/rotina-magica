@@ -23,7 +23,7 @@ export function stopNarratedAudio(): void {
 
 /**
  * Tenta tocar um arquivo local, a partir de `from` segundos (quando a voz é ligada no meio da fase);
- * retorna false quando o arquivo não existe ou o navegador não toca áudio.
+ * retorna false quando o arquivo não existe ou o navegador não toca áudio (nunca quando foi parado de propósito).
  */
 export function playNarratedAudio(practiceId: string, phaseIndex: number, from = 0): Promise<boolean> {
   return playAudioFile(narratedAudioUrl(practiceId, phaseIndex), from);
@@ -46,7 +46,10 @@ function playAudioFile(url: string, from: number): Promise<boolean> {
   return playing
     .then(() => true)
     .catch(() => {
-      if (current === audio) current = null;
+      // Parado de propósito (a fase mudou, a voz foi desligada ou outra fala começou): não é falha,
+      // e a voz do celular não pode entrar por cima do arquivo seguinte.
+      if (current !== audio) return true;
+      current = null;
       return false;
     });
 }
