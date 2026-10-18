@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Vozes da narração</title>
+  <style>
+    body { margin: 0; padding: 16px; background: #0e1017; color: #e8e2d4; font: 16px/1.5 system-ui, sans-serif; }
+    h1 { color: #f1e6cf; font-family: Georgia, serif; font-weight: 500; }
+    li { list-style: none; background: #161922; border: 1px solid #2a2f3d; border-radius: 14px; padding: 12px; margin: 0 0 10px; }
+    b { color: #c9a45c; }
+    audio { width: 100%; margin-top: 8px; }
+    ul { padding: 0; }
+  </style>
+</head>
+<body>
+  <h1>Escolha a voz</h1>
+  <p>O mesmo trecho com cada voz. Diga o número da que soar mais natural.</p>
+  <ul id="lista"><li>Carregando…</li></ul>
+  <script>
+    fetch('audio/amostras/index.json')
+      .then((r) => r.json())
+      .then((vozes) => {
+        const ul = document.getElementById('lista');
+        ul.innerHTML = '';
+        vozes.forEach((v, i) => {
+          const li = document.createElement('li');
+          const nome = v.voz.replace(/^pt-BR-|Neural$/g, '');
+          li.innerHTML = `<b>${i + 1}.</b> ${nome} · ${v.genero === 'Female' ? 'feminina' : 'masculina'}<audio controls preload="none" src="audio/amostras/${v.arquivo}"></audio>`;
+          ul.appendChild(li);
+        });
+      })
+      .catch(() => (document.getElementById('lista').innerHTML = '<li>Amostras ainda não geradas.</li>'));
+  </script>
+</body>
+</html>

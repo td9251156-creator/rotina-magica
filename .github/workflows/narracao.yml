@@ -10,6 +10,10 @@ on:
         description: 'Voz do Azure (vazio = a mais natural da região)'
         required: false
         default: ''
+      amostras:
+        description: 'Só gerar amostras de todas as vozes (página amostras.html)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -35,13 +39,16 @@ jobs:
       - name: Gerar
         env:
           VOZ: ${{ inputs.voz }}
+          AMOSTRAS: ${{ inputs.amostras }}
         run: |
           test -n "$AZURE_SPEECH_KEY" || { echo "Falta o secret AZURE_SPEECH_KEY"; exit 1; }
           V=(); if [ -n "$VOZ" ]; then V=(--voice "$VOZ"); fi
+          if [ "$AMOSTRAS" = "true" ]; then python scripts/gerar-narracao.py --engine azure --amostras | tee "$RUNNER_TEMP/gerar.log"; exit 0; fi
           npx vite-node scripts/narracao-textos.ts > "$RUNNER_TEMP/textos.json"
           python scripts/gerar-narracao.py --engine azure "${V[@]}" --extras "$RUNNER_TEMP/textos.json" | tee "$RUNNER_TEMP/gerar.log"
           npm test
       - name: Subir versão do cache
+        if: ${{ !inputs.amostras }}
         run: python -c "import re,pathlib;p=pathlib.Path('public/sw.js');s=p.read_text();p.write_text(re.sub(r\"rumo-v(\d+)\",lambda m:f'rumo-v{int(m[1])+1}',s,1))"
       - name: Enviar para o branch narracao-azure
         run: |
