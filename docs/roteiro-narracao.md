@@ -27,6 +27,11 @@ arquivos seguem o app.
      `AZURE_SPEECH_KEY=sua-chave AZURE_SPEECH_REGION=brazilsouth python3 scripts/gerar-narracao.py --engine azure`
      (no PowerShell: `$env:AZURE_SPEECH_KEY="sua-chave"; $env:AZURE_SPEECH_REGION="brazilsouth"` antes do comando).
   4. Ouça os arquivos em `public/audio/practices/`, suba `CACHE` em `public/sw.js` e abra um PR.
+
+  O gerador escolhe sozinho a voz mais natural que a região tiver (HD, depois multilíngue, depois a Antonio)
+  e manda cada fala inteira num pedido só, sem mexer no tom nem pôr eco. Para comparar vozes:
+  `python scripts/gerar-narracao.py --engine azure --listar-vozes` e depois
+  `--voice NOME --only sober` (ex.: `pt-BR-ThalitaMultilingualNeural`, `pt-BR-FranciscaNeural`).
 - **Voz de gente:** grave as falas no celular (gravador de voz, num lugar quieto), uma gravação por arquivo da lista
   abaixo, seguindo "Como gravar". Quem mantém o app corta, iguala o volume e troca os arquivos.
 - **Trocou um arquivo?** Suba `CACHE` em `public/sw.js`: quem já ouviu guarda o áudio antigo no celular.
