@@ -3,6 +3,7 @@ import { HINT_COST, SHUFFLE_COST, SYMBOLS, canMatch, dailyPairsChallenge, deal, 
 import { createRng } from '@/domain/games/rng';
 import { toLocalDate } from '@/domain/dates';
 import type { Sign } from '@/domain/games/symbols';
+import { useFitArea } from './fit';
 import { Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
 
@@ -53,6 +54,8 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
   const [board, setBoard] = useState<Tile[]>(() => deal(layout, rng, signs?.length));
   const nameOf = (t: Tile) => (signs ? signs[t.symbol].name : SYMBOLS[t.symbol]);
   const total = useRef(board.length);
+  const size = useRef({ maxX: Math.max(...board.map((t) => t.x), 0) + 2, maxY: Math.max(...board.map((t) => t.y), 0) + 2 });
+  const [stageRef, area] = useFitArea<HTMLDivElement>(120);
   const [selected, setSelected] = useState<number | null>(null);
   const [hint, setHint] = useState<number[]>([]);
   const [shake, setShake] = useState<number | null>(null);
@@ -138,11 +141,9 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     lastMatch.current = null;
   };
 
-  // Medidas: o tabuleiro tem 16 meias-peças de largura e cabe na tela.
-  const maxX = Math.max(...board.map((t) => t.x), 0) + 2;
-  const maxY = Math.max(...board.map((t) => t.y), 0) + 2;
-  const width = Math.min(typeof window === 'undefined' ? 390 : window.innerWidth, 560) - 40;
-  const u = Math.max(14, Math.min(26, width / 16));
+  // Medidas: a peça cresce até o tabuleiro inteiro (do começo da partida) ocupar o espaço livre da tela.
+  const { maxX, maxY } = size.current;
+  const u = Math.max(14, Math.min(44, area.width / (maxX + 0.9), area.height / (maxY * 1.25 + 0.9)));
   // Cada camada sobe e vai para a esquerda, com a lateral da peça aparecendo: dá a sensação de pilha.
   const depth = Math.round(u * 0.28);
   const ordered = [...board].sort((a, b) => a.z - b.z || a.y - b.y || a.x - b.x);
@@ -157,6 +158,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
           {board.length / 2} pares · {fmt(elapsed)}
         </span>
       </div>
+      <div ref={stageRef} className="mj__stage">
       <div
         className="mj__board"
         style={{
@@ -197,6 +199,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
             </button>
           );
         })}
+      </div>
       </div>
       {stuck && (
         <div className="card mj__stuck">

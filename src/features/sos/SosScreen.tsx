@@ -210,8 +210,8 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
         <button type="button" className="option" onClick={() => play('onda')}>
           Segura a onda (respirar)
         </button>
-        <button type="button" className="option" onClick={() => play('rebate')}>
-          Rebater pensamentos
+        <button type="button" className="option" onClick={() => play('pares')}>
+          Pares (prender a atenção)
         </button>
       </div>
 

@@ -9,7 +9,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 
 ## Próximos
 - Narração com voz mais humana: gerar com Azure (`--engine azure`) ou gravar com voz de gente (passos em `docs/roteiro-narracao.md`).
-- Mais modos difíceis desbloqueados por nível (Pares, Desvia), no mesmo molde do modo rápido do Blocos.
+- Mais modos difíceis desbloqueados por nível (Pares, Arcanos), no mesmo molde do modo rápido do Blocos.
 - Ajustar textos e técnicas com o uso real (o laboratório vai mostrar o que funciona).
 - Empacotar como app Android (TWA/Capacitor) se a agenda não bastar como lembrete.
 
@@ -18,6 +18,8 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-18 — Jogos: saíram Desvia e Rebate (XP e histórico ficam); Pares, Arcanos, Blocos e Segura a onda
+  ocupam a tela toda, com peças e cartas maiores. Ajuda agora: onda da vontade desenhada.
 - 2026-10-18 — Narração mais fluida: frases inteiras, sem cortes nem tom rebaixado, reverberação de sala; falas
   reescritas com linguagem de relaxamento guiado (hipnose permissiva, âncora de calma e ensaio do futuro);
   gerador com opção de voz Azure (`pt-BR-AntonioNeural`) e caminho para gravação com voz de gente.

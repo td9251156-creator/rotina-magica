@@ -2,7 +2,7 @@ import { useData } from '@/data/provider';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { alcoholLink, cravingNightLink, lastDays, moneyKept, planStats, riskiestWeekday, type NightRecord } from '@/domain/lab';
 import { computeProgress } from '@/domain/progress';
-import { GAME_INFO, type GameId } from '@/domain/progression';
+import { GAME_INFO, RETIRED_GAME_NAMES, gameTitle } from '@/domain/progression';
 import { averageDrops, scoreStrategies } from '@/domain/strategies';
 import { rulerHistory } from '@/domain/training';
 import { Screen } from '@/ui/Screen';
@@ -45,7 +45,7 @@ export function Lab({ onBack }: { onBack: () => void }) {
     .flatMap((p) => (Array.isArray(p.extra?.before) ? (p.extra.before as string[]) : []))
     .reduce<Record<string, number>>((acc, t) => ({ ...acc, [t]: (acc[t] ?? 0) + 1 }), {});
   const topTags = Object.entries(lapseTags).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  const gameNames = Object.fromEntries(Object.entries(GAME_INFO).map(([id, g]) => [`jogo:${id as GameId}`, g.title]));
+  const gameNames = Object.fromEntries([...Object.keys(GAME_INFO), ...Object.keys(RETIRED_GAME_NAMES)].map((id) => [`jogo:${id}`, gameTitle(id)]));
   const drops = averageDrops(cravings).filter((d) => d.averageDrop > 0).slice(0, 4);
   const ruler = rulerHistory(repos.practices.list());
   const firstConf = ruler.find((r) => r.confianca !== null)?.confianca ?? null;
