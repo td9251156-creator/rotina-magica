@@ -426,6 +426,7 @@ describe('rodada 3', () => {
     expect(screen.getByRole('link', { name: 'Chamar alguém no WhatsApp' }).getAttribute('href')).toMatch(/^https:\/\/wa\.me\/\?text=/);
     window.location.hash = '#lab';
     expect(await screen.findByText(/laboratório/i)).toBeInTheDocument();
+    expect(document.querySelector('img[src="/illustrations/laboratory.svg"]')).toBeInTheDocument();
     expect(screen.queryByText('Ajuda de gente')).not.toBeInTheDocument();
   });
 

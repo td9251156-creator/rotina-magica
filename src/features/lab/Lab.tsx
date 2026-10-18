@@ -180,10 +180,13 @@ export function Lab({ onBack }: { onBack: () => void }) {
       {topTags.length > 0 && <p className="card">O que mais veio antes de usar: {topTags.map(([t]) => t.toLowerCase()).join(', ')}.</p>}
 
       {empty && (
-        <p className="card muted">
-          Ainda não há dados suficientes. Escolha o plano da noite e, no dia seguinte, conte como foi: em poucos dias aparece
-          o que funciona para você.
-        </p>
+        <section className="card lab-empty">
+          <img src="/illustrations/laboratory.svg" alt="" />
+          <p className="muted">
+            Ainda não há dados suficientes. Escolha o plano da noite e, no dia seguinte, conte como foi: em poucos dias aparece
+            o que funciona para você.
+          </p>
+        </section>
       )}
     </Screen>
   );

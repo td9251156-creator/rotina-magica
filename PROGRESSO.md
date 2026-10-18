@@ -17,12 +17,16 @@
 - Clima de hoje com lembrete antes da hora de risco (arquivo de agenda nos dias que pedem atenção); narração guardada para tocar sem internet; Laboratório com o texto do "Diário e noites" corrigido; prévia discreta do link.
 - A noite aprende com os registros (gatilho mais comum, hora da vontade e o que já funcionou); desafio da semana na tela Hoje; lembrete do meio-dia; modo rápido do Blocos a partir do nível 3; com o PIN fechado, os jogos do SOS não mostram o que a pessoa escreveu.
 - Narração refeita sem cortes no meio das frases e sem tom artificial, com falas no estilo de relaxamento guiado (hipnose e PNL só como linguagem) e opção de voz Azure no gerador.
+- Tela inicial ganhou a marca visual no topo, ícone e texto de ação no SOS e hierarquia visual reforçada no próximo passo, sem alterar os fluxos existentes.
+- Ilustrações locais foram integradas na primeira etapa do primeiro uso e no estado vazio do Laboratório, adaptando a linguagem visual dos anexos sem usar capturas com dados de demonstração; testes de interface conferem os dois pontos.
+- O teste que compara o roteiro de narração normaliza CRLF/LF, para passar tanto no Windows quanto em sistemas Unix.
 
 ## Em andamento
 
 - Testar o app completo no celular, no uso real.
 - Jogos, parte 4: Pares, Desvia, Rebate, Segura a onda e A noite revistos.
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas.
+- Refinar as ilustrações com uso real no celular, se necessário.
 
 ## Backlog
 
@@ -41,7 +45,10 @@
 - O cruzamento Diário/noites mostra associação, não causalidade, e exige dois registros de cada tipo.
 - Lembretes extras não são ativados automaticamente: a pessoa baixa e importa o arquivo se quiser.
 - A voz dos exercícios reutiliza `practiceVoice`, fica desligada por padrão e não envia texto para fora do aparelho.
+- A melhoria visual usa apenas `public/icons/logo.svg` e ícones locais já existentes; nenhum asset externo ou dependência nova foi adicionado.
+- As ilustrações adaptadas são SVGs estáticos em `public/illustrations`, sem serviço externo, tracking ou dados pessoais.
 
 ## Perguntas em aberto
 
 - Qual formato de desafio diário ajuda sem transformar o jogo em cobrança?
+- A escala e o contraste das ilustrações ficam confortáveis em todos os aparelhos?

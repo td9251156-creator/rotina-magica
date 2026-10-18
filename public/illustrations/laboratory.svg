@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-labelledby="title desc">
+  <title id="title">Seu laboratório está começando</title>
+  <desc id="desc">Um frasco dourado e pequenos pontos de luz aguardam os primeiros registros.</desc>
+  <rect width="320" height="180" rx="24" fill="#161922"/>
+  <path d="M132 38h56M143 38v34l-33 62a9 9 0 0 0 8 13h94a9 9 0 0 0 8-13l-33-62V38" fill="none" stroke="#c9a45c" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M124 112h72l17 30a4 4 0 0 1-4 5h-98a4 4 0 0 1-4-5z" fill="#c9a45c" fill-opacity=".18"/>
+  <circle cx="150" cy="116" r="4" fill="#f1e6cf"/>
+  <circle cx="177" cy="128" r="3" fill="#c9a45c"/>
+  <path d="M62 54l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM252 70l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#f1e6cf" opacity=".8"/>
+</svg>
