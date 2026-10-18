@@ -90,6 +90,16 @@ export function Journal() {
 
       <section className="card">
         <h2>Últimos 14 dias</h2>
+        {days.every((d) => past.get(d)?.craving == null) && (
+          <div className="empty-state">
+            <svg viewBox="0 0 120 80" aria-hidden="true">
+              <circle className="empty-state__moon" cx="96" cy="18" r="9" />
+              <rect className="empty-state__page" x="22" y="22" width="56" height="48" rx="6" />
+              <path className="empty-state__lines" d="M32 36h36M32 46h28M32 56h20" />
+            </svg>
+            <p className="muted small">Seu primeiro registro aparece aqui. Uma noite anotada já começa a mostrar o seu padrão.</p>
+          </div>
+        )}
         <div className="bars" aria-label="Fissura nos últimos 14 dias">
           {days.map((d) => {
             const v = past.get(d)?.craving;
@@ -123,7 +133,7 @@ export function Journal() {
           </>
         )}
         {thoughts.slice(0, 3).map((t) => (
-          <div key={t.id} className="thought">
+          <div key={t.id} className="thought-entry">
             <span className="muted small">{t.date.split('-').reverse().slice(0, 2).join('/')}</span>
             {t.thought && <span className="quote">{t.thought}</span>}
             {t.answer && <span>→ {t.answer}</span>}

@@ -133,16 +133,32 @@ export function Lab({ onBack }: { onBack: () => void }) {
       {ruler.length > 0 && (
         <section>
           <h2>Sua régua de 0 a 10</h2>
-          <ul className="ticks">
+          <div className="stack">
             {ruler
               .slice(-5)
               .reverse()
               .map((r, k) => (
-                <li key={k}>
-                  {dm(r.date)} · importância <strong>{r.importancia ?? '–'}</strong> · confiança <strong>{r.confianca ?? '–'}</strong>
-                </li>
+                <div key={k} className="card ruler">
+                  <span className="muted small">{dm(r.date)}</span>
+                  <span className="ruler__row">
+                    <span>
+                      importância <strong>{r.importancia ?? '–'}</strong>
+                    </span>
+                    <span className="bar" aria-hidden="true">
+                      <span style={{ width: `${(r.importancia ?? 0) * 10}%` }} />
+                    </span>
+                  </span>
+                  <span className="ruler__row">
+                    <span>
+                      confiança <strong>{r.confianca ?? '–'}</strong>
+                    </span>
+                    <span className="bar" aria-hidden="true">
+                      <span style={{ width: `${(r.confianca ?? 0) * 10}%` }} />
+                    </span>
+                  </span>
+                </div>
               ))}
-          </ul>
+          </div>
           {ruler.length > 1 && firstConf !== null && lastConf !== null && (
             <p className="muted small">
               {lastConf > firstConf
@@ -156,13 +172,19 @@ export function Lab({ onBack }: { onBack: () => void }) {
       {strategies.length > 0 && (
         <section>
           <h2>O que mais funcionou no SOS</h2>
-          <ul className="ticks">
+          <div className="stack">
             {strategies.map((s) => (
-              <li key={s.id}>
-                {names.get(s.id)} <span className="muted small">({s.worked} de {s.tries})</span>
-              </li>
+              <div key={s.id} className="card ruler">
+                <strong>{names.get(s.id)}</strong>
+                <span className="muted small">
+                  ajudou {s.worked} de {s.tries} {s.tries === 1 ? 'vez' : 'vezes'}
+                </span>
+                <span className="bar" aria-hidden="true">
+                  <span style={{ width: `${(s.worked / s.tries) * 100}%` }} />
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 

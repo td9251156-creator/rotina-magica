@@ -200,7 +200,20 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
           <p>{letter}</p>
         </section>
       )}
-      {stage === 'start' && <p>Vamos atravessar isso juntos. Escolha uma ferramenta: em 3 minutos a vontade costuma baixar.</p>}
+      <button type="button" className="sos sos--play" onClick={() => play('blocos')}>
+        Jogar Blocos · 3 min
+        <span>Jogar ocupa a cabeça e baixa a vontade</span>
+      </button>
+      <div className="row">
+        <button type="button" className="option" onClick={() => play('onda')}>
+          Segura a onda (respirar)
+        </button>
+        <button type="button" className="option" onClick={() => play('rebate')}>
+          Rebater pensamentos
+        </button>
+      </div>
+
+      <h2>Ou use uma destas técnicas</h2>
       <div className="list">
         {WEAPONS.map(({ id, title, icon }) => (
           <button key={id} type="button" className="item__body item__body--solo" onClick={() => wield(id)}>
@@ -226,19 +239,6 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
         </span>
         <Chevron />
       </button>
-
-      <button type="button" className="sos sos--play" onClick={() => play('blocos')}>
-        Jogar Blocos · 3 min
-        <span>Jogar ocupa a cabeça e baixa a vontade</span>
-      </button>
-      <div className="row">
-        <button type="button" className="option" onClick={() => play('onda')}>
-          Segura a onda (respirar)
-        </button>
-        <button type="button" className="option" onClick={() => play('rebate')}>
-          Rebater pensamentos
-        </button>
-      </div>
 
       {kit.length > 0 && (
         <section className="stack">

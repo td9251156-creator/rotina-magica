@@ -426,7 +426,7 @@ h1, h2 { color: var(--title); }
 .trap--on { border-color: var(--accent); background: var(--raised); }
 .trap__q { margin-top: 6px; color: var(--accent); font-style: italic; }
 .quote { font-family: var(--serif); font-style: italic; border-left: 3px solid var(--accent); padding-left: 10px; margin: 4px 0; display: block; }
-.thought { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--border); }
+.thought-entry { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--border); }
 .plain { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 8px; }
 
 /* Prática guiada: sempre noturna, como uma cena (igual ao Templo do Lições do Dia). */
@@ -652,3 +652,18 @@ h1, h2 { color: var(--title); }
 @media (prefers-reduced-motion: reduce) {
   .fig *, .orb__core, .tri, .tri__inner, .fork__path--lit, .burst__wave, .speak__wave, .box__orb, .phase-ring__fill { animation: none !important; transition: none !important; }
 }
+.ruler { display: flex; flex-direction: column; gap: 6px; }
+.ruler__row { display: grid; grid-template-columns: 7.5rem 1fr; align-items: center; gap: 8px; }
+
+.done__glow { transform-box: fill-box; transform-origin: center; animation: done-open 1.4s ease-out both; }
+.done__ray { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; opacity: 0; animation: done-ray 1.6s 0.5s ease-out forwards; }
+.done__check { fill: none; stroke: #1a1610; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-check 0.6s 0.9s ease-out forwards; }
+@keyframes done-open { from { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } to { transform: scale(1); } }
+@keyframes done-ray { from { opacity: 0; } to { opacity: 0.8; } }
+@keyframes draw-check { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .done__glow, .done__ray, .done__check { animation: none; opacity: 1; stroke-dashoffset: 0; } }
+.empty-state { display: flex; align-items: center; gap: 12px; margin: 4px 0 8px; }
+.empty-state svg { flex: 0 0 96px; height: 64px; }
+.empty-state__moon { fill: var(--accent); opacity: 0.8; }
+.empty-state__page { fill: var(--raised); stroke: var(--border); }
+.empty-state__lines { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; opacity: 0.6; }
