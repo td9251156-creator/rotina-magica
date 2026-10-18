@@ -26,12 +26,21 @@ jobs:
         with:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - run: pip install soundfile numpy
       - name: Gerar
+        env:
+          VOZ: ${{ inputs.voz }}
         run: |
           test -n "$AZURE_SPEECH_KEY" || { echo "Falta o secret AZURE_SPEECH_KEY"; exit 1; }
-          if [ -n "${{ inputs.voz }}" ]; then V="--voice ${{ inputs.voz }}"; fi
-          python scripts/gerar-narracao.py --engine azure $V
+          V=(); if [ -n "$VOZ" ]; then V=(--voice "$VOZ"); fi
+          npx vite-node scripts/narracao-textos.ts > "$RUNNER_TEMP/textos.json"
+          python scripts/gerar-narracao.py --engine azure "${V[@]}" --extras "$RUNNER_TEMP/textos.json" | tee "$RUNNER_TEMP/gerar.log"
+          npm test
       - name: Subir versão do cache
         run: python -c "import re,pathlib;p=pathlib.Path('public/sw.js');s=p.read_text();p.write_text(re.sub(r\"rumo-v(\d+)\",lambda m:f'rumo-v{int(m[1])+1}',s,1))"
       - name: Enviar para o branch narracao-azure
@@ -39,6 +48,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b narracao-azure
-          git add public/audio/practices public/sw.js
-          git commit -m "troca a narração pela voz Azure"
+          git add public/audio public/sw.js
+          git commit -m "gera a narração com a voz Azure" -m "$(grep -E '^(voz|estilo)' "$RUNNER_TEMP/gerar.log")"
           git push -f origin narracao-azure

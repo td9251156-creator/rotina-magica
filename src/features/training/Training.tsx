@@ -13,6 +13,8 @@ import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
 import { PracticePlayer } from '../routine/PracticePlayer';
 import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
+import { playNarration, stopNarratedAudio } from '@/platform/narrated-audio';
+import { trainingFile } from '@/domain/narration';
 
 const APPROACH_ICONS: Record<string, IconId> = {
   motivacao: 'ter_motivacao',
@@ -170,8 +172,11 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
   const setText = (text: string) => setAnswers({ ...answers, [i]: { ...answer, text } });
 
   useEffect(() => {
-    if (voice) speak(step.text);
-    return () => stopSpeaking();
+    if (voice) say(technique.id, i, step.text);
+    return () => {
+      stopSpeaking();
+      stopNarratedAudio();
+    };
   }, [i, voice, step.text]);
 
   const finish = () => {
@@ -244,8 +249,10 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
           className="player__voice"
           aria-pressed={voice}
           onClick={() => {
-            if (voice) stopSpeaking();
-            else speak(step.text);
+            if (voice) {
+              stopSpeaking();
+              stopNarratedAudio();
+            } else say(technique.id, i, step.text);
             write((r) => r.settings.set('practiceVoice', !voice));
           }}
         >
@@ -324,4 +331,11 @@ function ShareBox({ text }: { text: string }) {
       </button>
     </div>
   );
+}
+
+/** Toca a narração gravada do passo; sem arquivo, a voz do celular lê o texto. */
+function say(techniqueId: string, step: number, text: string) {
+  void playNarration(trainingFile(techniqueId, step)).then((played) => {
+    if (!played) speak(text);
+  });
 }

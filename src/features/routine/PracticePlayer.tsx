@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useData } from '@/data/provider';
-import { phaseAt, practiceSeconds, phaseScript, type Practice } from '@/domain/routine';
+import { phaseAt, practiceSeconds, phaseScript, type Practice, type PracticePhase } from '@/domain/routine';
 import { canSpeak, speakLines, stopSpeaking } from '@/platform/voice';
 import { canPlayAmbient, startAmbient, stopAmbient } from '@/platform/ambient';
-import { playNarratedAudio, prefetchNarration, stopNarratedAudio } from '@/platform/narrated-audio';
+import { playNarratedAudio, playNarration, prefetchNarration, stopNarratedAudio } from '@/platform/narrated-audio';
+import { cueFile } from '@/domain/narration';
 import { vibrate } from '../games/record';
 
 function fmt(s: number) {
@@ -35,7 +36,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
       vibrate(25);
       if (voice) {
         const { index, phase } = now;
-        void playNarratedAudio(practice.id, index).then((played) => {
+        void playPhase(practice.id, index, phase).then((played) => {
           // A fase pode ter mudado enquanto o arquivo era procurado.
           if (!played && lastPhase.current === index) speakLines(phaseScript(phase));
         });
@@ -65,7 +66,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     }
     else if (now) {
       const { index, phase, left } = now;
-      void playNarratedAudio(practice.id, index, phase.seconds - left).then((played) => {
+      void playPhase(practice.id, index, phase, phase.seconds - left).then((played) => {
         if (!played && lastPhase.current === index) speakLines(phaseScript(phase));
       });
     }
@@ -129,4 +130,9 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
       </div>
     </div>
   );
+}
+
+/** Fase com roteiro toca a narração dela; fase sem roteiro, o aviso curto (ex.: "Inspire"). */
+function playPhase(practiceId: string, index: number, phase: PracticePhase, from = 0): Promise<boolean> {
+  return phase.guide ? playNarratedAudio(practiceId, index, from) : playNarration(cueFile(phase), from);
 }

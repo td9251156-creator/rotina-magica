@@ -657,8 +657,9 @@ describe('melhorias gerais', () => {
       const { user } = open('#rotina/n_pilar');
       await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
       await user.click(screen.getByRole('button', { name: 'Ouvir a voz guiando' }));
-      await vi.waitFor(() => expect(fetched).toHaveLength(24));
+      await vi.waitFor(() => expect(fetched).toHaveLength(30));
       expect(fetched[0]).toMatch(/audio\/practices\/triangulo-0\.mp3$/);
+      expect(fetched.at(-1)).toMatch(/audio\/cues\/.+\.mp3$/);
     } finally {
       vi.unstubAllGlobals();
       delete (window as { speechSynthesis?: unknown }).speechSynthesis;

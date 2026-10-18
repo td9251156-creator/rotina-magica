@@ -164,3 +164,4 @@ expo-env.d.ts
 .metro-health-check*
 /ios
 /android
+__pycache__/
