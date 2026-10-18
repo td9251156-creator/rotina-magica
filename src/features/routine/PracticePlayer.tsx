@@ -9,6 +9,7 @@ import type { AmbientSound } from '../sounds/Sounds';
 import { playNarratedAudio, playNarration, prefetchNarration, stopNarratedAudio } from '@/platform/narrated-audio';
 import { cueFile } from '@/domain/narration';
 import { vibrate } from '../games/record';
+import { PhaseRing, PracticeScene } from './PracticeScene';
 
 function fmt(s: number) {
   const m = Math.floor(s / 60);
@@ -84,30 +85,24 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
   };
   if (!now) return null;
 
-  const label = now.phase.label;
-  const visual =
-    practice.id === 'triangulo' ? (
-      <svg className="tri" viewBox="0 0 100 90" aria-hidden="true">
-        <path d="M50 6 94 84H6z" />
-      </svg>
-    ) : practice.id === 'pilar' ? (
-      <div className="pillar" aria-hidden="true">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <span key={i} className={i === now.index ? 'on' : i < now.index ? 'done' : ''} />
-        ))}
-      </div>
-    ) : (
-      <div className={`breath breath--${label.split(' ')[0].toLowerCase()}`} aria-hidden="true" />
-    );
-
+  const steps = practice.phases.length <= 12 ? practice.phases : null;
   return (
     <div className="player">
       <p className="muted small">{practice.title}</p>
-      <div className="player__visual">{visual}</div>
+      {steps && (
+        <ol className="phases" aria-label={`Fase ${now.index + 1} de ${steps.length}`}>
+          {steps.map((p, i) => (
+            <li key={`${p.label}-${i}`} className={i === now.index ? 'on' : i < now.index ? 'done' : ''} />
+          ))}
+        </ol>
+      )}
+      <div className="player__visual">
+        <PracticeScene practiceId={practice.id} index={now.index} phase={now.phase} progress={1 - now.left / now.phase.seconds} />
+      </div>
       <p className="player__label" aria-live="polite">
-        {label}
+        {now.phase.label}
       </p>
-      <p className="player__count">{Math.ceil(now.left)}</p>
+      <PhaseRing left={now.left} seconds={now.phase.seconds} />
       {now.phase.hint && <p className="muted center">{now.phase.hint}</p>}
       <div className="bar">
         <span style={{ width: `${Math.min(100, (elapsed / total) * 100)}%` }} />
