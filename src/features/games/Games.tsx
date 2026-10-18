@@ -4,7 +4,7 @@ import type { Repositories } from '@/data/repositories/types';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { ACTIVITIES } from '@/domain/evening';
 import { commonTrigger, provenCoping, urgeHour } from '@/domain/games/story';
-import { FAST_BLOCKS, GAME_IDS, GAME_INFO, bestScore, levelFor, totalXp, type GameId } from '@/domain/progression';
+import { FAST_BLOCKS, GAME_IDS, GAME_INFO, RETIRED_GAME_NAMES, bestScore, gameTitle, levelFor, totalXp, type GameId } from '@/domain/progression';
 import { Icon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { symbolsOn, OCCULT_SIGNS } from '@/domain/games/symbols';
@@ -12,9 +12,7 @@ import type { RoutineStyle } from '@/domain/routine';
 import { ArcanaGame } from './ArcanaGame';
 import { BlocksGame } from './BlocksGame';
 import { PairsGame } from './PairsGame';
-import { RebateGame } from './RebateGame';
 import { recordGame, type GameOutcome, type RecordedGame } from './record';
-import { SwipeGame } from './SwipeGame';
 import { GAME_ICON } from './icons';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 import { StoryGame } from './StoryGame';
@@ -27,8 +25,6 @@ export const HOW_TO: Record<GameId, string> = {
     'As cartas estão viradas para baixo. Vire duas por vez e ache os pares do mesmo arcano. Lembrar onde cada uma está é o treino. Pares seguidos sem errar valem mais, e cada arcano achado traz uma ideia para a vida (não é adivinhação).',
   pares:
     'Toque em duas peças iguais para tirar o par. Só valem peças livres: sem nada em cima e com um lado aberto (as presas ficam mais escuras). Pares seguidos e rápidos valem mais. Travou? Use a dica ou embaralhe.',
-  desvia: 'Aparece uma frase. Se ela leva ao uso, empurre para cima (▲). Se é algo que você quer, puxe para baixo (▼). Quanto mais rápido, mais pontos.',
-  rebate: 'Um pensamento tenta te convencer a usar. Escolha, antes do tempo acabar, a resposta que derruba ele.',
   noite: 'Uma noite de risco, do fim do expediente até dormir. Escolha o que fazer em cada momento e veja a vontade subir ou baixar. As opções usam o seu plano.',
   onda: 'Segure o dedo no círculo enquanto puxa o ar (4 s) e segura (2 s). Solte o dedo e o ar devagar (6 s). Acertar o ritmo baixa a onda.',
 };
@@ -41,11 +37,6 @@ export function personalWords(repos: Repositories) {
     .list('atividade')
     .map((i) => (i.extra?.catalog ? ACTIVITIES.find((a) => a.id === i.text)?.label : i.text))
     .filter((t): t is string => !!t);
-  const good = [...reasons, ...plans, ...activities].filter((t) => t.length <= 40);
-  const answers: Record<string, string> = {};
-  repos.plan.list('resposta').forEach((i) => {
-    if (typeof i.extra?.thought === 'string') answers[i.extra.thought] = i.text;
-  });
   const ifThens = repos.plan.list('se_entao');
   // A noite aprende com os registros das últimas 8 semanas: gatilho mais comum, hora da vontade e o que já funcionou.
   const today = toLocalDate(new Date());
@@ -55,7 +46,7 @@ export function personalWords(repos: Repositories) {
   const copingNames = new Map<string, string>([
     ...DEFAULT_ACTIONS.map((a) => [a.id, a.text] as const),
     ...ifThens.map((p) => [`plano:${p.id}`, p.text] as const),
-    ...GAME_IDS.map((g) => [`jogo:${g}`, `jogar ${GAME_INFO[g].title}`] as const),
+    ...[...GAME_IDS, ...Object.keys(RETIRED_GAME_NAMES)].map((g) => [`jogo:${g}`, `jogar ${gameTitle(g)}`] as const),
   ]);
   const story = {
     reason: reasons[0],
@@ -66,11 +57,11 @@ export function personalWords(repos: Repositories) {
     peakHour: urgeHour(cravings),
     coping: copingId ? copingNames.get(copingId) : undefined,
   };
-  return { good, answers, story };
+  return { story };
 }
 
 /** Com o PIN fechado, os jogos não mostram nada que a pessoa escreveu. */
-const NO_WORDS = { good: [] as string[], answers: {} as Record<string, string>, story: {} };
+const NO_WORDS = { story: {} };
 
 /** Os símbolos do ocultismo estão ligados para esta pessoa? */
 export function useSymbols(repos: Repositories): boolean {
@@ -96,8 +87,6 @@ export function GameView({
   if (id === 'blocos') return <BlocksGame durationMs={durationMs} tree={symbols} startLevel={startLevel} onFinish={onFinish} />;
   if (id === 'pares') return <PairsGame onFinish={onFinish} signs={symbols ? OCCULT_SIGNS : undefined} />;
   if (id === 'arcanos') return <ArcanaGame onFinish={onFinish} />;
-  if (id === 'desvia') return <SwipeGame personalGood={words.good} onFinish={onFinish} />;
-  if (id === 'rebate') return <RebateGame personal={words.answers} onFinish={onFinish} />;
   if (id === 'noite') return <StoryGame personal={words.story} onFinish={onFinish} />;
   return <WaveGame onFinish={onFinish} />;
 }

@@ -52,8 +52,8 @@ export function createDemoRepositories(today = new Date()): Repositories {
   repos.plan.add({ kind: 'futuro', text: 'Viajando com o dinheiro que antes sumia em uma noite' });
   repos.plan.add({ kind: 'resposta', text: 'Mereço é acordar bem amanhã', extra: { thought: 'Só hoje, eu mereço' } });
 
-  const copings = ['jogo:blocos', 'jogo:onda', 'sair', 'jogo:rebate', 'agua_fria', 'jogo:blocos'];
-  const games: GameId[] = ['blocos', 'desvia', 'rebate', 'onda', 'noite'];
+  const copings = ['jogo:blocos', 'jogo:onda', 'sair', 'jogo:pares', 'agua_fria', 'jogo:blocos'];
+  const games: GameId[] = ['blocos', 'pares', 'onda', 'noite'];
   days.forEach((date, i) => {
     clock = at(date, 22);
     const used = useDays.has(date);

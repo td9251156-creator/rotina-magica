@@ -79,8 +79,6 @@ Jogos
 - `jogo_blocos`: Tetris. Quatro quadrados em forma de T.
 - `jogo_pares`: paciência de pares (Mahjong). Duas peças retangulares sobrepostas.
 - `jogo_arcanos`: memória com cartas de tarô. Duas cartas em leque com uma estrela.
-- `jogo_desvia`: empurrar para longe e puxar para perto. Duas setas, uma para cima e uma para baixo.
-- `jogo_rebate`: derrubar pensamentos. Raio rebatendo num escudo.
 - `jogo_onda`: respirar no ritmo. Onda com um círculo acima.
 - `jogo_noite`: ensaiar a noite. Lua com um caminho que se divide.
 

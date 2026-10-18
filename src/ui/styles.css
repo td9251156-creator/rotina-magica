@@ -228,8 +228,6 @@ textarea { resize: vertical; line-height: 1.4; }
 .tile strong { font-size: 1.1rem; }
 .tile__skill { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
 .tile--blocos { background: linear-gradient(160deg, color-mix(in srgb, var(--ok) 14%, var(--surface)), var(--surface) 60%); }
-.tile--desvia { background: linear-gradient(160deg, color-mix(in srgb, var(--calm) 14%, var(--surface)), var(--surface) 60%); }
-.tile--rebate { background: linear-gradient(160deg, color-mix(in srgb, var(--sos) 14%, var(--surface)), var(--surface) 60%); }
 .tile--onda { background: linear-gradient(160deg, color-mix(in srgb, var(--calm) 20%, var(--surface)), var(--surface) 60%); }
 
 /* ---- Jogo ---- */
@@ -272,17 +270,9 @@ button.tetris__box:disabled { opacity: 0.6; cursor: default; }
 .feedback.ok { color: var(--accent); }
 .feedback.bad { color: var(--danger); }
 
-.swipe__stage { position: relative; height: 46dvh; min-height: 260px; display: grid; place-items: center; touch-action: none; user-select: none; overflow: hidden; border-radius: 18px; background: radial-gradient(circle at 50% 50%, #1f2d33, var(--bg) 70%); }
-.swipe__card { width: 78%; min-height: 140px; display: grid; place-items: center; text-align: center; padding: 20px; font-size: 1.35rem; font-weight: 700; border-radius: 20px; background: var(--raised); border: 1px solid var(--border); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); transition: transform 180ms ease-out, opacity 180ms; }
-.swipe__timer { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: var(--sos); transform-origin: left; animation: shrink linear forwards; }
-@keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
-.thought { background: var(--raised); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: transform 300ms, opacity 300ms; }
+.thought { background: var(--raised); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
 .thought strong { font-size: 1.3rem; }
-.thought--broken { transform: scale(0.85) rotate(-4deg); opacity: 0.4; }
-.thought--strong { border-color: var(--danger); }
-.timebar { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
-.timebar span { display: block; height: 100%; background: var(--sos); transition: width 100ms linear; }
 .option--right { border-color: var(--accent); background: rgba(201, 164, 92, 0.15); }
 .option--wrong { border-color: var(--danger); background: rgba(242, 160, 160, 0.12); }
 
@@ -306,7 +296,7 @@ button.tetris__box:disabled { opacity: 0.6; cursor: default; }
 .rating button.on { background: var(--sos); color: var(--sos-text); border-color: var(--sos); }
 .sos--play { padding: 22px 16px; font-size: 1.35rem; }
 @media (prefers-reduced-motion: reduce) {
-  .swipe__card, .thought, .xp, .levelup, .xpbar span { transition: none; animation: none; }
+  .xp, .levelup, .xpbar span { transition: none; animation: none; }
 }
 
 .story__urge span { background: linear-gradient(90deg, var(--accent), var(--sos)); transition: width 400ms ease; }

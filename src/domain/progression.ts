@@ -4,20 +4,26 @@
  */
 import { daysBetween, type LocalDate } from './dates';
 
-export const GAME_IDS = ['blocos', 'pares', 'arcanos', 'desvia', 'rebate', 'onda', 'noite'] as const;
+export const GAME_IDS = ['blocos', 'pares', 'arcanos', 'onda', 'noite'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 
 export const GAME_INFO: Record<GameId, { title: string; skill: string; pitch: string }> = {
   blocos: { title: 'Blocos', skill: 'Foco', pitch: 'Encaixe peças. 3 minutos de jogo baixam a força da vontade.' },
   pares: { title: 'Pares', skill: 'Atenção', pitch: 'Ache pares de peças livres na pilha, no estilo Mahjong. Prende a cabeça.' },
   arcanos: { title: 'Arcanos', skill: 'Memória', pitch: 'Jogo da memória com os 22 Arcanos do tarô. Cada par traz uma ideia para a vida.' },
-  desvia: { title: 'Desvia', skill: 'Reflexo', pitch: 'Empurre o que leva ao uso, puxe o que você quer. Rápido.' },
-  rebate: { title: 'Rebate', skill: 'Mente', pitch: 'Derrube os pensamentos que dão permissão para usar.' },
   onda: { title: 'Segura a onda', skill: 'Calma', pitch: 'Respire no ritmo do dedo e veja a onda baixar.' },
   noite: { title: 'A noite', skill: 'Decisão', pitch: 'Ensaie a sua noite de risco. Cada escolha mexe na vontade.' },
 };
 
-const XP_DIVISOR: Record<GameId, number> = { blocos: 15, pares: 8, arcanos: 4, desvia: 8, rebate: 8, onda: 6, noite: 9 };
+/** Jogos que saíram do app: o nome fica para o histórico (laboratório, A noite) e o XP já ganho continua valendo. */
+export const RETIRED_GAME_NAMES: Record<string, string> = { desvia: 'Desvia', rebate: 'Rebate' };
+
+/** Nome de qualquer jogo já registrado, inclusive dos que saíram. */
+export function gameTitle(id: string): string {
+  return (GAME_INFO as Record<string, { title: string } | undefined>)[id]?.title ?? RETIRED_GAME_NAMES[id] ?? id;
+}
+
+const XP_DIVISOR: Record<GameId, number> = { blocos: 15, pares: 8, arcanos: 4, onda: 6, noite: 9 };
 
 export function xpForGame(game: GameId, score: number): number {
   return Math.min(120, Math.max(10, Math.round(score / XP_DIVISOR[game])));
@@ -57,7 +63,7 @@ export function bestScore(sessions: readonly SessionLike[], game: GameId): numbe
 
 /** Jogo do dia: reveza entre os jogos de treino (Blocos fica para a hora da vontade e para jogar livre). */
 export function gameOfTheDay(today: LocalDate, start: LocalDate): GameId {
-  const rotation: GameId[] = ['desvia', 'rebate', 'onda', 'noite'];
+  const rotation: GameId[] = ['pares', 'onda', 'noite'];
   const i = ((daysBetween(start, today) % rotation.length) + rotation.length) % rotation.length;
   return rotation[i];
 }

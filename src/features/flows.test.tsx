@@ -120,25 +120,6 @@ describe('manhã seguinte', () => {
 });
 
 describe('jogos', () => {
-  it('Rebate: escolher a resposta forte derruba o pensamento', async () => {
-    const { THOUGHTS } = await import('@/domain/games/rebate');
-    const { user } = open('#jogos/rebate');
-    await user.click(screen.getByRole('button', { name: 'Começar' }));
-    const strong = screen.getAllByRole('button').find((b) => THOUGHTS.some((t) => t.strong === b.textContent))!;
-    await user.click(strong);
-    expect(screen.getByText('Derrubado!')).toBeInTheDocument();
-  });
-
-  it('Desvia: empurrar gatilho e puxar o que é bom', async () => {
-    const { RISK_CUES } = await import('@/domain/games/swipe');
-    const { user } = open('#jogos/desvia');
-    await user.click(screen.getByRole('button', { name: 'Começar' }));
-    const card = document.querySelector('.swipe__card')!.textContent!;
-    const risky = (RISK_CUES as readonly string[]).includes(card);
-    await user.click(screen.getByRole('button', { name: risky ? '▲ Empurrar' : '▼ Puxar' }));
-    expect(screen.getByText('✓')).toBeInTheDocument();
-  });
-
   it('no SOS, nota antes e depois do jogo mostra quanto baixou e alimenta o laboratório', async () => {
     const { repos, user } = open('#sos');
     await user.click(screen.getByRole('group', { name: 'Vontade agora' }).querySelectorAll('button')[8]);
@@ -784,17 +765,4 @@ describe('mais itens', () => {
     await user.click(screen.getByRole('button', { name: 'Começar' }));
   });
 
-  it('com o PIN fechado, o Rebate do SOS não mostra as respostas escritas', async () => {
-    const { hashPin, randomBytes, toBase64 } = await import('@/platform/crypto');
-    const { THOUGHTS } = await import('@/domain/games/rebate');
-    const repos = ready();
-    const salt = randomBytes(16);
-    repos.settings.set('pinSalt', toBase64(salt));
-    repos.settings.set('pinHash', await hashPin('2580', salt));
-    for (const t of THOUGHTS) repos.plan.add({ kind: 'resposta', text: 'resposta secreta', extra: { thought: t.text } });
-    const { user } = open('', repos);
-    await user.click(screen.getByRole('button', { name: 'Preciso de ajuda agora' }));
-    await user.click(await screen.findByRole('button', { name: 'Rebater pensamentos' }));
-    expect(screen.queryByText('resposta secreta')).not.toBeInTheDocument();
-  });
 });

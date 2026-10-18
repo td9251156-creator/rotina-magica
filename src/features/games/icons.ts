@@ -6,8 +6,6 @@ export const GAME_ICON: Record<GameId, IconId> = {
   blocos: 'jogo_blocos',
   pares: 'jogo_pares',
   arcanos: 'jogo_arcanos',
-  desvia: 'jogo_desvia',
-  rebate: 'jogo_rebate',
   onda: 'jogo_onda',
   noite: 'jogo_noite',
 };
