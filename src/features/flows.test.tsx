@@ -403,6 +403,9 @@ describe('terapias e vivências', () => {
     await user.click(screen.getByRole('button', { name: /Parar e respirar/ }));
     expect(screen.getByText('Pare')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Terminei' }));
+    expect(screen.getByText('Prática feita')).toBeInTheDocument();
+    expect(repos.practices.list()).toEqual([]);
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
     expect(repos.practices.list().map((p) => p.techniqueId)).toEqual(['sober']);
     expect(screen.getByText('Terapias e vivências')).toBeInTheDocument();
   });

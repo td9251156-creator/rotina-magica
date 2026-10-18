@@ -19,6 +19,8 @@ function fmt(s: number) {
 /** Prática guiada: uma instrução por vez, com tempo e uma imagem que acompanha. */
 export function PracticePlayer({ practice, onDone, onStop }: { practice: Practice; onDone: () => void; onStop: () => void }) {
   const [elapsed, setElapsed] = useState(0);
+  // Ao terminar, a cena se fecha em luz antes de voltar: fechar o ciclo marca o que foi feito.
+  const [finished, setFinished] = useState(false);
   const start = useRef(Date.now());
   const lastPhase = useRef(-1);
   const total = practiceSeconds(practice);
@@ -35,7 +37,8 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
-    if (!now) onDone();
+    if (finished) return;
+    if (!now) setFinished(true);
     else if (now.index !== lastPhase.current) {
       lastPhase.current = now.index;
       vibrate(25);
@@ -47,7 +50,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
         });
       }
     }
-  }, [now, onDone, voice]);
+  }, [now, finished, voice]);
   useEffect(
     () => () => {
       stopSpeaking();
@@ -60,7 +63,14 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     if (voice) void prefetchNarration();
   }, [voice]);
   useEffect(() => {
-    if (!ambient) return;
+    if (!finished) return;
+    stopSpeaking();
+    stopNarratedAudio();
+    vibrate(40);
+  }, [finished]);
+  const sounding = ambient && !finished;
+  useEffect(() => {
+    if (!sounding) return;
     const preset = findPreset(sound);
     if (!preset) {
       startAmbient();
@@ -69,7 +79,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     // Binaural sem a chuva: a voz guia por cima e o tom fica limpo.
     startBinaural(preset, Math.ceil(total / 60) + 1, false);
     return () => stopBinaural();
-  }, [ambient, sound, total]);
+  }, [sounding, sound, total]);
   const toggleVoice = () => {
     if (voice) {
       stopSpeaking();
@@ -83,6 +93,36 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
     }
     write((r) => r.settings.set('practiceVoice', !voice));
   };
+  if (finished)
+    return (
+      <div className="player player--done">
+        <p className="muted small">{practice.title}</p>
+        <div className="player__visual">
+          <svg className="scene done" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <radialGradient id="done-light">
+                <stop offset="0" stopColor="#fff" stopOpacity="0.95" />
+                <stop offset="0.35" stopColor="#f1e6cf" stopOpacity="0.7" />
+                <stop offset="1" stopColor="#c9a45c" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            {Array.from({ length: 12 }, (_, i) => (
+              <line key={i} className="done__ray" x1="100" y1="34" x2="100" y2="14" transform={`rotate(${i * 30} 100 100)`} />
+            ))}
+            <circle className="done__glow" cx="100" cy="100" r="78" fill="url(#done-light)" />
+            <path className="done__check" d="M78 101 l15 15 l30 -32" />
+          </svg>
+        </div>
+        <h2 className="player__label">Prática feita</h2>
+        <p className="center">
+          {Math.max(1, Math.round(Math.min(elapsed, total) / 60))} min cuidando de você. Isso fica com você, aconteça o que acontecer
+          hoje.
+        </p>
+        <button type="button" className="btn" onClick={onDone}>
+          Continuar
+        </button>
+      </div>
+    );
   if (!now) return null;
 
   const steps = practice.phases.length <= 12 ? practice.phases : null;
@@ -129,7 +169,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
         <button type="button" className="btn btn--ghost" onClick={onStop}>
           Parar
         </button>
-        <button type="button" className="btn" onClick={onDone}>
+        <button type="button" className="btn" onClick={() => setFinished(true)}>
           Terminei
         </button>
       </div>

@@ -94,7 +94,7 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
         const ids = techniqueIds(a);
         const done = ids.filter((id) => times(id) > 0).length;
         return (
-          <Setting key={a.id} title={a.title} hint={`${a.name} · ${done} de ${ids.length} ${ids.length === 1 ? 'feito' : 'feitos'}`} icon={<Icon id={APPROACH_ICONS[a.id]} />}>
+          <Setting key={a.id} title={a.title} hint={ids.length ? `${a.name} · ${done} de ${ids.length} ${ids.length === 1 ? 'feito' : 'feitos'}` : a.name} icon={<Icon id={APPROACH_ICONS[a.id]} />}>
             <p className="small">{a.what}</p>
             <p className="small muted evidence">Base: {a.evidence}</p>
             <div className="list">

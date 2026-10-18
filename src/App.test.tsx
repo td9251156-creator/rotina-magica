@@ -50,7 +50,7 @@ describe('Rumo', () => {
         <App />
       </DataProvider>,
     );
-    expect(screen.getByText(/Vamos atravessar isso juntos/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188');
   });
 
@@ -59,7 +59,7 @@ describe('Rumo', () => {
     repos.settings.set('onboardingDone', true);
     const { user } = setup(repos);
     await user.click(screen.getByRole('button', { name: /Bateu vontade/ }));
-    expect(await screen.findByText(/Vamos atravessar isso juntos/)).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
   });
 
   it('oferece instalar quando o navegador permite, e "Agora não" esconde de vez', async () => {
