@@ -33,6 +33,10 @@ arquivos seguem o app.
   no tom nem pôr eco: a voz respira e emenda como numa gravação contínua. Para comparar vozes:
   `python scripts/gerar-narracao.py --engine azure --listar-vozes` e depois
   `--voice NOME --only sober` (ex.: `pt-BR-ThalitaMultilingualNeural`, `pt-BR-FranciscaNeural`).
+  Quando a voz tem o estilo "calm", ele é usado. Com `--extras` (lista de `scripts/narracao-textos.ts`), o
+  gerador também narra os avisos curtos das fases sem roteiro (`public/audio/cues/`) e os passos de Terapias
+  e vivências (`public/audio/training/`), e grava `public/audio/textos.json`, que um teste confere.
+- **Sem PC:** no GitHub, Actions → **Narração** → Run workflow gera tudo com o secret `AZURE_SPEECH_KEY`.
 - **Voz de gente:** grave as falas no celular (gravador de voz, num lugar quieto), uma gravação por arquivo da lista
   abaixo, seguindo "Como gravar". Quem mantém o app corta, iguala o volume e troca os arquivos.
 - **Trocou um arquivo?** Suba `CACHE` em `public/sw.js`: quem já ouviu guarda o áudio antigo no celular.
@@ -46,8 +50,16 @@ dois da PNL, sempre como jeito de falar, sem promessa de cura e com a pessoa no 
 - **Acompanhar e conduzir:** descrever o que já está acontecendo (os sons, o ar, os pés no chão) e só depois
   sugerir o próximo passo ("e, enquanto você olha, a respiração pode ir ficando mais lenta").
 - **Aprofundar aos poucos:** cada volta, cada respiração "um pouco mais".
+- **Concordância inicial:** começar por uma verdade fácil ("você já sabe imaginar, faz isso todo dia"), que
+  abre caminho para a próxima sugestão.
+- **Usar o que distrai:** os sons de fora "ajudam a ficar mais aqui", em vez de atrapalhar.
+- **Não saber (Erickson):** "não sei se a calma chega primeiro nas mãos ou no peito": a calma vem, só o
+  lugar fica em aberto.
+- **Contagem para aprofundar:** "três, dois, um, a cada número um pouco mais fundo".
+- **Olhar de longe (dissociação leve):** observar a vontade e o pensamento "de mais longe".
 - **Âncora (PNL):** juntar o polegar e o indicador no auge da calma, para usar o gesto quando a vontade vier.
-- **Ensaio do futuro (PNL):** imaginar o próximo passo já sendo feito.
+- **Ensaio do futuro (PNL):** imaginar o próximo passo já sendo feito, e como fica a noite depois; o gesto
+  da âncora "traz a luz de volta" quando a vontade aparecer.
 - **Segurança:** "quem conduz é você, pode abrir os olhos a qualquer momento"; toda prática termina trazendo
   a pessoa de volta (mexer os dedos, abrir os olhos).
 
@@ -70,27 +82,28 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 
 ### `triangulo-0.mp3` · Feche os olhos · até 30 s
 
-- Encontre uma posição confortável. E deixe os olhos se fecharem.
-- Puxe o ar pelo nariz. E, ao soltar, deixe os ombros descerem.
-- Os sons de fora podem continuar. Só ajudam você a ficar aqui.
+- Encontre uma posição confortável. E deixe os olhos se fecharem, no seu tempo.
+- Puxe o ar pelo nariz. E, ao soltar, os ombros podem descer.
+- Cada som de fora pode ajudar você a ficar mais aqui.
 
 ### `triangulo-1.mp3` · O triângulo · até 150 s
 
 - Quem conduz é você. Pode abrir os olhos a qualquer momento.
-- Agora, na sua frente, você pode começar a imaginar um triângulo.
-- Um triângulo vermelho, brilhando, como fogo.
-- Talvez ele apareça nítido. Talvez só como uma ideia. Os dois jeitos funcionam.
+- Você já sabe imaginar. Faz isso todo dia, sem perceber.
+- Então, na sua frente, comece a imaginar um triângulo.
+- Vermelho, brilhando, quente como fogo.
+- Talvez você veja nítido. Talvez só sinta. Os dois jeitos funcionam.
 - Repare na ponta de cima. E nos dois cantos de baixo.
-- E, enquanto você olha, a respiração pode ir ficando mais lenta, sozinha.
-- Se um pensamento aparecer, tudo bem. Ele passa, e você volta para o triângulo.
-- Percorra as linhas com a atenção. Subindo de um lado, descendo do outro.
-- Cada volta pelas linhas deixa a mente um pouco mais quieta.
+- E, enquanto você olha, a respiração vai ficando mais lenta, sozinha.
+- Se um pensamento aparecer, ele pode passar. E você volta para o triângulo.
+- Percorra as linhas. Subindo de um lado, descendo do outro.
+- Cada volta deixa a mente mais quieta, e o corpo mais pesado.
+- Não sei se a calma chega primeiro nas mãos, ou no peito.
 - A vontade pode vir, e pode ir embora. O triângulo fica.
-- Veja o triângulo inteiro, de uma vez. Brilhando.
 - Se quiser guardar essa calma, junte o polegar e o indicador, e respire fundo.
 - Esse gesto fica com você, para quando a vontade aparecer.
-- Agora deixe a imagem ir sumindo, devagar.
-- Sinta o corpo, os pés no chão. Quando quiser, abra os olhos.
+- Agora deixe a imagem sumir, devagar. Sinta os pés no chão.
+- Quando quiser, abra os olhos.
 
 ## Luz pelo corpo (`pilar`)
 
@@ -136,15 +149,15 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 - Ela forma a última esfera, entre os pés e o chão.
 - Puxe o ar, e vibre.
 - *(vibrar 2 vezes, puxando o ar entre elas)* **A-do-nái Ra-A-rets**
-- Sinta os pés firmes no chão. Você está aqui, agora.
+- Os pés firmes no chão. Você está aqui, agora, inteiro.
 
 ### `pilar-5.mp3` · Corpo inteiro · até 60 s
 
 - Agora veja a coluna de luz inteira, da cabeça aos pés.
-- Ao soltar o ar, a luz desce pela frente do corpo. Ao puxar, ela sobe pelas costas.
+- Ao soltar o ar, a luz desce pela frente. Ao puxar, sobe pelas costas.
 - Deixe a luz envolver você, de cima a baixo.
 - Se quiser guardar essa calma, junte o polegar e o indicador.
-- Esse gesto fica com você.
+- Quando a vontade aparecer, esse gesto traz a luz de volta.
 - Agora deixe a imagem sumir, devagar. A calma fica.
 - Mexa os dedos. Quando quiser, abra os olhos.
 
@@ -157,7 +170,7 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `relaxar-1.mp3` · Solte, Pés e pernas · até 15 s
 
 - Solte. As pernas pesadas, quentes.
-- Respire. E deixe soltar mais um pouco.
+- Note a diferença. Solte mais um pouco.
 
 ### `relaxar-2.mp3` · Aperte, Barriga · até 5 s
 
@@ -166,7 +179,7 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `relaxar-3.mp3` · Solte, Barriga · até 15 s
 
 - Solte. A barriga macia, a respiração mais funda.
-- Respire. E deixe soltar mais um pouco.
+- Note a diferença. Solte mais um pouco.
 
 ### `relaxar-4.mp3` · Aperte, Mãos e braços · até 5 s
 
@@ -175,7 +188,7 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `relaxar-5.mp3` · Solte, Mãos e braços · até 15 s
 
 - Solte. As mãos abertas, os braços pesados.
-- Respire. E deixe soltar mais um pouco.
+- Note a diferença. Solte mais um pouco.
 
 ### `relaxar-6.mp3` · Aperte, Ombros · até 5 s
 
@@ -184,7 +197,7 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `relaxar-7.mp3` · Solte, Ombros · até 15 s
 
 - Solte. Os ombros descem, longe das orelhas.
-- Respire. E deixe soltar mais um pouco.
+- Note a diferença. Solte mais um pouco.
 
 ### `relaxar-8.mp3` · Aperte, Rosto · até 5 s
 
@@ -193,12 +206,12 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `relaxar-9.mp3` · Solte, Rosto · até 15 s
 
 - Solte. A testa lisa, o queixo solto.
-- Respire. E deixe soltar mais um pouco.
+- Note a diferença. Solte mais um pouco.
 
 ### `relaxar-10.mp3` · Corpo inteiro · até 30 s
 
 - Agora o corpo inteiro, pesado e solto.
-- Cada vez que o ar sai, você pode descer um pouco mais nessa calma.
+- Três. Dois. Um. A cada número, um pouco mais fundo nessa calma.
 - Fique o tempo que quiser. Quando quiser, volte devagar.
 
 ## Parar e respirar (`sober`)
@@ -214,7 +227,7 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 - Um aperto, calor, o coração rápido. Só repare.
 - Que emoção está aí? Raiva, tédio, tristeza?
 - E que pensamento está passando? Só repare, sem brigar.
-- Nada precisa mudar agora. Você só está olhando.
+- Nada precisa mudar. Só olhe, de mais longe.
 
 ### `sober-2.mp3` · Respire · até 60 s
 
@@ -237,4 +250,4 @@ própria, por isso entra só como linguagem, sem custo e dentro de práticas que
 ### `sober-4.mp3` · Escolha · até 25 s
 
 - Com mais calma, pergunte: qual é o próximo passo que cuida de você?
-- Pode ser pequeno. Imagine você fazendo ele agora.
+- Pode ser pequeno. Imagine você fazendo ele, e como fica a noite depois.

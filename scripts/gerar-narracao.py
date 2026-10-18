@@ -131,8 +131,12 @@ class AzureVoice:
 
         self.key = os.environ['AZURE_SPEECH_KEY']
         self.base = f"https://{os.environ['AZURE_SPEECH_REGION']}.tts.speech.microsoft.com/cognitiveservices"
-        self.voice = voice or self._best_voice()
-        print(f'voz: {self.voice}')
+        listed = {v['ShortName']: v for v in self.voices()}
+        self.voice = voice or self._best_voice(list(listed))
+        # Estilo calmo, quando a voz tem: soa como quem conduz um relaxamento, não como quem lê notícia.
+        styles = listed.get(self.voice, {}).get('StyleList', [])
+        self.style = next((st for st in ('calm', 'gentle', 'relaxed', 'empathetic') if st in styles), None)
+        print(f'voz: {self.voice}' + (f' (estilo {self.style})' if self.style else ''))
 
     def _get(self, path: str):
         import json
@@ -149,9 +153,8 @@ class AzureVoice:
             if v['Locale'] == 'pt-BR' or 'pt-BR' in v.get('SecondaryLocaleList', [])
         ]
 
-    def _best_voice(self) -> str:
+    def _best_voice(self, names: list[str]) -> str:
         """A mais natural que a região tiver: HD, depois multilíngue masculina, depois a Antonio."""
-        names = [v['ShortName'] for v in self.voices()]
         for want in ('pt-BR-Macerio:DragonHDLatestNeural', 'pt-BR-MacerioMultilingualNeural', 'pt-BR-AntonioNeural'):
             if want in names:
                 return want
@@ -160,14 +163,17 @@ class AzureVoice:
 
     def _ssml(self, inner: str) -> np.ndarray:
         import io
+        import urllib.error
         import urllib.request
 
+        body = f'<lang xml:lang="pt-BR">{inner}</lang>' if 'Multilingual' in self.voice or 'DragonHD' in self.voice else inner
+        if self.style:
+            body = f'<mstts:express-as style="{self.style}">{body}</mstts:express-as>'
         ssml = (
-            '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="pt-BR">'
-            f'<voice name="{self.voice}"><lang xml:lang="pt-BR">{inner}</lang></voice></speak>'
+            '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" '
+            'xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="pt-BR">'
+            f'<voice name="{self.voice}">{body}</voice></speak>'
         )
-        if 'Multilingual' not in self.voice and 'DragonHD' not in self.voice:
-            ssml = ssml.replace('<lang xml:lang="pt-BR">', '').replace('</lang>', '')
         req = urllib.request.Request(
             f'{self.base}/v1',
             data=ssml.encode('utf-8'),
@@ -178,8 +184,15 @@ class AzureVoice:
                 'User-Agent': 'rotina-magica-narracao',
             },
         )
-        with urllib.request.urlopen(req, timeout=60) as r:
-            audio, rate = sf.read(io.BytesIO(r.read()), dtype='float32')
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                audio, rate = sf.read(io.BytesIO(r.read()), dtype='float32')
+        except urllib.error.HTTPError as e:
+            if e.code != 400 or not self.style:
+                raise
+            print(f'estilo {self.style} recusado: segue sem estilo')
+            self.style = None
+            return self._ssml(inner)
         assert rate == SR
         return audio
 
@@ -296,6 +309,7 @@ def main():
     ap.add_argument('--voice', help='kokoro: pm_alex.bin (510 x 256 floats); azure: nome da voz (padrão: a mais natural da região)')
     ap.add_argument('--listar-vozes', action='store_true', help='azure: mostra as vozes em português e sai')
     ap.add_argument('--only', help='gera só os arquivos que começam assim (ex.: pilar)')
+    ap.add_argument('--extras', help='JSON de scripts/narracao-textos.ts: avisos curtos e passos das vivências')
     args = ap.parse_args()
     if args.engine == 'azure':
         k = AzureVoice(args.voice or ('pt-BR-AntonioNeural' if args.listar_vozes else None))
@@ -313,14 +327,27 @@ def main():
         if args.only and not file.startswith(args.only):
             continue
         a = master(render(k, seconds, guide), getattr(k, 'dry', False))
-        with tempfile.TemporaryDirectory() as d:
-            wav = Path(d, 'a.wav')
-            sf.write(wav, a, SR)
-            subprocess.run(
-                ['ffmpeg', '-v', 'error', '-y', '-i', wav, '-ac', '1', '-c:a', 'libmp3lame', '-q:a', '6', out_dir / file],
-                check=True,
-            )
+        save(a, out_dir / file)
         print(f'{file}: {len(a) / SR:.1f} s de {seconds} s')
+    if args.extras:
+        import json
+
+        items = json.loads(Path(args.extras).read_text(encoding='utf-8'))
+        audio = ROOT / 'public' / 'audio'
+        for item in items:
+            a = master(np.concatenate([silence(0.2), speak(k, item['text'], getattr(k, 'speed', SPEED))]), getattr(k, 'dry', False))
+            (audio / item['path']).parent.mkdir(parents=True, exist_ok=True)
+            save(a, audio / item['path'])
+        # O teste confere este índice contra o texto do app: mudou um passo, gere de novo.
+        (audio / 'textos.json').write_text(json.dumps(items, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+        print(f'{len(items)} avisos e passos das vivências')
+
+
+def save(a: np.ndarray, path: Path) -> None:
+    with tempfile.TemporaryDirectory() as d:
+        wav = Path(d, 'a.wav')
+        sf.write(wav, a, SR)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', wav, '-ac', '1', '-c:a', 'libmp3lame', '-q:a', '6', path], check=True)
 
 
 if __name__ == '__main__':
