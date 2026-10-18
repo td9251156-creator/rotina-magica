@@ -1,0 +1,44 @@
+name: Narração
+
+# Gera a narração das práticas com a voz do Azure e sobe num branch para revisão.
+# Só roda à mão (Actions → Narração → Run workflow). A chave fica no secret AZURE_SPEECH_KEY,
+# nunca no código nem no log; o Azure recebe só o texto do roteiro.
+on:
+  workflow_dispatch:
+    inputs:
+      voz:
+        description: 'Voz do Azure (vazio = a mais natural da região)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+      AZURE_SPEECH_REGION: brazilsouth
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install soundfile numpy
+      - name: Gerar
+        run: |
+          test -n "$AZURE_SPEECH_KEY" || { echo "Falta o secret AZURE_SPEECH_KEY"; exit 1; }
+          if [ -n "${{ inputs.voz }}" ]; then V="--voice ${{ inputs.voz }}"; fi
+          python scripts/gerar-narracao.py --engine azure $V
+      - name: Subir versão do cache
+        run: python -c "import re,pathlib;p=pathlib.Path('public/sw.js');s=p.read_text();p.write_text(re.sub(r\"rumo-v(\d+)\",lambda m:f'rumo-v{int(m[1])+1}',s,1))"
+      - name: Enviar para o branch narracao-azure
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b narracao-azure
+          git add public/audio/practices public/sw.js
+          git commit -m "troca a narração pela voz Azure"
+          git push -f origin narracao-azure
