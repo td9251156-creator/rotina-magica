@@ -29,3 +29,15 @@ export function formatRemaining(ms: number): string {
   const s = total % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+
+/** Ponto do pico na onda desenhada (fração dos 15 minutos). */
+export const WAVE_PEAK = 0.3;
+
+/**
+ * Altura da onda da vontade (0 a 1) no instante `t` (0 a 1 dos 15 minutos): sobe rápido, chega ao
+ * pico e desce devagar, como a vontade costuma fazer. É um desenho para dar horizonte, não uma medida.
+ */
+export function waveHeight(t: number): number {
+  const x = Math.min(1, Math.max(0, t)) / WAVE_PEAK;
+  return x ** 2 * Math.exp(2 * (1 - x));
+}

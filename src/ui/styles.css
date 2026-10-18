@@ -667,3 +667,13 @@ h1, h2 { color: var(--title); }
 .empty-state__moon { fill: var(--accent); opacity: 0.8; }
 .empty-state__page { fill: var(--raised); stroke: var(--border); }
 .empty-state__lines { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; opacity: 0.6; }
+.urge-wave { display: block; width: 100%; height: auto; margin: 4px 0 -4px; overflow: visible; }
+.urge-wave__line { fill: none; stroke: var(--border); stroke-width: 3; stroke-linecap: round; }
+.urge-wave__line--past { stroke: var(--accent); }
+.urge-wave__dot { fill: var(--title); stroke: var(--accent); stroke-width: 2; filter: drop-shadow(0 0 6px var(--accent)); transition: cx 1s linear, cy 1s linear; }
+.urge-wave text { fill: var(--muted); font-size: 11px; }
+.player__visual, .scene { height: min(290px, 34dvh); }
+.player__voice { padding: 8px 14px; font-size: 0.95em; }
+/* Na Ajuda agora a barra de baixo fica à vista: a prática encolhe para Parar e Terminei caberem na tela. */
+.sos-screen .player { min-height: 0; gap: 8px; }
+.sos-screen .player__visual, .sos-screen .scene { height: min(240px, 27dvh); }
