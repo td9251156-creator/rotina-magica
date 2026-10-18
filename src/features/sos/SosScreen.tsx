@@ -4,6 +4,7 @@ import type { GameId } from '@/domain/progression';
 import { toLocalDate } from '@/domain/dates';
 import { PRACTICES, type PracticeId } from '@/domain/routine';
 import { URGE_WAVE_MS, formatRemaining } from '@/domain/urge';
+import { UrgeWave } from './UrgeWave';
 import type { IconId } from '@/ui/app-icons';
 import { Chevron, Icon } from '@/ui/icons';
 import { navigate } from '@/router';
@@ -181,6 +182,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
       <button type="button" className="chip chip--help" onClick={() => document.getElementById('falar')?.scrollIntoView({ behavior: 'smooth' })}>
         Falar com alguém agora
       </button>
+      <UrgeWave progress={(now - waveStart) / URGE_WAVE_MS} />
       <p className="muted small">
         A vontade sobe, chega no pico e passa. {remaining > 0 ? `Fique comigo ${formatRemaining(remaining)}.` : 'O pico já passou.'}
       </p>

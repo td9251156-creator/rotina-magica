@@ -16,3 +16,15 @@ describe('urge', () => {
     expect(formatRemaining(-5)).toBe('0:00');
   });
 });
+
+import { WAVE_PEAK, waveHeight } from './urge';
+
+describe('onda da vontade', () => {
+  it('começa baixa, chega a 1 no pico e termina baixa', () => {
+    expect(waveHeight(0)).toBe(0);
+    expect(waveHeight(WAVE_PEAK)).toBeCloseTo(1);
+    expect(waveHeight(1)).toBeLessThan(0.3);
+    expect(waveHeight(WAVE_PEAK / 2)).toBeLessThan(waveHeight(WAVE_PEAK));
+    expect(waveHeight(0.6)).toBeGreaterThan(waveHeight(0.9));
+  });
+});
