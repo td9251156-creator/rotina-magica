@@ -3,6 +3,7 @@ import { useData } from '@/data/provider';
 import { BINAURAL_PRESETS, SAFETY_NOTE, type BinauralId } from '@/domain/binaural';
 import { canPlayBinaural, startBinaural, stopBinaural } from '@/platform/binaural';
 import { Screen } from '@/ui/Screen';
+import { SoundArt } from '@/ui/illustrations';
 
 /** Som que toca por baixo das práticas guiadas: o acorde de sempre ou uma faixa binaural. */
 export type AmbientSound = 'acorde' | Exclude<BinauralId, 'sono'>;
@@ -63,6 +64,7 @@ export function Sounds({ onBack }: { onBack: () => void }) {
         const on = playing?.id === p.id;
         return (
           <section key={p.id} className={`card sound${on ? ' sound--on' : ''}`}>
+            <SoundArt id={p.id} />
             <div className="sound__head">
               <h2>{p.title}</h2>
               <span className="muted small">{p.band}</span>

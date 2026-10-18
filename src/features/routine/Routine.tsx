@@ -16,6 +16,7 @@ import { MorningCard } from '../home/MorningCard';
 import { WeekChallengeCard } from '../home/WeekChallengeCard';
 import { vibrate } from '../games/record';
 import { StepIcon } from './StepIcon';
+import { SkyScene } from '@/ui/illustrations';
 
 const GREETING = {
   manha: 'Bom dia. Comece o dia no controle: poucos minutos fazem diferença.',
@@ -74,7 +75,8 @@ export function Routine() {
 
   return (
     <main className="screen screen--tabs">
-      <header className="hero">
+      <header className="hero hero--sky">
+        <SkyScene period={current} />
         <div className="hero__brand">
           <img className="hero__illustration" src={`${import.meta.env.BASE_URL}icons/logo.svg`} alt="" />
           <div>

@@ -17,6 +17,7 @@ import { GAME_ICON } from './icons';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 import { StoryGame } from './StoryGame';
 import { WaveGame } from './WaveGame';
+import { GameArt } from '@/ui/illustrations';
 
 export const HOW_TO: Record<GameId, string> = {
   blocos:
@@ -113,6 +114,7 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
           const plays = sessions.filter((s) => s.gameId === g).length;
           return (
             <button key={g} type="button" className={`tile tile--${g}`} onClick={() => onOpen(g)}>
+              <GameArt id={g} />
               <span className="tile__skill">
                 <span className="tile__icon" aria-hidden="true">
                   <Icon id={GAME_ICON[g]} />

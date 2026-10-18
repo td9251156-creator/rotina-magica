@@ -5,6 +5,7 @@ import { addDays, toLocalDate } from '@/domain/dates';
 import { navigate } from '@/router';
 import { Chip } from '@/ui/Chip';
 import { Screen } from '@/ui/Screen';
+import { SproutArt } from '@/ui/illustrations';
 
 type Step = 'when' | 'care' | 'questions' | 'adjust' | 'done';
 
@@ -44,6 +45,7 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
   if (step === 'when') {
     return (
       <Screen title="Registrar que usou" onBack={onDone}>
+        <SproutArt />
         <p className="muted">Sem julgamento. Isso é dado, não fracasso. Quando foi?</p>
         <div className="stack">
           <button type="button" className="option" onClick={() => log('agora')}>

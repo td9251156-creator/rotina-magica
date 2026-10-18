@@ -13,6 +13,7 @@ import { GameView } from '../games/Games';
 import { recordGame, type GameOutcome } from '../games/record';
 import { CRISIS_CONTACTS } from './defaults';
 import { readActions, readKit } from './kit';
+import { CalmSeaArt } from '@/ui/illustrations';
 
 const SOS_BLOCKS_MS = 3 * 60 * 1000;
 const CALL_SOMEONE = 'Oi! Tá podendo falar um pouquinho?';
@@ -134,6 +135,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
     const drop = before !== null && after !== null ? before - after : null;
     return (
       <main className="screen sos-screen">
+        <CalmSeaArt />
         <h1>Você atravessou a onda.</h1>
         {drop !== null && drop > 0 && (
           <p className="big">
@@ -159,7 +161,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
         <button type="button" className="option" onClick={() => (chosen?.startsWith('arma:') ? wield(weapon) : play(game))}>
           Mais uma rodada
         </button>
-        <button type="button" className="option" onClick={() => (record('passou'), setStage('passou'))}>
+        <button type="button" className="option" onClick={() => (record('passou'), setStage('passou'), window.scrollTo?.(0, 0))}>
           Passou
         </button>
       </div>
@@ -275,7 +277,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
 
       <h2>Como está agora?</h2>
       <div className="row">
-        <button type="button" className="option" onClick={() => (record('passou'), setStage('passou'))}>
+        <button type="button" className="option" onClick={() => (record('passou'), setStage('passou'), window.scrollTo?.(0, 0))}>
           Passou
         </button>
         <button

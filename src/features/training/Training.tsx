@@ -15,6 +15,7 @@ import { PracticePlayer } from '../routine/PracticePlayer';
 import { canSpeak, speak, stopSpeaking } from '@/platform/voice';
 import { playNarration, stopNarratedAudio } from '@/platform/narrated-audio';
 import { trainingFile } from '@/domain/narration';
+import { PathArt } from '@/ui/illustrations';
 
 const APPROACH_ICONS: Record<string, IconId> = {
   motivacao: 'ter_motivacao',
@@ -71,6 +72,7 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
 
   return (
     <Screen title="Terapias e vivências" onBack={onBack}>
+      <PathArt />
       <p className="muted">
         Exercícios curtos das terapias que mais ajudam quem quer parar. Faça com a cabeça tranquila: o que você escreve vira o
         seu kit na Ajuda agora.
