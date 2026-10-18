@@ -29,7 +29,8 @@ arquivos seguem o app.
   4. Ouça os arquivos em `public/audio/practices/`, suba `CACHE` em `public/sw.js` e abra um PR.
 
   O gerador escolhe sozinho a voz mais natural que a região tiver (HD, depois multilíngue, depois a Antonio)
-  e manda cada fala inteira num pedido só, sem mexer no tom nem pôr eco. Para comparar vozes:
+  e manda cada fase inteira num pedido só (pausas de até 5 s entre as falas, 0,7 s entre frases), sem mexer
+  no tom nem pôr eco: a voz respira e emenda como numa gravação contínua. Para comparar vozes:
   `python scripts/gerar-narracao.py --engine azure --listar-vozes` e depois
   `--voice NOME --only sober` (ex.: `pt-BR-ThalitaMultilingualNeural`, `pt-BR-FranciscaNeural`).
 - **Voz de gente:** grave as falas no celular (gravador de voz, num lugar quieto), uma gravação por arquivo da lista
