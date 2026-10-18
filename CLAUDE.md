@@ -59,16 +59,18 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-18 | Narração refeita: o gerador fala cada frase inteira, sem cortar pausas no meio e sem baixar o tom artificialmente (as duas coisas deixavam a voz travada e robótica), com reverberação de sala sintética; opção `--engine azure` (voz `pt-BR-AntonioNeural`, chave só no terminal) para quem quiser voz mais humana; falas reescritas em estilo de relaxamento guiado (hipnose ericksoniana permissiva, âncora e ensaio do futuro da PNL), com "quem conduz é você". `CACHE` subiu para `rumo-v2` | Pedido do autor: áudios "travados e robóticos", incluir PNL e hipnose. Hipnose e relaxamento guiado têm efeito moderado em ansiedade; PNL tem pouca evidência, então entra só como linguagem, barata e opcional. Azure é do mantenedor e só recebe o roteiro, nunca dados da pessoa |
 | 2026-10-18 | Narração com voz Azure gerada pelo workflow `narracao.yml` (só `workflow_dispatch`; chave no secret `AZURE_SPEECH_KEY`, nunca em código ou log): cada fase num pedido só, pausas de até 5 s, sem eco nem tom alterado; o gerador escolhe a voz mais natural da região. O workflow sobe `CACHE` e envia para o branch `narracao-azure`. Também narra os avisos das fases sem roteiro (`cues/`) e os passos das vivências (`training/`, `domain/narration.ts`; `textos.json` conferido por teste), com estilo "calm" quando a voz tem; falas com mais recursos de hipnose permissiva (concordância inicial, não saber, contagem, usar o que distrai) e PNL (âncora, ensaio do futuro) | Pedido do autor: voz menos "mecânica e de IA" e nada para ele rodar no PC. O Azure só recebe o texto do roteiro |
 | 2026-10-18 | Voz da narração: `pt-BR-ElzaNeural` (feminina), escolhida pelo autor entre 22 amostras (`public/amostras.html`, workflow `narracao.yml` com `amostras`), em velocidade natural. Para trocar, rodar o workflow com o campo `voz` | Pedido do autor: a voz antiga soava mecânica. Brazil South não tem vozes HD; se ainda soar artificial, o próximo passo é narração gravada por uma pessoa |
+| 2026-10-18 | "Sons para relaxar" (`#sons`, em Terapias e vivências › Observar sem obedecer): sons binaurais gerados no aparelho (`domain/binaural.ts`, `platform/binaural.ts`), um tom por ouvido, em três faixas: alfa 10 Hz (calma), teta 6 Hz e delta 3 Hz (sono), as duas últimas descendo devagar a partir de 10 Hz; chuva suave opcional (`binauralRain`) e fim que some sozinho. Também podem ser o som de fundo das práticas (`ambientSound`). Pede fone e avisa sobre epilepsia e direção | Pedido do autor. Evidência modesta (revisão de Garcia-Argibay 2019 na ansiedade; Jirakittayakorn e Wongsawat 2017 e 2018 para teta e sono), por isso fica opcional, sem promessa. Gerar na hora dá frequência exata e funciona offline; IA não melhora tom puro |
 | 2026-10-16 | Padrão de lembretes: 1 por dia, no fim do expediente | Maior risco é depois do trabalho, sozinho e entediado; a persona não soube dizer quantos tolera |
 
 ## Arquitetura
 ```
 index.html, src/main.tsx   entrada; registra o service worker (só em produção)
-src/App.tsx, src/router.ts navegação por hash + TabBar: '' (Hoje), #sos (Ajuda agora), #diario, #ajustes, #rotina/<passo>, #pensamento, #jogos[/id], #usei[/entender], #treino[/id], #lab, #ajustes, #primeiro-uso
+src/App.tsx, src/router.ts navegação por hash + TabBar: '' (Hoje), #sos (Ajuda agora), #diario, #ajustes, #rotina/<passo>, #pensamento, #jogos[/id], #usei[/entender], #treino[/id], #lab, #sons, #ajustes, #primeiro-uso
 src/domain/routine.ts      a rotina (Manhã/Tarde/Noite), práticas guiadas (fases com tempo), compromisso padrão
 src/domain/thinking.ts     armadilhas do pensamento (TCC), dicas do corpo, contagem
 src/domain/forecast.ts     Clima de hoje: previsão de risco com os dados do aparelho
 src/domain/challenges.ts   Desafio da semana: metas de prática contadas com os registros
+src/domain/binaural.ts     Sons para relaxar: faixas binaurais (alfa, teta, delta) e a descida da pulsação
 src/domain/narration.ts    narração além das práticas: avisos curtos (cues/) e passos das vivências (training/)
 src/domain/training.ts     exercícios (técnicas em passos); therapies.ts agrupa por terapia, com a base de cada uma
 src/domain/games/          motores puros dos jogos (blocos, mahjong=Pares, memory=Arcanos, symbols=planetas/signos/Árvore/tarô, swipe=Desvia, rebate, wave=Segura a onda, story=A noite) e rng com semente
@@ -79,7 +81,7 @@ src/data/                  repositories/types.ts (interfaces), repositories/loca
 src/platform/crypto.ts     PIN (PBKDF2) e cifra do backup (AES-GCM), via Web Crypto
 src/data/backup.ts, demo.ts backup com senha; dados de exemplo do modo ?demo
 src/ui/                    estilos (styles.css, tema noite e claro por variáveis), ícones (app-icons.ts + Icon em icons.tsx) e componentes compartilhados (Setting = ajuste que abre e fecha)
-src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome); voice.ts = voz das práticas; ambient.ts = som de fundo; narrated-audio.ts = MP3 gravado, se existir
+src/platform/install.ts    botão Instalar (guarda o beforeinstallprompt do Chrome); voice.ts = voz das práticas; ambient.ts = som de fundo; binaural.ts = sons binaurais; narrated-audio.ts = MP3 gravado, se existir
 public/                    manifest.webmanifest, sw.js (offline), ícones, illustrations/ (SVGs do primeiro uso e do Laboratório vazio, via `import.meta.env.BASE_URL`)
 .github/workflows/         ci.yml (PR), pages.yml (publica a cada push na main) e narracao.yml (gera a narração Azure, à mão); .github/dependabot.yml (mensal)
 docs/                      visao-produto.md, integracoes.md (regras para serviços externos), roteiro-narracao.md, apoio-financeiro.md, student-pack.md, img/ do README

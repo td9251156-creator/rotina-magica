@@ -8,7 +8,7 @@ import type { PracticeId } from './routine';
 export type TherapyItem =
   | { kind: 'tecnica'; id: string }
   | { kind: 'pratica'; id: PracticeId }
-  | { kind: 'atalho'; route: 'pensamento' | 'jogos'; param?: string; title: string; why: string };
+  | { kind: 'atalho'; route: 'pensamento' | 'jogos' | 'sons'; param?: string; title: string; why: string };
 
 export interface Approach {
   id: string;
@@ -61,7 +61,11 @@ export const APPROACHES: readonly Approach[] = [
     name: 'Atenção plena (mindfulness)',
     what: 'Notar a vontade, o corpo e os pensamentos sem brigar e sem obedecer. A onda passa.',
     evidence: 'A prevenção de recaída com atenção plena reduziu o uso de drogas num estudo de 2014 (Bowen e colegas).',
-    items: [{ kind: 'pratica', id: 'sober' }, { kind: 'atalho', route: 'jogos', param: 'onda', title: 'Segura a onda', why: 'Jogo de respirar devagar, no ritmo da onda.' }],
+    items: [
+      { kind: 'pratica', id: 'sober' },
+      { kind: 'atalho', route: 'jogos', param: 'onda', title: 'Segura a onda', why: 'Jogo de respirar devagar, no ritmo da onda.' },
+      { kind: 'atalho', route: 'sons', title: 'Sons para relaxar', why: 'Sons binaurais no fone: calma, relaxar fundo ou pegar no sono.' },
+    ],
   },
   {
     id: 'vontade',

@@ -235,6 +235,8 @@ export type SettingKey =
   | 'hardDay'
   | 'practiceVoice'
   | 'practiceAmbient'
+  | 'ambientSound'
+  | 'binauralRain'
   | 'riskReminder'
   | 'weekChallenge'
   | 'middayReminder';
