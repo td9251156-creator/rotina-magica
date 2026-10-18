@@ -1,0 +1,134 @@
+[
+ {
+  "voz": "pt-BR-AntonioNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-AntonioNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-BrendaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-BrendaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-DonatoNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-DonatoNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-ElzaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-ElzaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-FabioNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-FabioNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-FranciscaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-FranciscaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-GiovannaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-GiovannaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-HumbertoNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-HumbertoNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-JulioNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-JulioNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-LeilaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-LeilaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-LeticiaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-LeticiaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-MacerioMultilingualNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-MacerioMultilingualNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-ManuelaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-ManuelaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-NicolauNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-NicolauNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-ThalitaMultilingualNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-ThalitaMultilingualNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-ThalitaNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-ThalitaNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-ValerioNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-ValerioNeural.mp3"
+ },
+ {
+  "voz": "pt-BR-YaraNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "pt-BR-YaraNeural.mp3"
+ },
+ {
+  "voz": "en-US-AndrewMultilingualNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "en-US-AndrewMultilingualNeural.mp3"
+ },
+ {
+  "voz": "en-US-AvaMultilingualNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "en-US-AvaMultilingualNeural.mp3"
+ },
+ {
+  "voz": "en-US-BrianMultilingualNeural",
+  "genero": "Male",
+  "tipo": "Neural",
+  "arquivo": "en-US-BrianMultilingualNeural.mp3"
+ },
+ {
+  "voz": "en-US-EmmaMultilingualNeural",
+  "genero": "Female",
+  "tipo": "Neural",
+  "arquivo": "en-US-EmmaMultilingualNeural.mp3"
+ }
+]
