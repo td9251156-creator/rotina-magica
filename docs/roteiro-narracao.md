@@ -15,10 +15,38 @@ arquivos seguem o app.
   (os mesmos arquivos também vêm nos pacotes npm `kokoro-js` e `kokoro-fp32*-shards`).
 - **Gerar:** `pip install kokoro-onnx soundfile`, ffmpeg com rubberband e libmp3lame, e
   `python3 scripts/gerar-narracao.py --model model.onnx --voice pm_alex.bin` (`--only pilar` gera só uma prática).
-- **O que o script faz:** fala frase por frase, alarga as pausas das vírgulas, espalha as falas pela fase,
-  vibra os nomes (vogais longas esticadas três vezes, um pouco mais graves), deixa a voz mais grave com o
-  timbre preservado, põe um eco leve de sala e iguala o volume.
+- **O que o script faz:** fala cada frase inteira, sem cortar as pausas que a própria voz faz e sem mudar o tom
+  (os dois deixavam a fala travada e robótica), deixa cerca de 1 segundo entre frases, espalha as falas pela
+  fase, vibra os nomes (vogais longas esticadas de leve), põe uma reverberação de sala pequena e iguala o volume.
+- **Voz mais natural (Azure):** a voz `pt-BR-AntonioNeural` da Microsoft soa mais humana que o Kokoro em português.
+  Só o texto deste roteiro sai do computador; a licença do Azure permite publicar o áudio gerado. Passos:
+  1. Crie uma conta no [Azure for Students](https://azure.microsoft.com/free/students/) (vem no GitHub Student Pack,
+     sem cartão) e um recurso **Speech** (plano gratuito F0; o roteiro inteiro usa menos de 1% da cota do mês).
+  2. Copie a chave e a região do recurso (em "Keys and Endpoint"). Nunca coloque a chave em arquivo do repositório.
+  3. No terminal: `pip install soundfile numpy`, e então
+     `AZURE_SPEECH_KEY=sua-chave AZURE_SPEECH_REGION=brazilsouth python3 scripts/gerar-narracao.py --engine azure`
+     (no PowerShell: `$env:AZURE_SPEECH_KEY="sua-chave"; $env:AZURE_SPEECH_REGION="brazilsouth"` antes do comando).
+  4. Ouça os arquivos em `public/audio/practices/`, suba `CACHE` em `public/sw.js` e abra um PR.
+- **Voz de gente:** grave as falas no celular (gravador de voz, num lugar quieto), uma gravação por arquivo da lista
+  abaixo, seguindo "Como gravar". Quem mantém o app corta, iguala o volume e troca os arquivos.
 - **Trocou um arquivo?** Suba `CACHE` em `public/sw.js`: quem já ouviu guarda o áudio antigo no celular.
+
+## Linguagem das falas
+
+As falas usam recursos de relaxamento guiado e hipnose clínica (estilo permissivo, de Milton Erickson) e
+dois da PNL, sempre como jeito de falar, sem promessa de cura e com a pessoa no controle:
+
+- **Permissão, não ordem:** "você pode", "talvez", "quando quiser"; os dois jeitos de imaginar valem.
+- **Acompanhar e conduzir:** descrever o que já está acontecendo (os sons, o ar, os pés no chão) e só depois
+  sugerir o próximo passo ("e, enquanto você olha, a respiração pode ir ficando mais lenta").
+- **Aprofundar aos poucos:** cada volta, cada respiração "um pouco mais".
+- **Âncora (PNL):** juntar o polegar e o indicador no auge da calma, para usar o gesto quando a vontade vier.
+- **Ensaio do futuro (PNL):** imaginar o próximo passo já sendo feito.
+- **Segurança:** "quem conduz é você, pode abrir os olhos a qualquer momento"; toda prática termina trazendo
+  a pessoa de volta (mexer os dedos, abrir os olhos).
+
+Evidência: hipnose e relaxamento guiado têm efeito moderado em ansiedade e estresse; a PNL tem pouca evidência
+própria, por isso entra só como linguagem, sem custo e dentro de práticas que já têm base.
 
 ## Como gravar (medido nos áudios de referência)
 
@@ -36,36 +64,36 @@ arquivos seguem o app.
 
 ### `triangulo-0.mp3` · Feche os olhos · até 30 s
 
-- Sente-se com a coluna reta, os ombros soltos. Feche os olhos.
-- Puxe o ar fundo pelo nariz. E solte devagar.
-- Deixe os sons de fora em segundo plano.
+- Encontre uma posição confortável. E deixe os olhos se fecharem.
+- Puxe o ar pelo nariz. E, ao soltar, deixe os ombros descerem.
+- Os sons de fora podem continuar. Só ajudam você a ficar aqui.
 
 ### `triangulo-1.mp3` · O triângulo · até 150 s
 
-- Agora, na sua frente, imagine um triângulo.
+- Quem conduz é você. Pode abrir os olhos a qualquer momento.
+- Agora, na sua frente, você pode começar a imaginar um triângulo.
 - Um triângulo vermelho, brilhando, como fogo.
-- Veja a ponta de cima. E os dois cantos de baixo.
-- As linhas retas, firmes, cheias de luz.
-- Não precisa ficar perfeito. Só olhe para ele.
-- Repare na cor. Um vermelho vivo, quente.
-- Se um pensamento aparecer, tudo bem. Deixe passar, e volte para o triângulo.
+- Talvez ele apareça nítido. Talvez só como uma ideia. Os dois jeitos funcionam.
+- Repare na ponta de cima. E nos dois cantos de baixo.
+- E, enquanto você olha, a respiração pode ir ficando mais lenta, sozinha.
+- Se um pensamento aparecer, tudo bem. Ele passa, e você volta para o triângulo.
 - Percorra as linhas com a atenção. Subindo de um lado, descendo do outro.
-- Respire devagar. O triângulo continua ali.
+- Cada volta pelas linhas deixa a mente um pouco mais quieta.
 - A vontade pode vir, e pode ir embora. O triângulo fica.
-- Se a mente fugir, sem problema. É só voltar.
 - Veja o triângulo inteiro, de uma vez. Brilhando.
-- Fique com ele mais um pouco.
-- Agora deixe a imagem sumir, devagar.
+- Se quiser guardar essa calma, junte o polegar e o indicador, e respire fundo.
+- Esse gesto fica com você, para quando a vontade aparecer.
+- Agora deixe a imagem ir sumindo, devagar.
 - Sinta o corpo, os pés no chão. Quando quiser, abra os olhos.
 
 ## Luz pelo corpo (`pilar`)
 
 ### `pilar-0.mp3` · Alto da cabeça · até 60 s
 
-- De pé ou sentado, com a coluna reta. Feche os olhos.
+- De pé ou sentado, coluna reta. Deixe os olhos se fecharem.
 - Puxe o ar fundo. E solte devagar.
 - Agora imagine, logo acima da cabeça, uma esfera de luz branca.
-- Uma luz limpa, muito brilhante.
+- Talvez você veja, talvez só sinta.
 - Puxe o ar, e vibre o nome, sentindo a cabeça vibrar.
 - *(vibrar 3 vezes, puxando o ar entre elas)* **É-rei-iê**
 - A luz fica mais forte a cada vez.
@@ -74,7 +102,7 @@ arquivos seguem o app.
 
 - Agora a luz desce, como um raio, até a garganta.
 - Ali ela forma uma segunda esfera de luz.
-- Uma luz clara, brilhando no pescoço.
+- E, enquanto ela brilha, o pescoço pode ir se soltando.
 - Puxe o ar, e vibre.
 - *(vibrar 2 vezes, puxando o ar entre elas)* **Ie-o-vá E-lo-rím**
 - Sinta a garganta vibrar com o som.
@@ -82,7 +110,7 @@ arquivos seguem o app.
 ### `pilar-2.mp3` · Coração · até 60 s
 
 - A luz continua descendo, até o meio do peito.
-- Uma esfera quente, dourada, no lugar do coração.
+- Uma esfera quente, dourada. Cada respiração deixa o peito mais calmo.
 - Puxe o ar, e vibre.
 - *(vibrar 2 vezes, puxando o ar entre elas)* **Ie-o-vá E-lo-á Ve-da-át**
 - Sinta o calor se espalhar pelo peito.
@@ -91,7 +119,7 @@ arquivos seguem o app.
 
 - A luz desce mais, até logo abaixo do umbigo.
 - Uma esfera de luz, firme e tranquila.
-- Sinta essa luz bem no centro do corpo.
+- Você pode sentir essa luz bem no centro do corpo.
 - Puxe o ar, e vibre.
 - *(vibrar 2 vezes, puxando o ar entre elas)* **Xa-dái El Rái**
 - A barriga firme, a respiração calma.
@@ -109,7 +137,8 @@ arquivos seguem o app.
 - Agora veja a coluna de luz inteira, da cabeça aos pés.
 - Ao soltar o ar, a luz desce pela frente do corpo. Ao puxar, ela sobe pelas costas.
 - Deixe a luz envolver você, de cima a baixo.
-- Calma e firmeza, da cabeça aos pés.
+- Se quiser guardar essa calma, junte o polegar e o indicador.
+- Esse gesto fica com você.
 - Agora deixe a imagem sumir, devagar. A calma fica.
 - Mexa os dedos. Quando quiser, abra os olhos.
 
@@ -130,7 +159,7 @@ arquivos seguem o app.
 
 ### `relaxar-3.mp3` · Solte, Barriga · até 15 s
 
-- Solte. A barriga mole, a respiração mais funda.
+- Solte. A barriga macia, a respiração mais funda.
 - Respire. E deixe soltar mais um pouco.
 
 ### `relaxar-4.mp3` · Aperte, Mãos e braços · até 5 s
@@ -162,16 +191,16 @@ arquivos seguem o app.
 
 ### `relaxar-10.mp3` · Corpo inteiro · até 30 s
 
-- Agora o corpo inteiro. Respire devagar.
-- Cada vez que o ar sai, você solta mais um pouco.
-- Fique assim, pesado e solto. Quando quiser, volte devagar.
+- Agora o corpo inteiro, pesado e solto.
+- Cada vez que o ar sai, você pode descer um pouco mais nessa calma.
+- Fique o tempo que quiser. Quando quiser, volte devagar.
 
 ## Parar e respirar (`sober`)
 
 ### `sober-0.mp3` · Pare · até 10 s
 
-- Pare o que está fazendo.
-- Se der, feche os olhos.
+- Pare um instante.
+- Se der, deixe os olhos se fecharem.
 
 ### `sober-1.mp3` · Observe · até 45 s
 
@@ -202,4 +231,4 @@ arquivos seguem o app.
 ### `sober-4.mp3` · Escolha · até 25 s
 
 - Com mais calma, pergunte: qual é o próximo passo que cuida de você?
-- Pode ser pequeno. Um copo de água, uma mensagem, sair dali.
+- Pode ser pequeno. Imagine você fazendo ele agora.

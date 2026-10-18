@@ -1,7 +1,7 @@
 // Service worker do Rumo: guarda o app no celular para abrir sem internet.
 // Estratégia: rede primeiro para a página (pega versão nova quando há conexão), cache para o resto.
 // Os dados da pessoa NÃO passam por aqui: ficam no armazenamento local do navegador.
-const CACHE = 'rumo-v1';
+const CACHE = 'rumo-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
