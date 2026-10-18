@@ -115,14 +115,46 @@ class KokoroVoice:
 class AzureVoice:
     """Voz neural da Microsoft (Azure Speech), mais natural em português. Só o texto do roteiro sai do
     computador. Precisa de AZURE_SPEECH_KEY e AZURE_SPEECH_REGION (nunca no repositório); o plano gratuito
-    F0 e o Azure for Students cobrem este roteiro com folga. Ver docs/roteiro-narracao.md."""
+    F0 e o Azure for Students cobrem este roteiro com folga. Ver docs/roteiro-narracao.md.
 
-    def __init__(self, voice: str):
+    Cada fala vai inteira num pedido só, com as pausas dentro do SSML: a voz mantém a entonação de uma
+    frase para a outra, como uma pessoa lendo. Sem mudar o tom, sem esticar e sem eco artificial, que é o
+    que denuncia a voz de IA."""
+
+    speed = 0.94  # um pouco mais devagar que a fala normal; mais lento que isso soa arrastado
+    dry = True  # a voz já sai limpa de estúdio: sem reverberação nem equalização
+
+    def __init__(self, voice: str | None):
         import os
 
-        self.voice = voice
         self.key = os.environ['AZURE_SPEECH_KEY']
-        self.url = f"https://{os.environ['AZURE_SPEECH_REGION']}.tts.speech.microsoft.com/cognitiveservices/v1"
+        self.base = f"https://{os.environ['AZURE_SPEECH_REGION']}.tts.speech.microsoft.com/cognitiveservices"
+        self.voice = voice or self._best_voice()
+        print(f'voz: {self.voice}')
+
+    def _get(self, path: str):
+        import json
+        import urllib.request
+
+        req = urllib.request.Request(f'{self.base}/{path}', headers={'Ocp-Apim-Subscription-Key': self.key})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.load(r)
+
+    def voices(self) -> list[dict]:
+        """Vozes que falam português do Brasil nesta região (as multilíngues também)."""
+        return [
+            v for v in self._get('voices/list')
+            if v['Locale'] == 'pt-BR' or 'pt-BR' in v.get('SecondaryLocaleList', [])
+        ]
+
+    def _best_voice(self) -> str:
+        """A mais natural que a região tiver: HD, depois multilíngue masculina, depois a Antonio."""
+        names = [v['ShortName'] for v in self.voices()]
+        for want in ('pt-BR-Macerio:DragonHDLatestNeural', 'pt-BR-MacerioMultilingualNeural', 'pt-BR-AntonioNeural'):
+            if want in names:
+                return want
+        hd = [n for n in names if 'DragonHD' in n]
+        return hd[0] if hd else 'pt-BR-AntonioNeural'
 
     def _ssml(self, inner: str) -> np.ndarray:
         import io
@@ -130,10 +162,12 @@ class AzureVoice:
 
         ssml = (
             '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="pt-BR">'
-            f'<voice name="{self.voice}">{inner}</voice></speak>'
+            f'<voice name="{self.voice}"><lang xml:lang="pt-BR">{inner}</lang></voice></speak>'
         )
+        if 'Multilingual' not in self.voice and 'DragonHD' not in self.voice:
+            ssml = ssml.replace('<lang xml:lang="pt-BR">', '').replace('</lang>', '')
         req = urllib.request.Request(
-            self.url,
+            f'{self.base}/v1',
             data=ssml.encode('utf-8'),
             headers={
                 'Ocp-Apim-Subscription-Key': self.key,
@@ -147,24 +181,26 @@ class AzureVoice:
         assert rate == SR
         return audio
 
-    def say(self, sentence: str, speed: float) -> np.ndarray:
+    def say_block(self, text: str, speed: float) -> np.ndarray:
         from xml.sax.saxutils import escape
 
-        # Pausa de quem guia uma meditação nas vírgulas; o resto da entonação é da própria voz.
-        text = escape(sentence).replace(', ', ', <break time="450ms"/>')
-        return self._ssml(f'<prosody rate="{round((speed - 1) * 100)}%" pitch="-4%">{text}</prosody>')
+        sentences = [escape(s.strip()) for s in re.findall(r'[^.!?:]+[.!?:]*', text) if s.strip()]
+        body = f' <break time="{int(SENTENCE_S * 1000)}ms"/> '.join(sentences)
+        return self._ssml(f'<prosody rate="{round((speed - 1) * 100)}%">{body}</prosody>')
 
     def name(self, name: str) -> np.ndarray:
         import urllib.error
 
         try:
             inner = f'<phoneme alphabet="ipa" ph="{NAMES[name]}">{name}</phoneme>'
-            return self._ssml(f'<prosody rate="-45%" pitch="-6%">{inner}</prosody>')
+            return self._ssml(f'<prosody rate="-40%">{inner}</prosody>')
         except urllib.error.HTTPError:  # fonema recusado: fala as sílabas como estão escritas
-            return self._ssml(f'<prosody rate="-45%" pitch="-6%">{name.replace("-", " ")}</prosody>')
+            return self._ssml(f'<prosody rate="-40%">{name.replace("-", " ")}</prosody>')
 
 
 def speak(v, text: str, speed: float) -> np.ndarray:
+    if hasattr(v, 'say_block'):
+        return fade(trim(v.say_block(text, speed)))
     sentences = [s.strip() for s in re.findall(r'[^.!?:]+[.!?:]*', text) if s.strip()]
     parts = []
     for s in sentences:
@@ -173,13 +209,17 @@ def speak(v, text: str, speed: float) -> np.ndarray:
 
 
 def intone(v, name: str, times: int) -> np.ndarray:
+    if getattr(v, 'dry', False):  # a voz do Azure já alonga o nome; esticar por cima soa metálico
+        long = fade(trim(v.name(name)))
+        return np.concatenate(sum(([long, silence(INHALE_S)] for _ in range(times)), [])[:-1])
     # Esticar as vogais e um vibrato leve dão a sensação de som sustentado e vibrando.
     long = fade(ffmpeg_filter(trim(v.name(name)), f'rubberband=tempo={1 / NAME_STRETCH}:formant=preserved:transients=smooth:detector=soft:window=long,vibrato=f=5:d=0.02'))
     return np.concatenate(sum(([long, silence(INHALE_S)] for _ in range(times)), [])[:-1])
 
 
 def render(k, seconds: int, guide) -> np.ndarray:
-    for speed in (SPEED, SPEED + 0.05, SPEED + 0.1):
+    base = getattr(k, 'speed', SPEED)
+    for speed in (base, base + 0.04, base + 0.08):
         blocks = [intone(k, g[1], g[2]) if isinstance(g, tuple) else speak(k, g, speed) for g in guide]
         speech = sum(len(b) for b in blocks) / SR
         room = seconds * FILL - LEAD_S - speech
@@ -207,8 +247,9 @@ def room(a: np.ndarray, seconds: float = 1.1, wet: float = 0.16) -> np.ndarray:
     return a + wet * tail
 
 
-def master(a: np.ndarray) -> np.ndarray:
-    a = ffmpeg_filter(room(a), 'highpass=f=70,equalizer=f=180:t=q:w=1:g=2,equalizer=f=6500:t=q:w=1.5:g=-3')
+def master(a: np.ndarray, dry: bool = False) -> np.ndarray:
+    if not dry:
+        a = ffmpeg_filter(room(a), 'highpass=f=70,equalizer=f=180:t=q:w=1:g=2,equalizer=f=6500:t=q:w=1.5:g=-3')
     voiced = a[np.abs(a) > 0.01]
     rms = np.sqrt(np.mean(voiced**2)) if len(voiced) else 1
     a = a * (10 ** (-20 / 20) / rms)  # fala em torno de -20 dBFS
@@ -220,11 +261,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--engine', choices=['kokoro', 'azure'], default='kokoro')
     ap.add_argument('--model', help='kokoro: model.onnx')
-    ap.add_argument('--voice', help='kokoro: pm_alex.bin (510 x 256 floats); azure: nome da voz (padrão pt-BR-AntonioNeural)')
+    ap.add_argument('--voice', help='kokoro: pm_alex.bin (510 x 256 floats); azure: nome da voz (padrão: a mais natural da região)')
+    ap.add_argument('--listar-vozes', action='store_true', help='azure: mostra as vozes em português e sai')
     ap.add_argument('--only', help='gera só os arquivos que começam assim (ex.: pilar)')
     args = ap.parse_args()
     if args.engine == 'azure':
-        k = AzureVoice(args.voice or 'pt-BR-AntonioNeural')
+        k = AzureVoice(args.voice or ('pt-BR-AntonioNeural' if args.listar_vozes else None))
+        if args.listar_vozes:
+            for v in k.voices():
+                print(v['ShortName'], v['Gender'], v.get('VoiceType', ''), ','.join(v.get('StyleList', [])))
+            return
     else:
         if not (args.model and args.voice):
             ap.error('kokoro precisa de --model e --voice')
@@ -234,7 +280,7 @@ def main():
     for file, seconds, guide in parse_script((ROOT / 'docs' / 'roteiro-narracao.md').read_text(encoding='utf-8')):
         if args.only and not file.startswith(args.only):
             continue
-        a = master(render(k, seconds, guide))
+        a = master(render(k, seconds, guide), getattr(k, 'dry', False))
         with tempfile.TemporaryDirectory() as d:
             wav = Path(d, 'a.wav')
             sf.write(wav, a, SR)
