@@ -123,6 +123,8 @@ class AzureVoice:
 
     speed = 0.94  # um pouco mais devagar que a fala normal; mais lento que isso soa arrastado
     dry = True  # a voz já sai limpa de estúdio: sem reverberação nem equalização
+    sentence_s = 0.7  # entre frases da mesma fala: a voz emenda como quem conversa
+    max_gap_s = 5.0  # entre falas: pausas longas demais quebram o fio
 
     def __init__(self, voice: str | None):
         import os
@@ -182,11 +184,31 @@ class AzureVoice:
         return audio
 
     def say_block(self, text: str, speed: float) -> np.ndarray:
+        return self._ssml(self._fala(text, speed))
+
+    def _fala(self, text: str, speed: float) -> str:
         from xml.sax.saxutils import escape
 
         sentences = [escape(s.strip()) for s in re.findall(r'[^.!?:]+[.!?:]*', text) if s.strip()]
-        body = f' <break time="{int(SENTENCE_S * 1000)}ms"/> '.join(sentences)
-        return self._ssml(f'<prosody rate="{round((speed - 1) * 100)}%">{body}</prosody>')
+        body = f' {pause(self.sentence_s)} '.join(sentences)
+        return f'<prosody rate="{round((speed - 1) * 100)}%">{body}</prosody>'
+
+    def _nome(self, name: str, times: int, ipa: bool) -> str:
+        said = f'<phoneme alphabet="ipa" ph="{NAMES[name]}">{name}</phoneme>' if ipa else name.replace('-', ' ')
+        return f' {pause(INHALE_S)} '.join([f'<prosody rate="-40%">{said}</prosody>'] * times)
+
+    def say_phase(self, guide, gap: float, speed: float) -> np.ndarray:
+        """A fase inteira num áudio só: a voz respira entre as falas como numa gravação contínua."""
+        import urllib.error
+
+        def ssml(ipa: bool) -> str:
+            parts = [self._nome(g[1], g[2], ipa) if isinstance(g, tuple) else self._fala(g, speed) for g in guide]
+            return f' {pause(gap)} '.join(parts)
+
+        try:
+            return self._ssml(ssml(True))
+        except urllib.error.HTTPError:  # fonema recusado: fala as sílabas como estão escritas
+            return self._ssml(ssml(False))
 
     def name(self, name: str) -> np.ndarray:
         import urllib.error
@@ -196,6 +218,12 @@ class AzureVoice:
             return self._ssml(f'<prosody rate="-40%">{inner}</prosody>')
         except urllib.error.HTTPError:  # fonema recusado: fala as sílabas como estão escritas
             return self._ssml(f'<prosody rate="-40%">{name.replace("-", " ")}</prosody>')
+
+
+def pause(seconds: float) -> str:
+    """Pausa em SSML (o Azure aceita até 5 s por pausa, então as maiores viram várias)."""
+    ms = int(seconds * 1000)
+    return ' '.join(f'<break time="{min(5000, ms - i)}ms"/>' for i in range(0, ms, 5000)) if ms > 0 else ''
 
 
 def speak(v, text: str, speed: float) -> np.ndarray:
@@ -225,9 +253,13 @@ def render(k, seconds: int, guide) -> np.ndarray:
         room = seconds * FILL - LEAD_S - speech
         if room >= MIN_GAP_S * (len(blocks) - 1):
             break
-    gap = min(MAX_GAP_S, room / max(1, len(blocks) - 1)) if len(blocks) > 1 else 0
+    gap = min(getattr(k, 'max_gap_s', MAX_GAP_S), room / max(1, len(blocks) - 1)) if len(blocks) > 1 else 0
     if room < MIN_GAP_S * (len(blocks) - 1):
         raise SystemExit(f'Fala longa demais para {seconds} s: encurte o roteiro')
+    if hasattr(k, 'say_phase'):
+        whole = np.concatenate([silence(LEAD_S), fade(trim(k.say_phase(guide, gap, speed)))])
+        if len(whole) / SR <= seconds * FILL:
+            return whole
     out = [silence(LEAD_S)]
     for b in blocks:
         out += [b, silence(gap)]
