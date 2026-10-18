@@ -46,7 +46,7 @@
 - Lembretes extras não são ativados automaticamente: a pessoa baixa e importa o arquivo se quiser.
 - A voz dos exercícios reutiliza `practiceVoice`, fica desligada por padrão e não envia texto para fora do aparelho.
 - A melhoria visual usa apenas `public/icons/logo.svg` e ícones locais já existentes; nenhum asset externo ou dependência nova foi adicionado.
-- As ilustrações adaptadas são SVGs estáticos em `public/illustrations`, sem serviço externo, tracking ou dados pessoais.
+- As ilustrações adaptadas são SVGs estáticos em `public/illustrations`, sem serviço externo, tracking ou dados pessoais; as referências usam `import.meta.env.BASE_URL` para funcionar sob o subcaminho do GitHub Pages.
 
 ## Perguntas em aberto
 
