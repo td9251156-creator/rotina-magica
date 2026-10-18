@@ -249,10 +249,11 @@ export function TrainingSession({ id, onDone, onMore, onBack }: { id: string; on
           className="player__voice"
           aria-pressed={voice}
           onClick={() => {
+            // Ao ligar, quem fala é o efeito do passo; falar aqui também tocava duas vozes juntas.
             if (voice) {
               stopSpeaking();
               stopNarratedAudio();
-            } else say(technique.id, i, step.text);
+            }
             write((r) => r.settings.set('practiceVoice', !voice));
           }}
         >
