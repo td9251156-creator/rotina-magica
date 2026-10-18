@@ -121,7 +121,7 @@ class AzureVoice:
     frase para a outra, como uma pessoa lendo. Sem mudar o tom, sem esticar e sem eco artificial, que é o
     que denuncia a voz de IA."""
 
-    speed = 0.94  # um pouco mais devagar que a fala normal; mais lento que isso soa arrastado
+    speed = 1.0  # no ritmo natural da voz: desacelerar com prosody deixa a fala arrastada e artificial
     dry = True  # a voz já sai limpa de estúdio: sem reverberação nem equalização
     sentence_s = 0.7  # entre frases da mesma fala: a voz emenda como quem conversa
     max_gap_s = 5.0  # entre falas: pausas longas demais quebram o fio
@@ -131,10 +131,13 @@ class AzureVoice:
 
         self.key = os.environ['AZURE_SPEECH_KEY']
         self.base = f"https://{os.environ['AZURE_SPEECH_REGION']}.tts.speech.microsoft.com/cognitiveservices"
-        listed = {v['ShortName']: v for v in self.voices()}
-        self.voice = voice or self._best_voice(list(listed))
+        self.listed = {v['ShortName']: v for v in self.voices()}
+        self.use(voice or self._best_voice(list(self.listed)))
+
+    def use(self, voice: str) -> None:
+        self.voice = voice
         # Estilo calmo, quando a voz tem: soa como quem conduz um relaxamento, não como quem lê notícia.
-        styles = listed.get(self.voice, {}).get('StyleList', [])
+        styles = self.listed.get(voice, {}).get('StyleList', [])
         self.style = next((st for st in ('calm', 'gentle', 'relaxed', 'empathetic') if st in styles), None)
         print(f'voz: {self.voice}' + (f' (estilo {self.style})' if self.style else ''))
 
@@ -309,6 +312,7 @@ def main():
     ap.add_argument('--voice', help='kokoro: pm_alex.bin (510 x 256 floats); azure: nome da voz (padrão: a mais natural da região)')
     ap.add_argument('--listar-vozes', action='store_true', help='azure: mostra as vozes em português e sai')
     ap.add_argument('--only', help='gera só os arquivos que começam assim (ex.: pilar)')
+    ap.add_argument('--amostras', action='store_true', help='azure: um trecho com cada voz em português, para comparar')
     ap.add_argument('--extras', help='JSON de scripts/narracao-textos.ts: avisos curtos e passos das vivências')
     args = ap.parse_args()
     if args.engine == 'azure':
@@ -321,6 +325,8 @@ def main():
         if not (args.model and args.voice):
             ap.error('kokoro precisa de --model e --voice')
         k = KokoroVoice(args.model, args.voice)
+    if args.amostras:
+        return amostras(k)
     out_dir = ROOT / 'public' / 'audio' / 'practices'
     out_dir.mkdir(parents=True, exist_ok=True)
     for file, seconds, guide in parse_script((ROOT / 'docs' / 'roteiro-narracao.md').read_text(encoding='utf-8')):
@@ -341,6 +347,37 @@ def main():
         # O teste confere este índice contra o texto do app: mudou um passo, gere de novo.
         (audio / 'textos.json').write_text(json.dumps(items, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
         print(f'{len(items)} avisos e passos das vivências')
+
+
+AMOSTRA = [
+    'Encontre uma posição confortável. E deixe os olhos se fecharem, no seu tempo.',
+    'Puxe o ar pelo nariz. E, ao soltar, os ombros podem descer.',
+    'Você já sabe imaginar. Faz isso todo dia, sem perceber.',
+    'Não sei se a calma chega primeiro nas mãos, ou no peito.',
+]
+
+
+def amostras(k) -> None:
+    """O mesmo trecho com cada voz que fala português nesta região, para escolher ouvindo
+    (public/amostras.html). Vozes nativas primeiro, depois as multilíngues."""
+    import json
+
+    out = ROOT / 'public' / 'audio' / 'amostras'
+    out.mkdir(parents=True, exist_ok=True)
+    voices = sorted(k.listed.values(), key=lambda v: (v['Locale'] != 'pt-BR', 'DragonHD' not in v['ShortName'], v['ShortName']))
+    index = []
+    for v in voices[:24]:
+        try:
+            k.use(v['ShortName'])
+            a = master(np.concatenate([silence(0.3), fade(trim(k.say_phase(AMOSTRA, 2.0, k.speed)))]), True)
+        except Exception as e:  # voz que a região lista mas não sintetiza: pula
+            print(f"{v['ShortName']}: {e}")
+            continue
+        file = f"{v['ShortName'].replace(':', '-')}.mp3"
+        save(a, out / file)
+        index.append({'voz': v['ShortName'], 'genero': v.get('Gender', ''), 'tipo': v.get('VoiceType', ''), 'arquivo': file})
+    (out / 'index.json').write_text(json.dumps(index, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    print(f'{len(index)} amostras')
 
 
 def save(a: np.ndarray, path: Path) -> None:
