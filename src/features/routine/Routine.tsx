@@ -76,7 +76,7 @@ export function Routine() {
     <main className="screen screen--tabs">
       <header className="hero">
         <div className="hero__brand">
-          <img className="hero__illustration" src="/icons/logo.svg" alt="" />
+          <img className="hero__illustration" src={`${import.meta.env.BASE_URL}icons/logo.svg`} alt="" />
           <div>
             <p className="eyebrow">{dateLabel}</p>
             <h1>Rotina Mágica</h1>

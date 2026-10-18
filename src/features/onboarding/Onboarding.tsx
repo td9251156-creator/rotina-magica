@@ -56,7 +56,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       {step === 0 && (
         <section>
-          <img className="welcome-illustration" src="/illustrations/welcome.svg" alt="Um novo começo, com um caminho iluminado" />
+          <img className="welcome-illustration" src={`${import.meta.env.BASE_URL}illustrations/welcome.svg`} alt="Um novo começo, com um caminho iluminado" />
           <h1>Que horas você costuma sair do trabalho?</h1>
           <p className="muted">É a hora em que o app vai te ajudar a decidir a noite.</p>
           <div className="chips">

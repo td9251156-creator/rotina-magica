@@ -181,7 +181,7 @@ export function Lab({ onBack }: { onBack: () => void }) {
 
       {empty && (
         <section className="card lab-empty">
-          <img src="/illustrations/laboratory.svg" alt="" />
+          <img src={`${import.meta.env.BASE_URL}illustrations/laboratory.svg`} alt="" />
           <p className="muted">
             Ainda não há dados suficientes. Escolha o plano da noite e, no dia seguinte, conte como foi: em poucos dias aparece
             o que funciona para você.
