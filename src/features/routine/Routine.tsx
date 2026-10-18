@@ -75,9 +75,14 @@ export function Routine() {
   return (
     <main className="screen screen--tabs">
       <header className="hero">
-        <p className="eyebrow">{dateLabel}</p>
-        <h1>Rotina Mágica</h1>
-        <p className="tagline">Retome o controle da sua vida, um dia de cada vez.</p>
+        <div className="hero__brand">
+          <img className="hero__illustration" src="/icons/logo.svg" alt="" />
+          <div>
+            <p className="eyebrow">{dateLabel}</p>
+            <h1>Rotina Mágica</h1>
+            <p className="tagline">Retome o controle da sua vida, um dia de cada vez.</p>
+          </div>
+        </div>
       </header>
 
       <section className="today" aria-label="Progresso">
@@ -142,13 +147,16 @@ export function Routine() {
       <MorningCard />
 
       <button type="button" className="sos" onClick={() => navigate('sos')}>
-        Bateu vontade?
-        <span>Ajuda agora</span>
+        <span className="sos__main">
+          <Icon id="aba_ajuda" />
+          <span>Bateu vontade?</span>
+        </span>
+        <span>Ajuda agora · abrir em um toque</span>
       </button>
 
       {next && (
         <button type="button" className="next" onClick={() => openStep(next)}>
-          <span className="eyebrow">Próximo passo · {next.minutes} min</span>
+          <span className="eyebrow">Seu próximo passo · {next.minutes} min</span>
           <span className="next__row">
             <span className="item__icon">
               <StepIcon step={next} />

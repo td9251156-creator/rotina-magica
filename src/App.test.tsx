@@ -17,6 +17,7 @@ function setup(repos = createTestRepositories()) {
 describe('Rumo', () => {
   it('primeiro uso gera planos de noite e leva para a noite de hoje', async () => {
     const { repos, user } = setup();
+    expect(screen.getByRole('img', { name: 'Um novo começo, com um caminho iluminado' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '18:00' }));
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.click(screen.getByRole('button', { name: 'Ver amigos ou família' }));

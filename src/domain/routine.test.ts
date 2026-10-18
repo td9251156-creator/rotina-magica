@@ -112,7 +112,7 @@ describe('rotina', () => {
         expected.push('');
       });
     }
-    const md = readFileSync('docs/roteiro-narracao.md', 'utf8');
+    const md = readFileSync('docs/roteiro-narracao.md', 'utf8').replace(/\r\n/g, '\n');
     const body = md.slice(md.search(/^## .*\(`\w+`\)$/m));
     expect(body.trim()).toBe(expected.join('\n').trim());
     expect(narratedFiles()).toEqual(files);
