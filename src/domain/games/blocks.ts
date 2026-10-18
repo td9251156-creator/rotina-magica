@@ -80,6 +80,8 @@ export interface BlocksState {
   score: number;
   lines: number;
   level: number;
+  /** Nível de partida (modo rápido começa mais alto); sobe um a cada 10 linhas. */
+  startLevel: number;
   /** Sequência atual de peças que limparam linha; -1 quando não há. */
   combo: number;
   /** A última limpeza foi de quatro linhas (vale bônus se vier outra). */
@@ -148,7 +150,7 @@ function fillQueue(queue: PieceType[], bag: PieceType[], rng: Rng): { queue: Pie
   return { queue: out, bag: rest };
 }
 
-export function newGame(seed: number): BlocksState {
+export function newGame(seed: number, startLevel = 1): BlocksState {
   const rng = createRng(seed);
   const first = takeNext([], rng);
   const { queue, bag } = fillQueue([], first.bag, rng);
@@ -161,7 +163,8 @@ export function newGame(seed: number): BlocksState {
     canHold: true,
     score: 0,
     lines: 0,
-    level: 1,
+    level: startLevel,
+    startLevel,
     combo: -1,
     lastWasTetris: false,
     locks: 0,
@@ -204,7 +207,7 @@ function lock(s: BlocksState, endless: boolean): BlocksState {
   }
   const { board: clearedBoard, cleared } = clearLines(board);
   const lines = s.lines + cleared;
-  const level = 1 + Math.floor(lines / 10);
+  const level = s.startLevel + Math.floor(lines / 10);
   const combo = cleared ? s.combo + 1 : -1;
   const backToBack = cleared === 4 && s.lastWasTetris;
   const points = clearPoints(cleared, s.level, combo, backToBack);

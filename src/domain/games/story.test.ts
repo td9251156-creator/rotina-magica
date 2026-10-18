@@ -1,5 +1,6 @@
 import { createRng } from './rng';
-import { MAX_URGE, START_URGE, buildStory, choose, ending, isOver, startStory, storyScore, turningPoint } from './story';
+import { TRIGGERS } from '../routine';
+import { MAX_URGE, START_URGE, TRIGGER_SCENES, buildStory, choose, commonTrigger, ending, isOver, provenCoping, startStory, storyScore, turningPoint, urgeHour } from './story';
 
 describe('A noite (história)', () => {
   it('monta 5 cenas, sempre iguais para a mesma semente', () => {
@@ -44,5 +45,61 @@ describe('A noite (história)', () => {
     expect(turningPoint(s)?.delta).toBeGreaterThanOrEqual(2);
     expect(turningPoint(s)?.plan).toMatch(/^Se .+, então .+/);
     expect(storyScore(s)).toBe(0);
+  });
+});
+
+describe('A noite aprende com os registros', () => {
+  it('troca a cena da vontade pela do gatilho da pessoa, na hora de pico', () => {
+    for (let seed = 0; seed < 6; seed++) {
+      const scenes = buildStory(createRng(seed), { trigger: 'Solidão', peakHour: 20 });
+      expect(scenes).toHaveLength(5);
+      expect(scenes[2].id).toBe('gatilho-solidao');
+      expect(scenes[2].time).toBe('20:00');
+      expect(scenes[2].fromData).toMatch(/solidão/);
+      expect(scenes[2].choices).toHaveLength(3);
+    }
+  });
+
+  it('hora de pico fora da noite do ensaio fica às 21h', () => {
+    expect(buildStory(createRng(1), { trigger: 'Tédio', peakHour: 15 })[2].time).toBe('21:00');
+  });
+
+  it('não repete o gatilho em outra cena', () => {
+    const ids = Array.from({ length: 12 }, (_, i) => buildStory(createRng(i), { trigger: 'Oferta ou mensagem' }).map((s) => s.id)).flat();
+    expect(ids).not.toContain('final-mensagem');
+  });
+
+  it('o que já funcionou entra como a melhor saída da cena', () => {
+    const scene = buildStory(createRng(3), { coping: 'Mande um áudio para alguém' })[2];
+    const best = [...scene.choices].sort((a, b) => a.delta - b.delta)[0];
+    expect(best.text).toBe('Fazer o que já funcionou com você: Mande um áudio para alguém');
+    expect(scene.choices).toHaveLength(3);
+    expect(scene.fromData).toMatch(/já funcionou/);
+  });
+
+  it('cada gatilho do Diário tem cena com uma saída boa e uma ruim', () => {
+    for (const t of TRIGGERS) {
+      const scene = TRIGGER_SCENES[t];
+      expect(scene, t).toBeDefined();
+      expect(scene.choices.some((c) => c.delta < 0)).toBe(true);
+      expect(scene.choices.some((c) => c.delta > 0)).toBe(true);
+    }
+  });
+
+  it('lê gatilho, hora e ação que funcionou dos registros', () => {
+    expect(commonTrigger([{ triggers: ['Tédio'] }])).toBeUndefined();
+    expect(commonTrigger([{ triggers: ['Tédio', 'Raiva'] }, { triggers: ['Tédio'] }])).toBe('Tédio');
+    const at = (h: number) => new Date(2026, 9, 10, h, 15).toISOString();
+    expect(urgeHour([{ occurredAt: at(21) }, { occurredAt: at(21) }])).toBeUndefined();
+    expect(urgeHour([{ occurredAt: at(21) }, { occurredAt: at(20) }, { occurredAt: at(21) }])).toBe(21);
+    expect(
+      provenCoping([
+        { coping: 'sair', outcome: 'passou' },
+        { coping: 'gente', outcome: 'passou' },
+        { coping: 'gente', outcome: 'passou' },
+        { coping: 'sair', outcome: 'usei' },
+      ]),
+    ).toBe('gente');
+    expect(provenCoping([{ coping: 'sair', outcome: 'ainda_forte' }])).toBeUndefined();
   });
 });

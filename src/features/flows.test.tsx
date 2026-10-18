@@ -664,3 +664,85 @@ describe('melhorias gerais', () => {
     }
   });
 });
+
+describe('mais itens', () => {
+  it('o desafio da semana conta a prática e deixa trocar antes de começar', async () => {
+    const { weekStart } = await import('@/domain/challenges');
+    const repos = ready();
+    const today = toLocalDate(new Date());
+    repos.settings.set('weekChallenge', { week: weekStart(today), id: 'pensamentos' });
+    const { user } = open('', repos);
+    const card = screen.getByRole('region', { name: 'Desafio da semana' });
+    expect(within(card).getByText('0 de 2')).toBeInTheDocument();
+    await user.click(within(card).getByRole('button', { name: 'Trocar desafio' }));
+    expect(within(card).getByRole('heading', { name: 'Ensaiar a noite' })).toBeInTheDocument();
+  });
+
+  it('jogos diferentes na semana cumprem o desafio', async () => {
+    const { weekStart } = await import('@/domain/challenges');
+    const repos = ready();
+    const today = toLocalDate(new Date());
+    repos.settings.set('weekChallenge', { week: weekStart(today), id: 'jogos' });
+    for (const gameId of ['blocos', 'pares', 'onda']) repos.games.add({ date: today, gameId, score: 10, xp: 5, durationMs: 1000, extra: null });
+    open('', repos);
+    const card = screen.getByRole('region', { name: 'Desafio da semana' });
+    expect(within(card).getByText('3 de 3')).toBeInTheDocument();
+    expect(within(card).getByText(/Cumprido/)).toBeInTheDocument();
+    expect(within(card).queryByRole('button', { name: 'Trocar desafio' })).not.toBeInTheDocument();
+  });
+
+  it('o lembrete do meio-dia abre direto a pausa da rotina', async () => {
+    const files: Blob[] = [];
+    const url = URL as unknown as { createObjectURL?: (b: Blob) => string; revokeObjectURL?: (u: string) => void };
+    url.createObjectURL = (b) => (files.push(b), 'blob:x');
+    url.revokeObjectURL = () => {};
+    try {
+      const { repos, user } = open('#ajustes');
+      await user.click(screen.getByRole('button', { name: 'Adicionar lembrete do meio-dia' }));
+      const ics = await files[0].text();
+      expect(ics).toMatch(/SUMMARY:Rotina: pausa do meio-dia/);
+      expect(ics).toMatch(/#rotina\/t_ahathoor/);
+      expect(ics).toMatch(/DTSTART[^\r]*T120000/);
+      expect(repos.settings.get('middayReminder', null)).toBe('12:00');
+    } finally {
+      delete url.createObjectURL;
+      delete url.revokeObjectURL;
+    }
+  });
+
+  it('A noite usa o gatilho, a hora e o que já funcionou nos registros', async () => {
+    const { personalWords } = await import('@/features/games/Games');
+    const repos = ready();
+    const today = toLocalDate(new Date());
+    repos.journal.upsert({ date: addDays(today, -2), craving: 6, triggers: ['Solidão'], breaks: 0, trick: null, victory: null });
+    repos.journal.upsert({ date: addDays(today, -1), craving: 5, triggers: ['Solidão', 'Tédio'], breaks: 0, trick: null, victory: null });
+    for (const n of [1, 2, 3]) {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      d.setHours(20, 10, 0, 0);
+      repos.cravings.add({ occurredAt: d.toISOString(), intensity: 7, intensityAfter: 3, trigger: null, coping: 'audio', outcome: 'passou', note: null });
+    }
+    expect(personalWords(repos).story).toMatchObject({ trigger: 'Solidão', peakHour: 20, coping: expect.stringMatching(/^Mande um áudio/) });
+  });
+
+  it('o modo rápido do Blocos abre com o nível do app', async () => {
+    const { user } = open('#jogos/blocos');
+    expect(screen.getByText(/Modo rápido abre no nível 3/)).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: /Modo rápido/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+  });
+
+  it('com o PIN fechado, o Rebate do SOS não mostra as respostas escritas', async () => {
+    const { hashPin, randomBytes, toBase64 } = await import('@/platform/crypto');
+    const { THOUGHTS } = await import('@/domain/games/rebate');
+    const repos = ready();
+    const salt = randomBytes(16);
+    repos.settings.set('pinSalt', toBase64(salt));
+    repos.settings.set('pinHash', await hashPin('2580', salt));
+    for (const t of THOUGHTS) repos.plan.add({ kind: 'resposta', text: 'resposta secreta', extra: { thought: t.text } });
+    const { user } = open('', repos);
+    await user.click(screen.getByRole('button', { name: 'Preciso de ajuda agora' }));
+    await user.click(await screen.findByRole('button', { name: 'Rebater pensamentos' }));
+    expect(screen.queryByText('resposta secreta')).not.toBeInTheDocument();
+  });
+});

@@ -29,6 +29,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
   const { repos, write } = useData();
   const [time, setTime] = useState(() => repos.settings.get('workEndTime', '18:00'));
   const [morningTime, setMorningTime] = useState(() => repos.settings.get('dailyReminders', '08:00'));
+  const [middayTime, setMiddayTime] = useState(() => repos.settings.get('middayReminder', '12:00'));
   const [spend, setSpend] = useState(() => String(repos.settings.get<number | null>('weeklySpending', null) ?? ''));
   const [msg, setMsg] = useState<string | null>(null);
   const [password, setPassword] = useState('');
@@ -63,6 +64,20 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
     write((r) => r.settings.set('dailyReminders', parsedMorning));
     setMorningTime(parsedMorning);
     setMsg('Lembrete da manhã baixado. Importe na sua agenda apenas se quiser mais um horário.');
+  };
+
+  const addMiddayReminder = () => {
+    const parsedMidday = parseTime(middayTime);
+    if (!parsedMidday) return;
+    // O link abre direto o passo do meio-dia da rotina.
+    download(
+      'rotina-lembrete-meio-dia.ics',
+      buildDailyReminderIcs({ time: parsedMidday, url: `${appUrl}#rotina/t_ahathoor`, now: new Date(), title: 'Rotina: pausa do meio-dia' }),
+      'text/calendar',
+    );
+    write((r) => r.settings.set('middayReminder', parsedMidday));
+    setMiddayTime(parsedMidday);
+    setMsg('Lembrete do meio-dia baixado. Abra o arquivo para salvar na agenda.');
   };
 
   const backup = async () => {
@@ -161,6 +176,17 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         {!parseTime(morningTime) && <p className="warn small">Não entendi esse horário. Tente 08:00.</p>}
         <button type="button" className="btn" disabled={!parseTime(morningTime)} onClick={addMorningReminder}>
           Adicionar lembrete da manhã
+        </button>
+      </Setting>
+      <Setting title="Lembrete do meio-dia (opcional)" hint="Uma pausa curta no meio do dia">
+        <p className="small muted">Um minuto para respirar e lembrar do plano da noite antes da tarde acabar. O alarme abre direto a pausa do meio-dia.</p>
+        <label className="field">
+          Horário do meio-dia
+          <input inputMode="numeric" value={middayTime} onChange={(e) => setMiddayTime(e.target.value)} />
+        </label>
+        {!parseTime(middayTime) && <p className="warn small">Não entendi esse horário. Tente 12:00.</p>}
+        <button type="button" className="btn" disabled={!parseTime(middayTime)} onClick={addMiddayReminder}>
+          Adicionar lembrete do meio-dia
         </button>
       </Setting>
 

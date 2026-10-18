@@ -35,6 +35,8 @@ interface Props {
   durationMs?: number;
   /** Com símbolos: cada nível é uma esfera da Árvore da Vida, de Malkuth a Kether. */
   tree?: boolean;
+  /** Modo rápido: a partida começa num nível mais alto. */
+  startLevel?: number;
   onFinish: (o: GameOutcome) => void;
 }
 
@@ -55,9 +57,9 @@ function Mini({ type, dim }: { type: PieceType | null; dim?: boolean }) {
   );
 }
 
-export function BlocksGame({ durationMs, tree, onFinish }: Props) {
+export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props) {
   const endless = durationMs !== undefined;
-  const [state, setState] = useState<BlocksState>(() => newGame(Date.now() % 2147483647));
+  const [state, setState] = useState<BlocksState>(() => newGame(Date.now() % 2147483647, startLevel));
   const [startedAt] = useState(() => Date.now());
   const [now, setNow] = useState(startedAt);
   const [paused, setPaused] = useState(false);
@@ -90,7 +92,7 @@ export function BlocksGame({ durationMs, tree, onFinish }: Props) {
       onFinish({
         score: s.score,
         durationMs: Date.now() - startedAt,
-        extra: { lines: s.lines, level: s.level },
+        extra: { lines: s.lines, level: s.level, ...(startLevel > 1 ? { fast: true } : {}) },
       });
     },
     [onFinish, startedAt],

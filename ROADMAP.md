@@ -8,11 +8,8 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas; artigo contando como o app foi feito.
 
 ## Próximos
-- Jogos, parte 4: rever A noite (Pares, Desvia, Rebate e Segura a onda já revistos).
-- Lembrete por período (manhã, Ahathoor ao meio-dia) na agenda, se a pessoa quiser mais de um.
-- Desafios semanais e modos difíceis desbloqueados por nível.
+- Mais modos difíceis desbloqueados por nível (Pares, Desvia), no mesmo molde do modo rápido do Blocos.
 - Ajustar textos e técnicas com o uso real (o laboratório vai mostrar o que funciona).
-- Cenas de A noite que aprendem com o laboratório (usar os gatilhos reais da pessoa).
 - Empacotar como app Android (TWA/Capacitor) se a agenda não bastar como lembrete.
 
 ## Depois
@@ -20,6 +17,11 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-18 — Mais itens: A noite passa a ensaiar a noite da própria pessoa (cena do gatilho mais comum do Diário,
+  na hora em que a vontade costuma apertar, com o que já fez a vontade passar no SOS como saída); desafio da semana
+  na tela Hoje (seis metas de prática que giram por semana, com troca antes de começar); lembrete do meio-dia em
+  Ajustes, abrindo direto a pausa da rotina; modo rápido do Blocos a partir do nível 3. Correção: com o PIN fechado,
+  os jogos do SOS não mostram mais as respostas escritas pela pessoa.
 - 2026-10-17 — Melhorias gerais: o Clima de hoje oferece um lembrete na agenda meia hora antes da hora de risco,
   só nos dias que pedem atenção; com a voz ligada, a narração inteira fica guardada para tocar sem internet; texto do
   "Diário e noites" no Laboratório corrigido; prévia discreta do link (descrição e imagem) para quem compartilha.

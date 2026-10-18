@@ -235,7 +235,9 @@ export type SettingKey =
   | 'hardDay'
   | 'practiceVoice'
   | 'practiceAmbient'
-  | 'riskReminder';
+  | 'riskReminder'
+  | 'weekChallenge'
+  | 'middayReminder';
 
 export interface Repositories {
   routine: RoutineRepository;

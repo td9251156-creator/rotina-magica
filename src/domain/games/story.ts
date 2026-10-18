@@ -20,6 +20,8 @@ export interface StoryScene {
   time: string;
   text: string;
   choices: StoryChoice[];
+  /** Cena montada com os registros da pessoa (gatilho mais comum, hora de pico, o que já funcionou). */
+  fromData?: string;
 }
 
 export interface StoryPersonal {
@@ -27,6 +29,12 @@ export interface StoryPersonal {
   activity?: string;
   plan?: string;
   ifThen?: string;
+  /** Gatilho mais comum no Diário (um dos TRIGGERS). */
+  trigger?: string;
+  /** Hora (0 a 23) em que a vontade mais aparece nos pedidos de ajuda. */
+  peakHour?: number;
+  /** O que mais vezes fez a vontade passar no SOS, já em palavras. */
+  coping?: string;
 }
 
 export const START_URGE = 4;
@@ -218,12 +226,157 @@ const PHASES: Variant[][] = [
   ],
 ];
 
-/** Monta uma noite: uma cena por fase, opções embaralhadas. */
+/**
+ * Uma cena para cada gatilho do Diário. Quando a pessoa já registrou um gatilho mais de uma vez, a cena
+ * da vontade (21h) passa a ser a do gatilho dela: o ensaio treina a situação de risco real (Marlatt).
+ */
+export const TRIGGER_SCENES: Record<string, Omit<StoryScene, 'time'>> = {
+  Estresse: {
+    id: 'gatilho-estresse',
+    cue: 'eu chegar em casa estressado',
+    text: 'Você chega em casa com a cabeça fervendo do dia. O corpo pede alívio rápido.',
+    choices: [
+      { text: 'Pensar "hoje eu preciso, eu mereço"', delta: 3, why: 'Estresse pede alívio rápido, e a vontade se oferece como atalho. É a armadilha da permissão.' },
+      { text: 'Descarregar o corpo: 10 minutos de caminhada rápida ou flexões', delta: -2, why: 'Exercício gasta a adrenalina do estresse e baixa a vontade em minutos.' },
+      { text: 'Escrever em três linhas o que pesou hoje', delta: -1, why: 'Pôr para fora tira o peso da cabeça e mostra o tamanho real do problema.' },
+    ],
+  },
+  Tédio: {
+    id: 'gatilho-tedio',
+    cue: 'bater o tédio em casa',
+    text: 'Nada para fazer. Sofá, celular, e o tempo não passa.',
+    choices: [
+      { text: 'Rolar o celular esperando algo acontecer', delta: 2, why: 'Tédio sem plano é o terreno onde a vontade cresce.' },
+      { text: 'Começar algo com as mãos: cozinhar, arrumar, consertar', delta: -2, why: 'Ocupar as mãos e a atenção tira espaço da vontade.' },
+      { text: 'Jogar uma partida de Blocos', delta: -1, why: 'Um jogo que prende a atenção baixa a vontade (estudos com Tetris).' },
+    ],
+  },
+  Raiva: {
+    id: 'gatilho-raiva',
+    cue: 'eu ficar com raiva de alguém',
+    text: 'Uma discussão deixou você com raiva. A vontade vem junto: "que se dane".',
+    choices: [
+      { text: 'Pensar "que se dane" e ir atrás', delta: 3, why: 'A raiva quer descarga na hora e apaga o freio. A vontade aproveita.' },
+      { text: 'Sair para andar até a raiva baixar de tom', delta: -2, why: 'Mover o corpo descarrega a raiva sem custo nenhum.' },
+      { text: 'Respirar devagar antes de responder qualquer coisa', delta: -1, why: 'Respirar devagar baixa a tensão e devolve a escolha para você.' },
+    ],
+  },
+  Solidão: {
+    id: 'gatilho-solidao',
+    cue: 'eu me sentir sozinho',
+    text: 'Casa vazia. Ninguém mandou mensagem hoje.',
+    choices: [
+      { text: 'Ficar sozinho com o pensamento', delta: 2, why: 'A solidão faz a vontade parecer a única companhia.' },
+      { text: 'Mandar um áudio para alguém, sobre qualquer assunto', delta: -2, why: 'Contato com gente é dos melhores protetores contra recaída.' },
+      { text: 'Ir para um lugar com gente: padaria, praça, mercado', delta: -1, why: 'Estar perto de gente já muda o clima da noite.' },
+    ],
+  },
+  Cansaço: {
+    id: 'gatilho-cansaco',
+    cue: 'eu estiver exausto',
+    text: 'Exausto. A cabeça diz que só um pouco daria energia para a noite.',
+    choices: [
+      { text: 'Acreditar que precisa de energia agora', delta: 2, why: 'Cansaço deixa o freio fraco, e a promessa de energia parece boa.' },
+      { text: 'Comer de verdade, tomar banho e deitar cedo', delta: -2, why: 'Corpo descansado aguenta muito melhor a vontade.' },
+      { text: 'Um café e ver o que dá', delta: 1, why: 'Ficar acordado no cansaço estica a janela de risco.' },
+    ],
+  },
+  Álcool: {
+    id: 'gatilho-alcool',
+    cue: 'eu estiver bebendo',
+    text: 'Umas cervejas depois do trabalho. A vontade cresce a cada gole.',
+    choices: [
+      { text: 'Pedir mais uma', delta: 3, why: 'O álcool tira o freio e chama a vontade.' },
+      { text: 'Trocar por água e ir embora agora', delta: -2, why: 'Parar o álcool cedo corta a escalada da noite.' },
+      { text: 'Avisar alguém que está indo para casa', delta: -1, why: 'Combinar com alguém vira um compromisso para cumprir.' },
+    ],
+  },
+  'Dinheiro na mão': {
+    id: 'gatilho-dinheiro',
+    cue: 'cair dinheiro na conta',
+    text: 'Caiu o pagamento. O dinheiro está ali, fácil.',
+    choices: [
+      { text: 'Sacar dinheiro "para garantir"', delta: 3, why: 'Dinheiro vivo na mão é acesso direto.' },
+      { text: 'Guardar o dinheiro na poupança e baixar o limite do PIX da noite', delta: -2, why: 'Dificultar o acesso dá tempo para a vontade passar.' },
+      { text: 'Pagar as contas da semana primeiro', delta: -1, why: 'Dinheiro com destino sobra menos para a vontade.' },
+    ],
+  },
+  'Oferta ou mensagem': {
+    id: 'gatilho-oferta',
+    cue: 'chegar uma oferta',
+    text: 'Chega mensagem: "tem hoje, quer?"',
+    choices: [
+      { text: 'Responder "depois eu vejo"', delta: 2, why: 'Deixar a porta aberta mantém a vontade acesa.' },
+      { text: 'Bloquear o contato e apagar a conversa', delta: -2, why: 'Cortar o acesso é das ações que mais protegem.' },
+      { text: 'Responder "não, valeu" e largar o celular', delta: -1, why: 'Recusar curto e direto funciona, sem precisar explicar.' },
+    ],
+  },
+};
+
+/** Cenas comuns que repetiriam o gatilho da pessoa: saem do sorteio quando a cena dela entra. */
+const OVERLAP: Record<string, string> = {
+  Álcool: 'saida-cerveja',
+  'Dinheiro na mão': 'casa-pagamento',
+  'Oferta ou mensagem': 'final-mensagem',
+};
+
+/** Fase da vontade (21h), que vira a cena do gatilho da pessoa. */
+const URGE_PHASE = 2;
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** Monta uma noite: uma cena por fase, opções embaralhadas. Com registros, a vontade chega pelo gatilho da pessoa. */
 export function buildStory(rng: Rng, personal: StoryPersonal = {}): StoryScene[] {
-  return PHASES.map((variants) => {
-    const scene = variants[Math.floor(rng() * variants.length)](personal);
+  const own = personal.trigger ? TRIGGER_SCENES[personal.trigger] : undefined;
+  const skip = personal.trigger ? OVERLAP[personal.trigger] : undefined;
+  return PHASES.map((variants, phase) => {
+    const options = variants.map((v) => v(personal)).filter((sc) => sc.id !== skip);
+    let scene: StoryScene = options[Math.floor(rng() * options.length)];
+    if (phase === URGE_PHASE && (own || personal.coping)) {
+      const notes: string[] = [];
+      if (own) {
+        // A hora de pico só entra se couber na noite do ensaio (entre 19h e 22h).
+        const hour = personal.peakHour !== undefined && personal.peakHour >= 19 && personal.peakHour <= 21 ? personal.peakHour : 21;
+        scene = { ...own, time: `${pad(hour)}:00`, choices: [...own.choices] };
+        notes.push(`o seu gatilho mais comum (${personal.trigger!.toLowerCase()})`);
+      }
+      if (personal.coping) {
+        // O que já funcionou com a pessoa entra no lugar da opção do meio.
+        const middle = [...scene.choices].sort((a, b) => a.delta - b.delta)[1];
+        const coping = { text: `Fazer o que já funcionou com você: ${cut(personal.coping, '')}`, delta: -3, why: 'Seus registros mostram que isso já fez a vontade passar antes.' };
+        scene = { ...scene, choices: scene.choices.map((c) => (c === middle ? coping : c)) };
+        notes.push('o que já funcionou com você');
+      }
+      scene = { ...scene, fromData: `Cena feita com os seus registros: ${notes.join(' e ')}.` };
+    }
     return { ...scene, choices: shuffle(scene.choices, rng) };
   });
+}
+
+/** O gatilho que mais aparece no Diário (precisa aparecer pelo menos 2 vezes). */
+export function commonTrigger(journal: readonly { triggers: readonly string[] }[]): string | undefined {
+  const count = new Map<string, number>();
+  for (const j of journal) for (const t of j.triggers) if (t in TRIGGER_SCENES) count.set(t, (count.get(t) ?? 0) + 1);
+  const [top] = [...count.entries()].sort((a, b) => b[1] - a[1]);
+  return top && top[1] >= 2 ? top[0] : undefined;
+}
+
+/** A hora com mais pedidos de ajuda (precisa de pelo menos 3). */
+export function urgeHour(cravings: readonly { occurredAt: string }[]): number | undefined {
+  if (cravings.length < 3) return undefined;
+  const count = new Map<number, number>();
+  for (const c of cravings) {
+    const h = new Date(c.occurredAt).getHours();
+    count.set(h, (count.get(h) ?? 0) + 1);
+  }
+  return [...count.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0][0];
+}
+
+/** A ação que mais vezes fez a vontade passar no SOS. */
+export function provenCoping(cravings: readonly { coping: string | null; outcome: string }[]): string | undefined {
+  const count = new Map<string, number>();
+  for (const c of cravings) if (c.coping && c.outcome === 'passou') count.set(c.coping, (count.get(c.coping) ?? 0) + 1);
+  return [...count.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
 }
 
 export interface StoryStep {

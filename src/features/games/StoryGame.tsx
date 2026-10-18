@@ -104,6 +104,7 @@ export function StoryGame({ personal, onFinish }: { personal: StoryPersonal; onF
       <div className="bar story__urge" aria-hidden>
         <span style={{ width: `${state.urge * 10}%` }} />
       </div>
+      {scene.fromData && <p className="small muted center">{scene.fromData}</p>}
       <div className="thought">
         <strong>{scene.text}</strong>
       </div>

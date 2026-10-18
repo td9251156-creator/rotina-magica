@@ -1,4 +1,4 @@
-import { COLS, PREVIEW, ROWS, clearLines, clearPoints, collides, emptyBoard, hardDrop, holdPiece, move, newGame, rotate, rotatePiece, softDrop, tick, type BlocksState } from './blocks';
+import { COLS, PREVIEW, ROWS, clearLines, clearPoints, collides, emptyBoard, gravityMs, hardDrop, holdPiece, move, newGame, rotate, rotatePiece, softDrop, tick, type BlocksState } from './blocks';
 
 describe('Blocos', () => {
   it('começa com tabuleiro vazio e peça no topo', () => {
@@ -119,5 +119,14 @@ describe('Blocos', () => {
     expect(out.lastClear).toEqual({ lines: 1, points: 200, combo: 2, backToBack: false });
     expect(out.locks).toBe(s.locks + 1);
     expect(hardDrop(out).combo).toBe(-1);
+  });
+});
+
+describe('Blocos no modo rápido', () => {
+  it('começa no nível escolhido e cai mais depressa', () => {
+    const s = newGame(1, 5);
+    expect(s.level).toBe(5);
+    expect(s.startLevel).toBe(5);
+    expect(gravityMs(s.level)).toBeLessThan(gravityMs(newGame(1).level));
   });
 });
