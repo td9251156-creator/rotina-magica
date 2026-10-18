@@ -13,6 +13,7 @@ import { Chevron, Icon } from '@/ui/icons';
 import { TonightCard } from '../evening/TonightCard';
 import { CareCard } from '../home/CareCard';
 import { MorningCard } from '../home/MorningCard';
+import { WeekChallengeCard } from '../home/WeekChallengeCard';
 import { vibrate } from '../games/record';
 import { StepIcon } from './StepIcon';
 
@@ -234,6 +235,8 @@ export function Routine() {
           </section>
         );
       })}
+
+      {!hard && <WeekChallengeCard />}
 
       {canInstall && !installHidden && (
         <section className="card install">

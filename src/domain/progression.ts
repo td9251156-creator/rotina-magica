@@ -66,3 +66,6 @@ export function gameOfTheDay(today: LocalDate, start: LocalDate): GameId {
 export function trainedDays(dates: readonly LocalDate[]): number {
   return new Set(dates).size;
 }
+
+/** Modo rápido do Blocos: abre com a prática (nível do app), começa num nível de queda mais veloz. */
+export const FAST_BLOCKS = { unlockLevel: 3, startLevel: 5 } as const;

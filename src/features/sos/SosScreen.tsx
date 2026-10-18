@@ -124,7 +124,7 @@ export function SosScreen({ onClose, onUsed, locked = false }: { onClose: () => 
         <button type="button" className="link" onClick={() => setStage('after')}>
           Parar
         </button>
-        <GameView key={round} id={game} durationMs={game === 'blocos' ? SOS_BLOCKS_MS : undefined} onFinish={gameDone} />
+        <GameView key={round} id={game} durationMs={game === 'blocos' ? SOS_BLOCKS_MS : undefined} onFinish={gameDone} locked={locked} />
       </main>
     );
   }

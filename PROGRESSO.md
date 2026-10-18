@@ -15,18 +15,18 @@
 - A voz das práticas segue o ritmo dos três áudios de referência: falas curtas pela fase inteira, nomes vibrados, voz masculina quando houver e "Som de fundo" opcional. O roteiro para gravar a narração está em `docs/roteiro-narracao.md`.
 - Narração com voz neural (Kokoro, voz masculina) gerada para as quatro práticas guiadas e publicada com o app; toca sem internet depois da primeira vez.
 - Clima de hoje com lembrete antes da hora de risco (arquivo de agenda nos dias que pedem atenção); narração guardada para tocar sem internet; Laboratório com o texto do "Diário e noites" corrigido; prévia discreta do link.
+- A noite aprende com os registros (gatilho mais comum, hora da vontade e o que já funcionou); desafio da semana na tela Hoje; lembrete do meio-dia; modo rápido do Blocos a partir do nível 3; com o PIN fechado, os jogos do SOS não mostram o que a pessoa escreveu.
 
 ## Em andamento
 
 - Testar o app completo no celular, no uso real.
-- Jogos, parte 4: revisar os outros jogos, um por rodada.
+- Jogos, parte 4: Pares, Desvia, Rebate, Segura a onda e A noite revistos.
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas.
 
 ## Backlog
 
-- Desafios semanais e modos difíceis.
+- Mais modos difíceis por nível (hoje só o modo rápido do Blocos).
 - Ajustar textos e técnicas com o uso real.
-- Cenas de A noite que aprendem com o laboratório.
 - Empacotar como app Android se a agenda não bastar.
 
 ## Decisões
