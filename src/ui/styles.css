@@ -581,3 +581,74 @@ h1, h2 { color: var(--title); }
 .sound__glow { width: 72px; height: 72px; margin: 8px auto; border-radius: 999px; background: radial-gradient(circle, rgba(201, 164, 92, 0.5), rgba(201, 164, 92, 0.05)); animation: sound-breathe 10s ease-in-out infinite; }
 @keyframes sound-breathe { 50% { transform: scale(1.5); opacity: 0.6; } }
 @media (prefers-reduced-motion: reduce) { .sound__glow { animation: none; } }
+
+/* ---- Cenas das práticas guiadas (PracticeScene) ---- */
+.player__visual { height: 290px; }
+.scene { display: block; width: 100%; height: 290px; overflow: visible; }
+.phases { display: flex; justify-content: center; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.phases li { width: 18px; height: 4px; border-radius: 999px; background: var(--border); transition: background 0.6s; }
+.phases li.done { background: rgba(201, 164, 92, 0.5); }
+.phases li.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+.fig { --fig: rgba(241, 230, 207, 0.13); --fig-line: rgba(201, 164, 92, 0.35); }
+.fig .limb { fill: none; stroke: var(--fig); stroke-width: 11; stroke-linecap: round; transition: stroke 0.8s; }
+.fig .limb--leg { stroke-width: 14; }
+.fig .limb--thin { stroke-width: 7; stroke: transparent; }
+.fig .solid { fill: var(--fig); transition: fill 0.8s; }
+.fig .fig__soft { fill: transparent; }
+.fig__torso { stroke: var(--fig-line); stroke-width: 1; }
+.fig__part { transform-box: fill-box; transform-origin: center; }
+.fig__part.release { --fig: rgba(241, 230, 207, 0.5); filter: drop-shadow(0 0 10px rgba(201, 164, 92, 0.9)); }
+.fig__part.release .limb--thin, .fig__part.release .fig__soft { stroke: var(--fig); fill: var(--fig); }
+.fig__part.tense { --fig: #e0895a; filter: drop-shadow(0 0 8px #e0895a); animation: tense 0.45s ease-in-out infinite alternate; }
+.fig__part.tense .limb--thin, .fig__part.tense .fig__soft { stroke: var(--fig); fill: var(--fig); }
+@keyframes tense { to { transform: scale(0.96); } }
+.fig .beam { stroke: #fff; stroke-width: 5; stroke-linecap: round; opacity: 0.55; filter: drop-shadow(0 0 8px #fff); transition: all 1.2s ease-out; }
+.fig .point { fill: var(--raised); stroke: var(--fig-line); transition: all 0.8s; }
+.fig .point--done { fill: rgba(255, 255, 255, 0.6); stroke: none; }
+.fig .point--on { fill: #fff; stroke: none; filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 22px rgba(255, 255, 255, 0.8)); animation: glow 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes glow { 50% { transform: scale(1.35); } }
+.fig .aura { animation: glow 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.fig .ground { stroke: var(--accent); stroke-width: 2; opacity: 0.7; filter: drop-shadow(0 0 6px var(--accent)); }
+.fig .spot circle { fill: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); animation: glow 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.fig .spot text { fill: var(--title); font-size: 12px; font-family: var(--sans, inherit); }
+
+.box__track { fill: none; stroke: var(--border); stroke-width: 3; }
+.box__side { stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.box__orb { fill: rgba(201, 164, 92, 0.22); stroke: var(--accent); stroke-width: 1; transform-box: fill-box; transform-origin: center; transition: transform 0.25s linear; }
+.box__dot { fill: #f1e6cf; filter: drop-shadow(0 0 8px var(--accent)); }
+
+.orb__ring { fill: none; stroke: var(--border); stroke-width: 1.5; }
+.orb__core { transform-box: fill-box; transform-origin: center; transition: transform 0.25s linear; }
+.orb--cycle .orb__core { animation: orb-cycle 10s ease-in-out infinite; }
+.orb--still .orb__core { transform: scale(0.7); }
+@keyframes orb-cycle { 0%, 100% { transform: scale(0.6); } 40% { transform: scale(1); } }
+
+.tri { filter: drop-shadow(0 0 18px #ff4a1c); animation: flame 2.4s ease-in-out infinite; }
+.tri path:first-of-type { stroke: #ff6a3d; stroke-width: 2.5; stroke-linejoin: round; }
+.tri__inner { fill: rgba(255, 200, 120, 0.25); animation: flicker 1.7s ease-in-out infinite; }
+@keyframes flicker { 50% { opacity: 0.45; } }
+.eye path { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; opacity: 0.8; }
+
+.fork__path { fill: none; stroke: var(--border); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.fork__path--lit { stroke: var(--accent); filter: drop-shadow(0 0 6px var(--accent)); stroke-dasharray: 260; animation: draw 3s ease-out forwards; }
+.fork__star { fill: #f1e6cf; filter: drop-shadow(0 0 10px var(--accent)); }
+@keyframes draw { from { stroke-dashoffset: 260; } to { stroke-dashoffset: 0; } }
+.burst circle { fill: var(--sos); }
+.burst__wave { fill: none !important; stroke: var(--sos); stroke-width: 4; transform-box: fill-box; transform-origin: center; animation: burst 1s ease-out infinite; }
+@keyframes burst { from { transform: scale(1); opacity: 1; } to { transform: scale(3); opacity: 0; } }
+.speak path:first-child { fill: rgba(201, 164, 92, 0.15); stroke: var(--accent); stroke-width: 2.5; }
+.speak__wave { fill: none; stroke: var(--title); stroke-width: 4; stroke-linecap: round; animation: flicker 1.2s ease-in-out infinite; }
+
+.phase-ring { position: relative; width: 84px; height: 84px; margin: 0 auto; }
+.phase-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.phase-ring__track { fill: none; stroke: var(--border); stroke-width: 4; }
+.phase-ring__fill { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.25s linear; }
+.phase-ring span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-size: 1.9rem; color: var(--title); }
+.step-hero { height: 180px; display: grid; place-items: center; margin: 4px 0 8px; }
+.step-hero .scene { height: 180px; }
+.step-hero__icon { width: 120px; height: 120px; border-radius: 999px; display: grid; place-items: center; color: var(--accent); background: radial-gradient(circle, rgba(201, 164, 92, 0.18), transparent 70%); }
+.step-hero__icon svg { width: 64px; height: 64px; }
+@media (prefers-reduced-motion: reduce) {
+  .fig *, .orb__core, .tri, .tri__inner, .fork__path--lit, .burst__wave, .speak__wave, .box__orb, .phase-ring__fill { animation: none !important; transition: none !important; }
+}

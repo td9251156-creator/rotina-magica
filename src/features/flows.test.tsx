@@ -654,6 +654,15 @@ describe('voz nas práticas', () => {
     }
   });
 
+  it('a prática guiada mostra a cena, as fases e a contagem num anel', async () => {
+    const { user } = open('#rotina/n_pilar');
+    expect(document.querySelector('.step-hero .fig')).not.toBeNull();
+    await user.click(screen.getByRole('button', { name: /Começar guiado/ }));
+    expect(screen.getByRole('timer')).toHaveAccessibleName('60 segundos');
+    expect(screen.getByRole('list', { name: 'Fase 1 de 6' })).toBeInTheDocument();
+    expect(document.querySelectorAll('.point--on')).toHaveLength(1);
+  });
+
   it('sem voz no navegador, o botão nem aparece', async () => {
     const { user } = open('#rotina/m_asana');
     await user.click(screen.getByRole('button', { name: /Começar guiado/ }));

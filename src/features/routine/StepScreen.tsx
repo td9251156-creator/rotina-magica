@@ -5,6 +5,11 @@ import { DEFAULT_OATH, PRACTICES, findStep, practiceSeconds, type RoutineStyle }
 import { navigate } from '@/router';
 import { Screen } from '@/ui/Screen';
 import { PracticePlayer } from './PracticePlayer';
+import { PracticeScene } from './PracticeScene';
+import { StepIcon } from './StepIcon';
+
+/** Fase que melhor mostra cada prática antes de começar. */
+const PREVIEW: Partial<Record<string, number>> = { triangulo: 1, sober: 3 };
 
 /** Um passo da rotina: como fazer, a prática guiada (se houver) e "Feito". */
 export function StepScreen({ id, onBack }: { id: string; onBack: () => void }) {
@@ -15,6 +20,8 @@ export function StepScreen({ id, onBack }: { id: string; onBack: () => void }) {
   const today = toLocalDate(new Date());
   const done = repos.routine.doneOn(today).includes(step.id);
   const practice = step.practice ? PRACTICES[step.practice] : null;
+  // Pilar e relaxar mostram o fim (a luz no corpo todo); as outras, a fase mais típica.
+  const preview = practice ? (PREVIEW[practice.id] ?? (practice.id === 'pilar' || practice.id === 'relaxar' ? practice.phases.length - 1 : 0)) : 0;
   const finish = () => {
     write((r) => r.routine.toggle(today, step.id, true));
     onBack();
@@ -29,6 +36,20 @@ export function StepScreen({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <Screen onBack={onBack}>
+      <div className="step-hero" aria-hidden="true">
+        {practice && practice.phases.length > 0 ? (
+          <PracticeScene
+            practiceId={practice.id}
+            index={preview}
+            phase={practice.phases[preview]}
+            progress={0.5}
+          />
+        ) : (
+          <span className="step-hero__icon">
+            <StepIcon step={step} />
+          </span>
+        )}
+      </div>
       <p className="eyebrow">{step.minutes} min</p>
       <h1>{step.title}</h1>
       {step.how.map((t) => (
