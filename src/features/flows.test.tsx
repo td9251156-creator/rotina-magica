@@ -120,6 +120,11 @@ describe('manhã seguinte', () => {
 });
 
 describe('jogos', () => {
+  it('cada jogo da lista tem o seu desenho', () => {
+    open('#jogos');
+    expect(document.querySelectorAll('.tile .game-art').length).toBe(document.querySelectorAll('.tile').length);
+  });
+
   it('no SOS, nota antes e depois do jogo mostra quanto baixou e alimenta o laboratório', async () => {
     const { repos, user } = open('#sos');
     await user.click(screen.getByRole('group', { name: 'Vontade agora' }).querySelectorAll('button')[8]);
