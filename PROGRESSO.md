@@ -16,6 +16,7 @@
 - Narração com voz neural (Kokoro, voz masculina) gerada para as quatro práticas guiadas e publicada com o app; toca sem internet depois da primeira vez.
 - Clima de hoje com lembrete antes da hora de risco (arquivo de agenda nos dias que pedem atenção); narração guardada para tocar sem internet; Laboratório com o texto do "Diário e noites" corrigido; prévia discreta do link.
 - A noite aprende com os registros (gatilho mais comum, hora da vontade e o que já funcionou); desafio da semana na tela Hoje; lembrete do meio-dia; modo rápido do Blocos a partir do nível 3; com o PIN fechado, os jogos do SOS não mostram o que a pessoa escreveu.
+- Narração refeita sem cortes no meio das frases e sem tom artificial, com falas no estilo de relaxamento guiado (hipnose e PNL só como linguagem) e opção de voz Azure no gerador.
 
 ## Em andamento
 

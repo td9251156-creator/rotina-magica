@@ -8,6 +8,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Trazer contribuidores: issues "good first issue" e "help wanted" abertas; artigo contando como o app foi feito.
 
 ## Próximos
+- Narração com voz mais humana: gerar com Azure (`--engine azure`) ou gravar com voz de gente (passos em `docs/roteiro-narracao.md`).
 - Mais modos difíceis desbloqueados por nível (Pares, Desvia), no mesmo molde do modo rápido do Blocos.
 - Ajustar textos e técnicas com o uso real (o laboratório vai mostrar o que funciona).
 - Empacotar como app Android (TWA/Capacitor) se a agenda não bastar como lembrete.
@@ -17,6 +18,9 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito
+- 2026-10-18 — Narração mais fluida: frases inteiras, sem cortes nem tom rebaixado, reverberação de sala; falas
+  reescritas com linguagem de relaxamento guiado (hipnose permissiva, âncora de calma e ensaio do futuro);
+  gerador com opção de voz Azure (`pt-BR-AntonioNeural`) e caminho para gravação com voz de gente.
 - 2026-10-18 — Mais itens: A noite passa a ensaiar a noite da própria pessoa (cena do gatilho mais comum do Diário,
   na hora em que a vontade costuma apertar, com o que já fez a vontade passar no SOS como saída); desafio da semana
   na tela Hoje (seis metas de prática que giram por semana, com troca antes de começar); lembrete do meio-dia em
