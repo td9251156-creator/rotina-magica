@@ -616,6 +616,44 @@ describe('voz nas práticas', () => {
     }
   });
 
+  it('toca o som binaural com um tom em cada ouvido e para no toque', async () => {
+    const tones: number[] = [];
+    const channels: number[] = [];
+    let stopped = 0;
+    const param = () => ({ value: 0, setValueAtTime(v: number) { this.value = v; }, linearRampToValueAtTime() {}, cancelScheduledValues() {} });
+    const source = () => ({ connect() {}, start() {}, stop: () => stopped++ });
+    class FakeContext {
+      currentTime = 0;
+      sampleRate = 8000;
+      destination = {};
+      resume = () => Promise.resolve();
+      createGain = () => ({ gain: param(), connect: (_n: unknown, _o?: number, ch?: number) => ch !== undefined && channels.push(ch) });
+      createChannelMerger = () => ({ connect() {} });
+      createBiquadFilter = () => ({ connect() {}, type: '', frequency: param() });
+      createBuffer = (_c: number, n: number) => ({ getChannelData: () => new Float32Array(n) });
+      createBufferSource = () => ({ ...source(), buffer: null, loop: false });
+      createOscillator = () => {
+        const osc = { ...source(), frequency: param(), start: () => tones.push(osc.frequency.value) };
+        return osc;
+      };
+    }
+    vi.stubGlobal('AudioContext', FakeContext);
+    try {
+      const { repos, user } = open('#sons');
+      await user.click(screen.getByRole('button', { name: 'Só o tom' }));
+      expect(repos.settings.get('binauralRain', true)).toBe(false);
+      await user.click(screen.getByRole('button', { name: 'Tocar 15 min' }));
+      expect(tones).toEqual([195, 205]);
+      expect(channels).toEqual([0, 1]);
+      await user.click(screen.getByRole('button', { name: /Parar · faltam 15:00/ }));
+      expect(stopped).toBeGreaterThanOrEqual(2);
+      await user.click(screen.getByRole('button', { name: 'Relaxar fundo (teta)' }));
+      expect(repos.settings.get('ambientSound', 'acorde')).toBe('fundo');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('sem voz no navegador, o botão nem aparece', async () => {
     const { user } = open('#rotina/m_asana');
     await user.click(screen.getByRole('button', { name: /Começar guiado/ }));

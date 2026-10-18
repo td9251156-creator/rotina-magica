@@ -574,3 +574,10 @@ h1, h2 { color: var(--title); }
 .challenge__progress { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; }
 .challenge__progress .bar { flex: 1; margin: 0; }
 .challenge--done { border-color: var(--accent); }
+
+/* Sons para relaxar */
+.sound__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.sound--on { border-color: var(--accent); }
+.sound__glow { width: 72px; height: 72px; margin: 8px auto; border-radius: 999px; background: radial-gradient(circle, rgba(201, 164, 92, 0.5), rgba(201, 164, 92, 0.05)); animation: sound-breathe 10s ease-in-out infinite; }
+@keyframes sound-breathe { 50% { transform: scale(1.5); opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .sound__glow { animation: none; } }

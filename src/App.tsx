@@ -11,6 +11,7 @@ import { Onboarding } from './features/onboarding/Onboarding';
 import { Settings } from './features/settings/Settings';
 import { SosScreen } from './features/sos/SosScreen';
 import { TrainingList, TrainingSession } from './features/training/Training';
+import { Sounds } from './features/sounds/Sounds';
 import { UsedFlow } from './features/used/UsedFlow';
 import { GAME_IDS, type GameId } from './domain/progression';
 import { navigate, readRoute, type Route } from './router';
@@ -77,6 +78,7 @@ export function App() {
       <GamesHub onOpen={(id) => navigate('jogos', id)} onBack={home} />
     );
   if (route.name === 'lab') return <Lab onBack={home} />;
+  if (route.name === 'sons') return <Sounds onBack={() => (history.length > 1 ? history.back() : home())} />;
   if (route.name === 'pensamento') return <Untangle onBack={() => (history.length > 1 ? history.back() : home())} />;
   if (route.name === 'rotina' && route.param) return <StepScreen id={route.param} onBack={home} />;
   const tab = route.name === 'ajustes' || route.name === 'diario' ? route.name : 'home';

@@ -3,6 +3,9 @@ import { useData } from '@/data/provider';
 import { phaseAt, practiceSeconds, phaseScript, type Practice, type PracticePhase } from '@/domain/routine';
 import { canSpeak, speakLines, stopSpeaking } from '@/platform/voice';
 import { canPlayAmbient, startAmbient, stopAmbient } from '@/platform/ambient';
+import { startBinaural, stopBinaural } from '@/platform/binaural';
+import { findPreset } from '@/domain/binaural';
+import type { AmbientSound } from '../sounds/Sounds';
 import { playNarratedAudio, playNarration, prefetchNarration, stopNarratedAudio } from '@/platform/narrated-audio';
 import { cueFile } from '@/domain/narration';
 import { vibrate } from '../games/record';
@@ -24,6 +27,7 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
   const voice = canSpeak() && repos.settings.get('practiceVoice', false);
   // Som de fundo também começa desligado, pelo mesmo motivo.
   const ambient = canPlayAmbient() && repos.settings.get('practiceAmbient', false);
+  const sound = repos.settings.get<AmbientSound>('ambientSound', 'acorde');
 
   useEffect(() => {
     const id = setInterval(() => setElapsed((Date.now() - start.current) / 1000), 200);
@@ -56,9 +60,15 @@ export function PracticePlayer({ practice, onDone, onStop }: { practice: Practic
   }, [voice]);
   useEffect(() => {
     if (!ambient) return;
-    startAmbient();
-    return stopAmbient;
-  }, [ambient]);
+    const preset = findPreset(sound);
+    if (!preset) {
+      startAmbient();
+      return stopAmbient;
+    }
+    // Binaural sem a chuva: a voz guia por cima e o tom fica limpo.
+    startBinaural(preset, Math.ceil(total / 60) + 1, false);
+    return () => stopBinaural();
+  }, [ambient, sound, total]);
   const toggleVoice = () => {
     if (voice) {
       stopSpeaking();
