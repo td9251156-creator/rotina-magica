@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MEMORY_MODES, cleared, dealMemory, flip, hideOpen, memoryBonus, type MemoryMode } from '@/domain/games/memory';
+import { MEMORY_MODES, bestGrid, cleared, dealMemory, flip, hideOpen, memoryBonus, type MemoryMode } from '@/domain/games/memory';
 import { createRng } from '@/domain/games/rng';
 import { ARCANA, roman } from '@/domain/games/symbols';
 import { SYMBOL_ART } from './art';
+import { useFitArea } from './fit';
 import { Art, Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
 
@@ -36,7 +37,9 @@ export function ArcanaGame({ onFinish, seed }: { onFinish: (o: GameOutcome) => v
 }
 
 function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number; onFinish: (o: GameOutcome) => void }) {
-  const { pairs, columns } = MEMORY_MODES[mode];
+  const { pairs } = MEMORY_MODES[mode];
+  const [tableRef, area] = useFitArea<HTMLDivElement>(170);
+  const { columns, cardWidth } = bestGrid(pairs * 2, area.width, area.height);
   const initial = useMemo(() => dealMemory(pairs, createRng(seed)), [pairs, seed]);
   const [state, setState] = useState(initial);
   const start = useRef(Date.now());
@@ -73,7 +76,7 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
 
   const found = state.found === null ? null : ARCANA[state.found];
   const matched = state.cards.filter((c) => c.matched).length / 2;
-  const wide = columns === 4;
+  const wide = cardWidth >= 64;
 
   return (
     <div className="arc">
@@ -85,7 +88,8 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
           {matched} de {pairs} pares · {state.moves} tentativas
         </span>
       </div>
-      <div className="arc__table" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+      <div ref={tableRef} className="arc__fit">
+      <div className="arc__table" style={{ gridTemplateColumns: `repeat(${columns}, ${cardWidth}px)`, fontSize: Math.max(13, cardWidth * 0.26) }}>
         {state.cards.map((c) => {
           const a = ARCANA[c.arcanum];
           const up = c.matched || state.open.includes(c.id);
@@ -111,6 +115,7 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
             </button>
           );
         })}
+      </div>
       </div>
       <div className="card arc__lesson" aria-live="polite">
         {found ? (

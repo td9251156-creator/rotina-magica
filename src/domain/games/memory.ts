@@ -82,3 +82,19 @@ export function cleared(s: MemoryState): boolean {
 export function memoryBonus(pairs: number, moves: number): number {
   return Math.max(0, pairs * 2 - moves) * 10;
 }
+
+/**
+ * Grade que deixa as cartas do maior tamanho possível no espaço livre (largura × altura),
+ * com cartas na proporção 3:4. Devolve colunas e a largura de cada carta.
+ */
+export function bestGrid(cards: number, width: number, height: number, gap = 8): { columns: number; cardWidth: number } {
+  let best = { columns: 4, cardWidth: 0 };
+  for (let columns = 3; columns <= 6; columns++) {
+    const rows = Math.ceil(cards / columns);
+    const byWidth = (width - gap * (columns - 1)) / columns;
+    const byHeight = ((height - gap * (rows - 1)) / rows) * 0.75;
+    const cardWidth = Math.floor(Math.min(byWidth, byHeight));
+    if (cardWidth > best.cardWidth) best = { columns, cardWidth };
+  }
+  return best;
+}

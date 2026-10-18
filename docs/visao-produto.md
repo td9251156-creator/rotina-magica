@@ -24,7 +24,7 @@ tem que ser o oposto do tédio. Agora o centro são 4 jogos curtos, cada um trei
 evidência: **Blocos** (Tetris: 3 min reduzem a força da fissura, Skorka-Brown et al. 2014/2015), **Desvia** (treino
 de aproximação/esquiva e controle inibitório: menos recaída em álcool, Wiers 2011/Eberl 2013; inicial em cocaína),
 **Rebate** (reestruturação de pensamentos permissivos, TCC/Marlatt; usa as respostas que a pessoa escreveu) e **Segura a
-onda** (respiração com expiração longa). XP e nível só crescem; missão diária com jogo do dia, treino de mente e plano
+onda** (respiração com expiração longa). (Desvia e Rebate saíram em 2026-10-18, a pedido do autor; ficaram Blocos, Pares, Arcanos, Segura a onda e A noite.) XP e nível só crescem; missão diária com jogo do dia, treino de mente e plano
 da noite. O SOS começa por jogar e pede nota da vontade antes e depois: o laboratório mostra o que baixa a vontade
 da pessoa, com os dados dela. Isso nenhum app de recuperação faz.
 

@@ -231,14 +231,14 @@ textarea { resize: vertical; line-height: 1.4; }
 .tile--onda { background: linear-gradient(160deg, color-mix(in srgb, var(--calm) 20%, var(--surface)), var(--surface) 60%); }
 
 /* ---- Jogo ---- */
-.screen--game { gap: 8px; }
+.screen--game { gap: 8px; padding-left: 10px; padding-right: 10px; }
 .intro { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 .game { display: flex; flex-direction: column; gap: 10px; }
 .game__hud { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted); }
 .game__hud strong { color: var(--text); font-size: 1.2rem; }
-.tetris { display: grid; grid-template-columns: 58px minmax(0, auto) 58px; justify-content: center; gap: 8px; align-items: start; }
+.tetris { display: grid; grid-template-columns: 52px minmax(0, auto) 52px; justify-content: center; gap: 6px; align-items: start; }
 .tetris__side { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
-.tetris__label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; }
+.tetris__label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); text-align: center; }
 .tetris__box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 58px; padding: 6px 4px; border-radius: 12px; border: 1px solid var(--border); background: var(--raised); color: var(--text); font: inherit; }
 button.tetris__box { cursor: pointer; touch-action: manipulation; }
 button.tetris__box:disabled { opacity: 0.6; cursor: default; }
@@ -248,7 +248,7 @@ button.tetris__box:disabled { opacity: 0.6; cursor: default; }
 .tetris__stat strong { font-family: var(--serif); font-size: 1.3rem; color: var(--title); }
 .tetris__well { position: relative; }
 .tetris__sphere { font-family: var(--serif); font-size: 0.72rem; color: var(--accent); }
-.blocks { display: block; width: min(calc(100vw - 32px - 132px), 60dvh * 0.5, 280px); aspect-ratio: 1 / 2; border-radius: 10px; border: 1px solid rgba(201, 164, 92, 0.35); box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.06), 0 10px 30px rgba(0, 0, 0, 0.45); touch-action: none; }
+.blocks { display: block; width: min(calc(100vw - 20px - 116px), calc((100dvh - 250px) / 2), 340px); aspect-ratio: 1 / 2; border-radius: 10px; border: 1px solid rgba(201, 164, 92, 0.35); box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.06), 0 10px 30px rgba(0, 0, 0, 0.45); touch-action: none; }
 .tetris__toast { position: absolute; left: 50%; top: 32%; transform: translateX(-50%); margin: 0; padding: 6px 12px; border-radius: 999px; background: rgba(14, 16, 23, 0.85); border: 1px solid rgba(201, 164, 92, 0.5); color: var(--title); font-weight: 700; font-size: 0.85rem; white-space: nowrap; pointer-events: none; animation: toast-up 1.1s ease-out forwards; }
 .tetris__toast--big { font-family: var(--serif); font-size: 1.15rem; color: #c9a45c; }
 @keyframes toast-up { 0% { opacity: 0; transform: translate(-50%, 10px) scale(0.9); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.05); } 70% { opacity: 1; transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -24px); } }
@@ -278,7 +278,7 @@ button.tetris__box:disabled { opacity: 0.6; cursor: default; }
 
 .wave__sea { height: 70px; border-radius: 14px; background: var(--surface); position: relative; overflow: hidden; border: 1px solid var(--border); }
 .wave__water { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #6fb7e8, #2f5f7a); transition: height 800ms ease; border-radius: 40% 40% 0 0 / 12px 12px 0 0; }
-.wave__pad { position: relative; height: 46dvh; min-height: 260px; border-radius: 22px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; }
+.wave__pad { position: relative; height: max(260px, calc(100dvh - 310px)); border-radius: 22px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; }
 .wave__circle { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, var(--accent) 0%, rgba(127, 200, 169, 0.2) 70%); transition: transform 60ms linear; }
 .wave__label { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; font-weight: 700; }
 
@@ -508,6 +508,7 @@ h1, h2 { color: var(--title); }
 .mj { display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .mj__bar { width: 100%; display: flex; justify-content: space-between; align-items: baseline; }
 .mj__bar strong { font-family: var(--serif); font-size: 1.4rem; color: var(--accent); }
+.mj__stage { width: 100%; }
 .mj__board { position: relative; margin: 4px auto; }
 .mj__tile { position: absolute; padding: 0; display: grid; place-items: center; line-height: 1; cursor: pointer; border-radius: 8px;
   background: linear-gradient(160deg, #fbf6ea, #e9dfc8); border: 1px solid #b9a77f; color: #1a1610;
@@ -519,14 +520,15 @@ h1, h2 { color: var(--title); }
 .glyph--art { width: 1em; height: 1em; display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .arc__verso { width: 70%; height: 70%; fill: none; stroke: currentColor; stroke-width: 1.2; }
 .arc { display: flex; flex-direction: column; gap: 10px; }
-.arc__table { display: grid; gap: 8px; perspective: 900px; }
+.arc__fit { width: 100%; }
+.arc__table { display: grid; gap: 8px; justify-content: center; perspective: 900px; }
 .arc__card { aspect-ratio: 3 / 4; padding: 0; border: 0; background: none; cursor: pointer; touch-action: manipulation; }
 .arc__card:disabled { cursor: default; }
 .arc__inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 280ms ease; }
 .arc__card--up .arc__inner { transform: rotateY(180deg); }
 .arc__back, .arc__face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 10px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .arc__back { background: radial-gradient(circle at 50% 50%, rgba(201, 164, 92, 0.25), transparent 60%), repeating-linear-gradient(45deg, #1b1e2c 0 6px, #161925 6px 12px); border: 1px solid rgba(201, 164, 92, 0.55); color: #c9a45c; font-size: 1.3rem; box-shadow: inset 0 0 0 3px #12141d, inset 0 0 0 4px rgba(201, 164, 92, 0.35); }
-.arc__face { transform: rotateY(180deg); background: linear-gradient(170deg, #f8f0dc, #e6d6b0); border: 1px solid #b9a77f; color: #2a2112; font-size: 1.7rem; }
+.arc__face { transform: rotateY(180deg); background: linear-gradient(170deg, #f8f0dc, #e6d6b0); border: 1px solid #b9a77f; color: #2a2112; font-size: 1.7em; }
 .arc__card--done .arc__face { box-shadow: 0 0 0 2px #c9a45c, 0 0 14px rgba(201, 164, 92, 0.55); }
 .arc__num { font-family: var(--serif); font-size: 0.7rem; letter-spacing: 0.06em; color: #6b5527; }
 .arc__name { font-family: var(--serif); font-size: 0.62rem; line-height: 1.1; text-align: center; padding: 0 3px; color: #3a2e18; }
@@ -667,3 +669,6 @@ h1, h2 { color: var(--title); }
 /* Na Ajuda agora a barra de baixo fica à vista: a prática encolhe para Parar e Terminei caberem na tela. */
 .sos-screen .player { min-height: 0; gap: 8px; }
 .sos-screen .player__visual, .sos-screen .scene { height: min(240px, 27dvh); }
+/* Jogo aberto pela Ajuda agora: a barra de abas fica à vista, então o tabuleiro desconta a altura dela. */
+.sos-screen .blocks { width: min(calc(100vw - 20px - 116px), calc((100dvh - 340px) / 2), 340px); }
+.sos-screen .wave__pad { height: max(240px, calc(100dvh - 400px)); }

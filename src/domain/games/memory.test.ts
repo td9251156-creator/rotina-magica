@@ -1,4 +1,4 @@
-import { cleared, dealMemory, flip, hideOpen, matchPoints, memoryBonus } from './memory';
+import { bestGrid, cleared, dealMemory, flip, hideOpen, matchPoints, memoryBonus } from './memory';
 import { createRng } from './rng';
 import { ARCANA, OCCULT_SIGNS, SEPHIROTH, roman, sephirah, symbolsOn } from './symbols';
 
@@ -64,5 +64,16 @@ describe('Arcanos (memória)', () => {
     expect(s.moves).toBe(12);
     expect(memoryBonus(12, s.moves)).toBe(120);
     expect(memoryBonus(12, 40)).toBe(0);
+  });
+});
+
+describe('grade das cartas', () => {
+  it('no celular em pé, prefere menos colunas e cartas maiores', () => {
+    const g = bestGrid(24, 358, 560);
+    expect(g.columns).toBeLessThan(6);
+    expect(g.cardWidth).toBeGreaterThan(54);
+  });
+  it('na tela deitada, usa mais colunas', () => {
+    expect(bestGrid(24, 900, 300).columns).toBe(6);
   });
 });
