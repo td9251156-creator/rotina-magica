@@ -20,7 +20,9 @@ concurrency:
 
 jobs:
   analisar:
-    runs-on: ubuntu-latest
+    # O sandbox Linux do Codex depende de recursos de namespace ainda incompatíveis
+    # com a migração do ubuntu-latest para Ubuntu 26.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7

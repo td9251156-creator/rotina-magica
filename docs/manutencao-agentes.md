@@ -29,6 +29,8 @@ objetivo é resolver problemas; quantidade de código ou de funcionalidades não
 - A versão do Codex CLI é fixa no lockfile; saídas têm limite de tamanho e verificação de padrões de segredo.
 - Antes de cada chamada, a automação valida o acesso à API e informa separadamente erros de chave, créditos,
   permissões, modelo e rede sem publicar o segredo.
+- Os agentes usam Ubuntu 22.04 fixo para manter o isolamento Linux compatível e evitar mudanças silenciosas do
+  runner `ubuntu-latest`.
 - Código gerado precisa passar pelos mesmos testes, CodeQL, revisão do CODEOWNERS e regras de proteção da branch.
 
 ## Prioridade e conclusão
