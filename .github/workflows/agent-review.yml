@@ -40,12 +40,13 @@ jobs:
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - name: Revisar pull request
         env:
+          CODEX_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          npx --no-install codex exec review --ephemeral --ignore-user-config \
+          bash .github/agents/run-codex.sh exec review --ephemeral --ignore-user-config \
             -c 'sandbox_mode="read-only"' \
             -c 'shell_environment_policy.inherit="core"' \
-            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","CODEX_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
             --base origin/main --output-last-message "$RUNNER_TEMP/agent-review.md" - <<'PROMPT'
           Revise este PR como um revisor independente. Priorize bugs, perda ou exposição de dados, compatibilidade
           com registros antigos, funcionamento offline, acesso à Pausa agora, acessibilidade e testes ausentes.

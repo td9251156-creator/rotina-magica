@@ -27,6 +27,8 @@ objetivo é resolver problemas; quantidade de código ou de funcionalidades não
   que o mantenedor deve revisar antes de aplicar a etiqueta.
 - A configuração Git, os hooks, o commit-base e o diff são conferidos antes e depois dos testes.
 - A versão do Codex CLI é fixa no lockfile; saídas têm limite de tamanho e verificação de padrões de segredo.
+- Antes de cada chamada, a automação valida o acesso à API e informa separadamente erros de chave, créditos,
+  permissões, modelo e rede sem publicar o segredo.
 - Código gerado precisa passar pelos mesmos testes, CodeQL, revisão do CODEOWNERS e regras de proteção da branch.
 
 ## Prioridade e conclusão

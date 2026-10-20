@@ -63,6 +63,7 @@ jobs:
           test -s "$RUNNER_TEMP/approved-task.md" || { echo 'A issue precisa de uma seção ## Tarefa aprovada.'; exit 1; }
       - name: Implementar escopo aprovado
         env:
+          CODEX_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           BASE_SHA=$(git rev-parse HEAD)
@@ -87,9 +88,9 @@ jobs:
             jq -r '"Título: " + .issue.title' "$GITHUB_EVENT_PATH"
             cat "$RUNNER_TEMP/approved-task.md"
             printf '\n--- FIM DA ISSUE ---\n'
-          } | npx --no-install codex exec --ephemeral --ignore-user-config --sandbox workspace-write \
+          } | bash .github/agents/run-codex.sh exec --ephemeral --ignore-user-config --sandbox workspace-write \
             -c 'shell_environment_policy.inherit="core"' \
-            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","CODEX_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
             --output-last-message "$RUNNER_TEMP/agent-implementation.md" -
           test "$(wc -c < "$RUNNER_TEMP/agent-implementation.md")" -le 30000 || { echo 'Relatório excedeu 30 KB.'; exit 1; }
           ! grep -Fq -- "$OPENAI_API_KEY" "$RUNNER_TEMP/agent-implementation.md" || { echo 'Possível segredo na saída.'; exit 1; }

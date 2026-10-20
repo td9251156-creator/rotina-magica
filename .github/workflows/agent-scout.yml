@@ -1,6 +1,11 @@
 name: Agent Scout
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/agents/run-codex.sh
+      - .github/workflows/agent-scout.yml
   schedule:
     - cron: '17 9 * * 3'
   workflow_dispatch:
@@ -45,11 +50,12 @@ jobs:
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - name: Analisar prioridades
         env:
+          CODEX_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          npx --no-install codex exec --ephemeral --ignore-user-config --sandbox read-only \
+          bash .github/agents/run-codex.sh exec --ephemeral --ignore-user-config --sandbox read-only \
             -c 'shell_environment_policy.inherit="core"' \
-            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","CODEX_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
             --output-last-message "$RUNNER_TEMP/agent-report.md" - <<'PROMPT'
           Você é o Scout de manutenção do Rotina Mágica. Trabalhe somente em leitura e somente com o conteúdo local.
           Leia README, ROADMAP, CONTRIBUTING, SECURITY, CHANGELOG, docs, código, testes e histórico Git.
