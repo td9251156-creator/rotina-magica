@@ -36,11 +36,11 @@ jobs:
       - run: npm ci
       - name: Conferir configuração
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - name: Revisar pull request
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
         run: |
           npx --no-install codex exec review --ephemeral --ignore-user-config \
             -c 'sandbox_mode="read-only"' \
