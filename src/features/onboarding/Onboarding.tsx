@@ -76,7 +76,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             <input inputMode="numeric" placeholder="ex.: 18:30" value={customTime} onChange={(e) => setCustomTime(e.target.value)} />
           </label>
           {customTime && !parsedCustom && <p className="warn small">Não entendi esse horário. Tente 18:30.</p>}
-          <details className="wellbeing-emergency"><summary>Quero apoio específico para hábitos ou uso de substâncias</summary><div className="support-choice"><button type="button" aria-pressed={focus === 'general'} onClick={() => setFocus('general')}><strong>Dias difíceis e bem-estar</strong></button><button type="button" aria-pressed={focus === 'recovery'} onClick={() => setFocus('recovery')}><strong>Hábitos e uso de substâncias</strong></button></div></details>
+          <details className="wellbeing-emergency"><summary>Quero apoio específico para hábitos ou uso de substâncias</summary><div className="support-choice"><button type="button" aria-pressed={focus === 'general'} onClick={() => { setFocus('general'); write((r) => r.settings.set<SupportFocus>('supportFocus', 'general')); }}><strong>Dias difíceis e bem-estar</strong></button><button type="button" aria-pressed={focus === 'recovery'} onClick={() => { setFocus('recovery'); write((r) => r.settings.set<SupportFocus>('supportFocus', 'recovery')); }}><strong>Hábitos e uso de substâncias</strong></button></div></details>
         </section>
       )}
 

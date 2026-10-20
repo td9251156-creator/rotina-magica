@@ -13,16 +13,16 @@ import { Setting } from '@/ui/Setting';
 import { download } from '@/ui/download';
 import { supportFocus, type SupportFocus } from '@/domain/support';
 
-const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
+const KIT_KINDS: { kind: PlanItemKind; label: string; generalLabel?: string }[] = [
   { kind: 'se_entao', label: 'Se… então…' },
   { kind: 'resposta', label: 'Respostas a pensamentos' },
-  { kind: 'recusa', label: 'Recusar oferta' },
+  { kind: 'recusa', label: 'Recusar oferta', generalLabel: 'Colocar um limite' },
   { kind: 'filme', label: 'O filme até o fim' },
   { kind: 'futuro', label: 'Futuro' },
   { kind: 'barreira', label: 'Barreiras' },
   { kind: 'razao', label: 'Razões' },
   { kind: 'pessoa', label: 'Quem você pode chamar' },
-  { kind: 'sinal_alerta', label: 'Escolhas que deixam você mais perto' },
+  { kind: 'sinal_alerta', label: 'Escolhas que deixam você mais perto', generalLabel: 'Sinais de que preciso de cuidado' },
   { kind: 'gentileza', label: 'Frases para um dia difícil' },
 ];
 
@@ -73,7 +73,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
     // O link abre direto o passo do meio-dia da rotina.
     download(
       'rotina-lembrete-meio-dia.ics',
-      buildDailyReminderIcs({ time: parsedMidday, url: `${appUrl}#rotina/t_ahathoor`, now: new Date(), title: 'Rotina: pausa do meio-dia' }),
+      buildDailyReminderIcs({ time: parsedMidday, url: `${appUrl}${focus === 'general' ? '#diario' : '#rotina/t_ahathoor'}`, now: new Date(), title: focus === 'general' ? 'Rotina: pausa para você' : 'Rotina: pausa do meio-dia' }),
       'text/calendar',
     );
     write((r) => r.settings.set('middayReminder', parsedMidday));
@@ -190,7 +190,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         </button>
       </Setting>
       <Setting title="Lembrete do meio-dia (opcional)" hint="Uma pausa curta no meio do dia">
-        <p className="small muted">Um minuto para respirar e lembrar do plano da noite antes da tarde acabar. O alarme abre direto a pausa do meio-dia.</p>
+        <p className="small muted">{focus === 'general' ? 'Um lembrete opcional para fazer uma pausa e registrar como você está. O alarme abre seu diário.' : 'Um minuto para respirar e lembrar do plano da noite antes da tarde acabar. O alarme abre direto a pausa do meio-dia.'}</p>
         <label className="field">
           Horário do meio-dia
           <input inputMode="numeric" value={middayTime} onChange={(e) => setMiddayTime(e.target.value)} />
@@ -274,13 +274,13 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
 
       <p className="eyebrow group">Ajuda agora</p>
       <Setting title="Seu kit" hint="O que aparece na Ajuda agora">
-        <p className="small muted">O que aparece no SOS. Vem das vivências e do primeiro uso.</p>
-        {KIT_KINDS.map(({ kind, label }) => {
+        <p className="small muted">{focus === 'general' ? 'Suas frases e escolhas pessoais para momentos difíceis. Elas ficam neste celular.' : 'O que aparece na Ajuda agora. Vem das vivências e do primeiro uso.'}</p>
+        {KIT_KINDS.map(({ kind, label, generalLabel }) => {
           const items = repos.plan.list(kind);
           if (!items.length) return null;
           return (
             <div key={kind}>
-              <h3>{label}</h3>
+              <h3>{focus === 'general' ? generalLabel ?? label : label}</h3>
               <ul className="stack">
                 {items.map((i) => (
                   <li key={i.id} className="kit-item">
@@ -308,7 +308,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
           );
         })}
         <button type="button" className="link" onClick={onEditPlans}>
-          Refazer primeiro uso (atividades, razões e planos de noite)
+          {focus === 'general' ? 'Refazer suas escolhas de apoio' : 'Refazer primeiro uso (atividades, razões e planos de noite)'}
         </button>
       </Setting>
 
