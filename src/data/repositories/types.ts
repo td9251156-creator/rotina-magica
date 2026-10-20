@@ -135,6 +135,8 @@ export interface Practice extends Entity {
   techniqueId: string;
   /** Notas dadas no exercício (ex.: régua de 0 a 10). Registros antigos não têm. */
   scores?: Record<string, number>;
+  /** Percepção pessoal, opcional e sem interpretação clínica. */
+  feedback?: 'helped' | 'same' | 'harder';
 }
 
 /** Uma partida de jogo. */
@@ -156,6 +158,7 @@ export interface GameRepository {
 
 export interface PracticeRepository {
   add(techniqueId: string, date: LocalDate, scores?: Record<string, number>): Practice;
+  setFeedback(id: string, feedback: Practice['feedback']): Practice;
   list(): Practice[];
 }
 

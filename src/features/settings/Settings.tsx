@@ -312,9 +312,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         </button>
       </Setting>
 
-      <p className="small muted center">
-        Se precisar conversar: CVV 188, 24h, de graça.
-      </p>
+      {focus === 'recovery' && <p className="small muted center">Se precisar conversar: CVV 188, 24h, de graça.</p>}
     </Screen>
   );
 }

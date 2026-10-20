@@ -10,7 +10,7 @@ O app é uma ferramenta de autocuidado. Não diagnostica, não substitui psicote
 
 ## Como a experiência funciona
 
-- **Ajuda agora:** acesso direto a exercícios simples de orientação e cuidado básico, mais opções para conversar com o CVV, procurar UBS/CAPS ou acionar o SAMU em uma emergência.
+- **Ajuda agora:** acesso direto a exercícios breves de orientação e cuidado básico, sem precisar preencher o primeiro uso.
 - **Vivências:** oito exercícios organizados por necessidade percebida, com duração aproximada, progresso visível e instruções para cada etapa. Algumas respostas podem ser guardadas no diário ou no kit pessoal; compartilhar uma mensagem sempre exige ação explícita.
 - **Diário:** humor e peso do momento são opcionais. A nota escrita também é opcional. Um registro em branco não é convertido em nota zero.
 - **Progresso:** mostra práticas e registros feitos, sem classificar a pessoa, comparar usuários ou interpretar evolução como resultado clínico.
@@ -30,6 +30,6 @@ Os dados permanecem no armazenamento local do navegador; não há conta nem sinc
 
 ## Limites e linguagem
 
-Os contatos de ajuda são opções, não substitutos de serviços de emergência locais. Em risco imediato, a tela oferece o número 192. O CVV 188 é uma opção de apoio emocional no Brasil; UBS e CAPS podem orientar sobre atendimento de saúde. O app não monitora crises, não chama serviços por conta própria e não sabe se uma orientação foi seguida.
+O app não monitora crises, não oferece atendimento profissional e não aciona ajuda por conta própria. As vivências servem para autocuidado e podem não ser adequadas a todas as pessoas; é possível interrompê-las a qualquer momento.
 
 Descrever uma prática como inspirada em terapia não significa que o app ofereça terapia. Textos de evidência e decisões da proposta anterior permanecem em [visao-produto.md](visao-produto.md) como histórico do módulo de recuperação e não devem ser generalizados para todo sofrimento emocional.

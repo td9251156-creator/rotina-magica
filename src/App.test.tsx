@@ -53,7 +53,8 @@ describe('Rumo', () => {
       </DataProvider>,
     );
     expect(screen.getByRole('button', { name: /Voltar para o aqui e agora/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188');
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByText(/188|CAPS|SAMU|192/)).not.toBeInTheDocument();
   });
 
   it('a Ajuda agora abre com aviso mesmo se o navegador bloquear o armazenamento', () => {

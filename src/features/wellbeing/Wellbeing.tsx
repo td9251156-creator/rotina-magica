@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useData } from '@/data/provider';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { periodFor } from '@/domain/routine';
-import { techniqueOfTheDay, techniqueMinutes } from '@/domain/training';
+import { findTechnique, techniqueOfTheDay, techniqueMinutes } from '@/domain/training';
+import { GENERAL_TECHNIQUES } from '@/domain/wellbeing-techniques';
+import type { Practice } from '@/data/repositories/types';
 import { navigate } from '@/router';
 import { Icon } from '@/ui/icons';
 import { SkyScene } from '@/ui/illustrations';
@@ -16,7 +18,8 @@ const MOODS = ['Muito pesado', 'Pesado', 'Mais ou menos', 'Um pouco melhor', 'Be
 export function WellbeingHome() {
   const { repos } = useData();
   const today = toLocalDate(new Date());
-  const entries = repos.practices.list();
+  const generalIds = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
+  const entries = repos.practices.list().filter((p) => generalIds.has(p.techniqueId));
   const suggestion = techniqueOfTheDay(today, entries.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), 'general');
   const checkin = repos.checkins.getByDate(today);
   const period = periodFor(new Date(), repos.settings.get('workEndTime', '18:00'));
@@ -53,7 +56,7 @@ export function WellbeingHome() {
         <button type="button" className="link" onClick={() => navigate('lab')}>Ver meus cuidados ao longo do tempo →</button>
       </section>
       <div className="tools">
-        <button type="button" className="tool" onClick={() => navigate('treino')}><span className="item__icon"><Icon id="ferr_vivencias" /></span><strong>Vivências e terapias</strong><span className="muted small">Escolha pelo que precisa agora</span></button>
+        <button type="button" className="tool" onClick={() => navigate('treino')}><span className="item__icon"><Icon id="ferr_vivencias" /></span><strong>Vivências guiadas</strong><span className="muted small">Escolha pelo que precisa agora</span></button>
         <button type="button" className="tool" onClick={() => navigate('jogos')}><span className="item__icon"><Icon id="ferr_jogos" /></span><strong>Jogos para uma pausa</strong><span className="muted small">Mudar o foco, sem cobrança</span></button>
       </div>
       <p className="wellbeing-note">Recursos de autocuidado, sem diagnóstico. O app não substitui psicoterapia ou atendimento de saúde.</p>
@@ -91,10 +94,14 @@ export function WellbeingJournal() {
 
 export function WellbeingProgress({ onBack }: { onBack: () => void }) {
   const { repos } = useData();
-  const practices = repos.practices.list();
+  const generalIds = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
+  const practices = repos.practices.list().filter((p) => generalIds.has(p.techniqueId));
   const days = new Set(practices.map((p) => p.date)).size;
   const records = repos.checkins.listBetween('2000-01-01', toLocalDate(new Date())).filter((c) => c.stress !== null || c.mood !== null || c.note);
-  return <Screen title="Seus cuidados" onBack={onBack}><p className="muted">Isto é uma memória dos cuidados que você fez, não uma medida de saúde ou uma competição.</p><div className="wellbeing-stats"><section className="card"><strong>{practices.length}</strong><span>vivências praticadas</span></section><section className="card"><strong>{days}</strong><span>dias com algum cuidado</span></section><section className="card"><strong>{records.length}</strong><span>registros no diário</span></section></div><section className="card"><h2>O cuidado pode mudar</h2><p>Uma prática pode ajudar num dia e não em outro. Seus números não precisam subir para que você mereça apoio.</p><button type="button" className="btn" onClick={() => navigate('treino')}>Escolher uma vivência</button></section></Screen>;
+  const latestFeedback = new Map<string, Practice['feedback']>();
+  practices.forEach((practice) => { if (practice.feedback) latestFeedback.set(practice.techniqueId, practice.feedback); });
+  const helpfulIds = [...latestFeedback].filter(([, feedback]) => feedback === 'helped').map(([id]) => id);
+  return <Screen title="Seus cuidados" onBack={onBack}><p className="muted">Isto é uma memória do que você fez e de como cada vivência pareceu para você. Não é uma medida de saúde ou uma competição.</p><div className="wellbeing-stats"><section className="card"><strong>{practices.length}</strong><span>vivências praticadas</span></section><section className="card"><strong>{days}</strong><span>dias com algum cuidado</span></section><section className="card"><strong>{records.length}</strong><span>registros no diário</span></section></div>{helpfulIds.length > 0 && <section className="card"><h2>Você marcou que estas ajudaram</h2><p className="small muted">É a sua percepção; pode mudar de um dia para outro.</p><div className="stack">{helpfulIds.map((id) => { const technique = findTechnique(id); return technique && <button key={id} className="wellbeing-action" onClick={() => navigate('treino', id)}><span><strong>{technique.title}</strong><span>Fazer de novo, se quiser</span></span><Icon id="seta" /></button>; })}</div></section>}<section className="card"><h2>O cuidado pode mudar</h2><p>Uma prática pode ajudar num dia e não em outro. Você pode contar como foi ao concluir uma vivência; essa resposta fica neste aparelho.</p><button type="button" className="btn" onClick={() => navigate('treino')}>Escolher uma vivência</button></section></Screen>;
 }
 
 export function WellbeingSupport({ locked }: { locked: boolean }) {
@@ -113,9 +120,7 @@ export function WellbeingSupport({ locked }: { locked: boolean }) {
       <button type="button" className="wellbeing-action" onClick={() => setExercise('ancorar_sentidos')}><Icon id="ter_atencao" /><span><strong>Voltar para o aqui e agora</strong><span>Olhar ao redor e sentir o apoio do corpo · cerca de 2 min</span></span><Icon id="seta" /></button>
       <button type="button" className="wellbeing-action" onClick={() => setExercise('pausa_corpo')}><Icon id="passo_respirar" /><span><strong>Dar uma pausa ao corpo</strong><span>Respiração no seu ritmo, sem forçar · cerca de 2 min</span></span><Icon id="seta" /></button>
     </div>
-    <section className="card"><h2>Falar com alguém</h2><p className="small muted">Se puder, procure alguém que respeite você. Também há apoio profissional e serviços gratuitos.</p><a className="btn" href="tel:188">CVV · conversar pelo 188</a><a className="link" href="https://cvv.org.br/" target="_blank" rel="noopener noreferrer">Conversar pelo chat do CVV →</a><a className="link" href="https://www.google.com/maps/search/UBS+CAPS" target="_blank" rel="noopener noreferrer">Buscar UBS ou CAPS perto de você →</a></section>
-    <details className="wellbeing-emergency"><summary>Preciso de ajuda urgente</summary><p>Se houver risco imediato à sua segurança ou uma emergência de saúde, ligue para o SAMU ou procure uma emergência.</p><a className="btn" href="tel:192">SAMU · 192</a></details>
     {!locked && <button type="button" className="link" onClick={() => navigate('treino')}>Ver outras vivências →</button>}
-    <p className="wellbeing-note">Você pode parar qualquer exercício se ele não estiver confortável. O app é um apoio de autocuidado, não um atendimento de emergência.</p>
+    <p className="wellbeing-note">Você pode parar qualquer exercício se ele não estiver confortável. Este espaço oferece pausas de autocuidado.</p>
   </main>;
 }

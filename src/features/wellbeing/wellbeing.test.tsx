@@ -6,10 +6,11 @@ import { createTestRepositories } from '@/data/test-repos';
 import { toLocalDate } from '@/domain/dates';
 import { TrainingSession } from '../training/Training';
 
-function setup(hash: string, locked = false) {
+function setup(hash: string, locked = false, seed?: (repos: ReturnType<typeof createTestRepositories>) => void) {
   const repos = createTestRepositories();
   repos.settings.set('onboardingDone', true);
   repos.settings.set('supportFocus', 'general');
+  seed?.(repos);
   if (locked) repos.settings.set('pinHash', 'hash-de-teste');
   window.location.hash = hash;
   render(<DataProvider repos={repos}><App /></DataProvider>);
@@ -23,7 +24,8 @@ describe('vivências e acolhimento geral', () => {
     expect(screen.queryByRole('button', { name: 'Usei' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Preciso de apoio agora' }));
     expect(await screen.findByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188');
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByText(/188|CAPS|SAMU|192/)).not.toBeInTheDocument();
   });
 
   it('filtra vivências, preserva a resposta ao voltar e pede cuidado antes de descartar', async () => {
@@ -70,6 +72,31 @@ describe('vivências e acolhimento geral', () => {
     expect(screen.queryByText('Frase pessoal secreta')).not.toBeInTheDocument();
   });
 
+  it('pede retorno opcional e guarda a percepção junto da vivência', async () => {
+    const { repos, user } = setup('#treino/proximo_passo');
+    await user.click(screen.getByRole('button', { name: 'Uma tarefa' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.type(screen.getByRole('textbox'), 'Beber água.');
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(screen.getByRole('group', { name: 'Como esta vivência pareceu?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Ajudou um pouco' }));
+    expect(repos.practices.list()[0]).toMatchObject({ techniqueId: 'proximo_passo', feedback: 'helped' });
+    expect(screen.getByRole('status')).toHaveTextContent('Você pode mudar essa resposta');
+  });
+
+  it('progresso geral não mistura práticas antigas do outro foco', () => {
+    const { repos } = setup('#lab', false, (r) => {
+      r.practices.add('se_entao', toLocalDate(new Date()));
+      const practice = r.practices.add('ancorar_sentidos', toLocalDate(new Date()));
+      r.practices.setFeedback(practice.id, 'helped');
+    });
+    expect(screen.getByText('vivências praticadas')).toBeInTheDocument();
+    expect(screen.getByText('vivências praticadas').previousElementSibling).toHaveTextContent('1');
+    expect(screen.getByRole('button', { name: /Voltar para o aqui e agora.*Fazer de novo/ })).toBeInTheDocument();
+    expect(repos.practices.list()).toHaveLength(2);
+  });
+
   it('permite mudar o tipo de apoio sem apagar o kit', async () => {
     const { repos, user } = setup('#ajustes');
     repos.plan.add({ kind: 'pessoa', text: 'Minha amiga' });
@@ -77,6 +104,17 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: /Hábitos e uso de substâncias/ }));
     expect(repos.settings.get('supportFocus', '')).toBe('recovery');
     expect(repos.plan.list('pessoa')[0].text).toBe('Minha amiga');
+  });
+
+  it('deixa entrar no app sem preencher o primeiro uso nem criar planos padrão', async () => {
+    const repos = createTestRepositories();
+    window.location.hash = '';
+    const user = userEvent.setup();
+    render(<DataProvider repos={repos}><App /></DataProvider>);
+    await user.click(screen.getByRole('button', { name: 'Começar agora sem configurar' }));
+    expect(await screen.findByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
+    expect(repos.settings.get('onboardingDone', false)).toBe(true);
+    expect(repos.plan.list('plano_noite')).toHaveLength(0);
   });
 
   it('um id inválido seguido de um válido não quebra a ordem dos hooks', () => {

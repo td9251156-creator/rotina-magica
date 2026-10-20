@@ -331,6 +331,14 @@ export function createLocalRepositories({ storage, newId, now }: RepoDeps): Repo
         save();
         return strip(row);
       },
+      setFeedback(id, feedback) {
+        const row = db.practices.find((p) => alive(p) && p.id === id);
+        if (!row) throw notFound('Vivência', id);
+        row.feedback = feedback;
+        row.updatedAt = stamp();
+        save();
+        return strip(row);
+      },
       list() {
         return db.practices.filter(alive).sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map(strip);
       },

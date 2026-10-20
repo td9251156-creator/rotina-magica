@@ -55,7 +55,7 @@ export const GENERAL_TECHNIQUES: readonly Technique[] = [
     steps: [
       { text: 'Pense em alguém com quem você se sente respeitado. Não precisa ser da família nem saber de tudo.', capture: { kind: 'pessoa', prompt: 'Quem eu posso procurar:', placeholder: 'Uma amiga, um colega, alguém do meu cuidado profissional.' } },
       { text: 'Um pedido pode ser pequeno. Leia esta sugestão e compartilhe só se quiser.', share: 'Estou passando por um momento difícil. Você pode conversar comigo um pouco? Não precisa resolver nada; sua companhia já ajuda.' },
-      { text: 'Se não houver alguém disponível, você também pode buscar uma UBS ou um CAPS. Para apoio emocional, o CVV atende pelo 188. Se houver risco imediato, procure uma emergência ou ligue 192.' },
+      { text: 'Se ninguém estiver disponível agora, você pode tentar outra pessoa ou retomar este pedido mais tarde. Não precisa resolver tudo nesta conversa.' },
     ],
   },
   {

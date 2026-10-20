@@ -38,7 +38,8 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
   const today = toLocalDate(new Date());
   const practices = repos.practices.list();
   const times = (id: string) => practices.filter((p) => p.techniqueId === id).length;
-  const ofTheDay = techniqueOfTheDay(today, practices.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), focus);
+  const selectedApproach = general && need !== 'all' ? approachesFor(focus).find((a) => a.id === need) : undefined;
+  const ofTheDay = techniqueOfTheDay(today, practices.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), focus, selectedApproach ? techniqueIds(selectedApproach) : undefined);
   const style = repos.settings.get<RoutineStyle | null>('routineStyle', null);
 
   if (playing) {
@@ -65,11 +66,11 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
     return <button key={d.title} type="button" className="training-item" onClick={() => open(item)}><span className="training-item__icon"><Icon id={item.kind === 'atalho' ? 'seta' : APPROACH_ICONS[a.id]} /></span><span className="item__text"><strong>{d.title}</strong><span className="muted small">{d.why}</span>{d.duration && <span className="training-duration">{d.duration}</span>}<span className="therapy__status">{d.status}</span></span><Chevron /></button>;
   })}</div>;
   return (
-    <Screen title={general ? 'Vivências e terapias' : 'Terapias e vivências'} onBack={onBack} className="training-list">
+    <Screen title={general ? 'Vivências guiadas' : 'Terapias e vivências'} onBack={onBack} className="training-list">
       <div className="training-landscape"><PathArt /></div>
       <p className="muted">{general ? 'Um espaço de autocuidado para momentos difíceis. Escolha pelo que você precisa agora; não é preciso fazer tudo nem terminar hoje.' : 'Exercícios curtos para preparar seu kit de apoio. Escolha um cuidado possível; você pode repetir ou parar quando quiser.'}</p>
       {general && <div className="training-needs" role="group" aria-label="O que você precisa agora?">{NEEDS.map(([id, label]) => <Chip key={id} selected={need === id} onClick={() => setNeed(id)}>{label}</Chip>)}</div>}
-      <button type="button" className="next training-today" onClick={() => onOpen(ofTheDay.id)}><span className="eyebrow">Um convite para hoje · cerca de {techniqueMinutes(ofTheDay)} min</span><span className="next__row"><span className="item__icon"><Icon id={APPROACH_ICONS[approachOf(ofTheDay.id)?.id ?? 'recaida']} /></span><span className="item__text"><strong>{ofTheDay.title}</strong><span className="muted small">{ofTheDay.why}</span></span><Chevron /></span></button>
+      <button type="button" className="next training-today" onClick={() => onOpen(ofTheDay.id)}><span className="eyebrow">{general && need !== 'all' ? 'Uma opção para o que você escolheu' : 'Um convite para hoje'} · cerca de {techniqueMinutes(ofTheDay)} min</span><span className="next__row"><span className="item__icon"><Icon id={APPROACH_ICONS[approachOf(ofTheDay.id)?.id ?? 'recaida']} /></span><span className="item__text"><strong>{ofTheDay.title}</strong><span className="muted small">{ofTheDay.why}</span></span><Chevron /></span></button>
       {approachesFor(focus).filter((a) => !general || need === 'all' || need === a.id).map((a) => {
         const ids = techniqueIds(a);
         const done = ids.filter((id) => times(id) > 0).length;
@@ -113,6 +114,8 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
   const [answers, setAnswers] = useState<Record<number, { text: string; option?: string }>>({});
   const [pauseDone, setPauseDone] = useState<Record<number, boolean>>({});
   const [finished, setFinished] = useState(false);
+  const [finishedPracticeId, setFinishedPracticeId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<'helped' | 'same' | 'harder' | null>(null);
   const [leaving, setLeaving] = useState(false);
   const finishedOnce = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -142,6 +145,7 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
     finishedOnce.current = true;
     const today = toLocalDate(new Date());
     const scores: Record<string, number> = {};
+    let practiceId: string | null = null;
     write((r) => {
       technique.steps.forEach((s, idx) => {
         const a = answers[idx];
@@ -157,8 +161,9 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
           }
         }
       });
-      r.practices.add(technique.id, today, scores);
+      practiceId = r.practices.add(technique.id, today, scores).id;
     });
+    setFinishedPracticeId(practiceId);
     setFinished(true);
   };
   if (finished) {
@@ -166,7 +171,7 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
     const toJournal = technique.steps.some((s, idx) => s.reflect?.journal && answers[idx]?.text.trim());
     const scored = technique.steps.some((s) => s.score);
     const where = toJournal ? (general ? 'Sua anotação foi para o seu Diário.' : 'As coisas boas de hoje foram para o seu Diário.') : scored ? 'Suas notas ficam no laboratório, para você ver como mudam com o tempo.' : general && kinds.length ? 'Sua frase ficou no kit pessoal, em Ajustes.' : kinds.map((k) => SAVED_WHERE[k]).find(Boolean);
-    return <Screen title={general ? 'Um cuidado feito.' : 'Feito.'} className="training-finished"><span className="training-finished__icon"><Icon id="feito" /></span><p>{where ? `Pronto. ${where}` : kinds.length ? 'Pronto. O que você escreveu já está no seu SOS.' : 'Você reservou um momento para si. Tudo bem se ainda houver algo difícil por aí.'}</p><p className="muted">Você pode repetir quando fizer sentido. Não precisa fazer outra vivência agora.</p><div className="actions"><button type="button" className="btn btn--ghost" onClick={onMore}>Mais vivências</button><button type="button" className="btn" onClick={onDone}>{finishLabel}</button></div></Screen>;
+    return <Screen title={general ? 'Um cuidado feito.' : 'Feito.'} className="training-finished"><span className="training-finished__icon"><Icon id="feito" /></span><p>{where ? `Pronto. ${where}` : kinds.length ? 'Pronto. O que você escreveu já está no seu SOS.' : 'Você reservou um momento para si. Tudo bem se ainda houver algo difícil por aí.'}</p><p className="muted">Você pode repetir quando fizer sentido. Não precisa fazer outra vivência agora.</p>{general && finishedPracticeId && <fieldset className="wellbeing-fieldset"><legend>Como foi esta vivência para você?</legend><p className="small muted">Sua percepção ajuda a lembrar o que vale a pena repetir. É opcional e fica neste aparelho.</p><div className="chips" role="group" aria-label="Como esta vivência pareceu?">{([['helped', 'Ajudou um pouco'], ['same', 'Não mudou'], ['harder', 'Ficou mais difícil']] as const).map(([value, label]) => <button key={value} type="button" className={`chip${feedback === value ? ' chip--on' : ''}`} aria-pressed={feedback === value} onClick={() => { write((r) => r.practices.setFeedback(finishedPracticeId, value)); setFeedback(value); }}>{label}</button>)}</div>{feedback && <p className="small" role="status">Obrigado. Você pode mudar essa resposta quando praticar de novo.</p>}</fieldset>}<div className="actions"><button type="button" className="btn btn--ghost" onClick={onMore}>Mais vivências</button><button type="button" className="btn" onClick={onDone}>{finishLabel}</button></div></Screen>;
   }
   return <Screen onBack={requestBack} className="training-session">
     {leaving && <div className="card training-leave" role="alertdialog" aria-label="Sair da vivência?"><h2>Sair por agora?</h2><p>O que você escreveu ainda não foi guardado. Você pode continuar ou sair sem salvar.</p><div className="actions"><button type="button" className="btn" onClick={() => setLeaving(false)}>Continuar aqui</button><button type="button" className="btn btn--ghost" onClick={onBack}>Sair sem salvar</button></div></div>}

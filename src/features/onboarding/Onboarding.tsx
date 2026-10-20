@@ -39,6 +39,14 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     onDone();
   };
 
+  const startWithoutSetup = () => {
+    write((r) => {
+      r.settings.set('supportFocus', focus);
+      r.settings.set('onboardingDone', true);
+    });
+    onDone();
+  };
+
   const addCustom = (value: string, list: string[], set: (v: string[]) => void, clear: () => void) => {
     const v = value.trim();
     if (v && !list.includes(v)) set([...list, v]);
@@ -170,6 +178,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           </button>
         )}
       </div>
+      {general && step === 0 && <button type="button" className="link onboarding-skip" onClick={startWithoutSetup}>Começar agora sem configurar</button>}
     </main>
   );
 }

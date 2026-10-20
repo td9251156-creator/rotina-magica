@@ -34,5 +34,6 @@ describe('acolhimento e compatibilidade', () => {
     expect(ids.some((id) => TECHNIQUES.some((t) => t.id === id))).toBe(false);
     expect(techniqueOfTheDay('2026-10-19', [], '2026-10-19', 'general').id).toBe('ancorar_sentidos');
     expect(techniqueOfTheDay('2026-10-19', ['ancorar_sentidos'], '2026-10-19', 'general').id).toBe('pausa_corpo');
+    expect(techniqueOfTheDay('2026-10-19', [], '2026-10-19', 'general', ['proximo_passo']).id).toBe('proximo_passo');
   });
 });
