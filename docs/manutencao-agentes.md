@@ -53,8 +53,7 @@ aplicativo nem resultados de saúde.
 
 ## Ativação
 
-1. Adicione `OPENAI_API_KEY` em **Settings → Secrets and variables → Actions → Secrets**. Para manter
-   compatibilidade com a configuração inicial deste repositório, os workflows também aceitam `API_OPENIA`.
+1. Adicione `OPENAI_API_KEY` em **Settings → Secrets and variables → Actions → Secrets**.
 2. Proteja `main`: exija pull request, uma revisão do CODEOWNERS, CI e CodeQL; bloqueie force push e exclusão.
 3. Deixe o Scout funcionar por duas semanas antes de aprovar a primeira implementação.
 4. Para iniciar uma tarefa, revise a seção `## Tarefa aprovada` e aplique a etiqueta `agent:approved`. Somente uma

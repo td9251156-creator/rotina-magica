@@ -41,11 +41,11 @@ jobs:
           gh label create 'agent:done' --repo "$REPO" --color 5319E7 --description 'Mudança de agente revisada e mesclada' --force
       - name: Conferir configuração
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - name: Analisar prioridades
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           npx --no-install codex exec --ephemeral --ignore-user-config --sandbox read-only \
             -c 'shell_environment_policy.inherit="core"' \

@@ -54,7 +54,7 @@ jobs:
           test "$RECENT" = 0 || { echo 'O limite é uma implementação por período de sete dias.'; exit 1; }
       - name: Conferir configuração
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - run: npm ci
       - name: Extrair tarefa aprovada
@@ -63,7 +63,7 @@ jobs:
           test -s "$RUNNER_TEMP/approved-task.md" || { echo 'A issue precisa de uma seção ## Tarefa aprovada.'; exit 1; }
       - name: Implementar escopo aprovado
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.API_OPENIA }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           BASE_SHA=$(git rev-parse HEAD)
           echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
