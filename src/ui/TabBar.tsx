@@ -1,6 +1,8 @@
 import { navigate, type RouteName } from '@/router';
 import type { IconId } from './app-icons';
 import { Icon } from './icons';
+import { useData } from '@/data/provider';
+import { supportFocus } from '@/domain/support';
 
 const TABS: { route: RouteName; label: string; icon: IconId }[] = [
   { route: 'home', label: 'Hoje', icon: 'aba_hoje' },
@@ -11,6 +13,8 @@ const TABS: { route: RouteName; label: string; icon: IconId }[] = [
 
 /** Barra de baixo: as quatro áreas do app, sempre a um toque. */
 export function TabBar({ current }: { current: RouteName }) {
+  const { repos } = useData();
+  const helpLabel = supportFocus(repos) === 'general' ? 'Pausa agora' : 'Ajuda agora';
   return (
     <nav className="tabbar" aria-label="Navegação principal">
       {TABS.map(({ route, label, icon }) => (
@@ -24,7 +28,7 @@ export function TabBar({ current }: { current: RouteName }) {
           <span className="tabbar__icon">
             <Icon id={icon} />
           </span>
-          <span>{label}</span>
+          <span>{route === 'sos' ? helpLabel : label}</span>
         </button>
       ))}
     </nav>

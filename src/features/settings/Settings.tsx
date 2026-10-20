@@ -144,8 +144,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         </div>
       </Setting>
       <p className="eyebrow group">Sua rotina</p>
-      <StyleCard />
-      <OathCard />
+      {focus !== 'general' && <><StyleCard /><OathCard /></>}
       <LetterCard />
 
       <p className="eyebrow group">Aparência e lembrete</p>
@@ -377,9 +376,9 @@ function LetterCard() {
   const [text, setText] = useState(() => repos.settings.get('letter', ''));
   const [ok, setOk] = useState(false);
   return (
-    <Setting title="Carta para o momento difícil" hint={text.trim() ? 'Escrita. Abre primeiro na Ajuda agora' : 'Ainda não escrita'}>
+    <Setting title="Carta para o momento difícil" hint={text.trim() ? 'Escrita. Aparece na pausa agora' : 'Ainda não escrita'}>
       <p className="small muted">
-        Escreva agora, com calma, para você mesmo no momento da vontade. Ela aparece primeiro em Ajuda agora (e fica escondida se o app estiver
+        Escreva agora, com calma, para você mesmo num momento difícil. Ela aparece em Pausa agora (e fica escondida se o app estiver
         trancado com PIN).
       </p>
       <textarea

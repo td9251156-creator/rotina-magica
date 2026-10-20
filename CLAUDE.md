@@ -14,8 +14,8 @@ O catálogo geral tem IDs próprios e usa voz do aparelho quando disponível; n�
 Guia da proposta e transição: `docs/proposta-acolhimento.md`. Visão histórica e evidências: `docs/visao-produto.md`.
 
 ## Critério de decisão
-"Isso ajuda uma pessoa em recuperação, com evidência de que funciona?" Se não há evidência, a feature
-precisa ser barata, opcional e não atrapalhar o fluxo de crise.
+"Isso ajuda alguém a atravessar um momento difícil, com base clara e sem prometer tratamento?" Se a evidência é
+fraca, a mudança precisa ser simples, opcional e não pode atrapalhar o acesso a uma pausa.
 
 ## Decisões tomadas
 | Data | Decisão | Por quê |

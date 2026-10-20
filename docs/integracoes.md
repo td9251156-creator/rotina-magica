@@ -6,9 +6,16 @@ integração só entra se cumprir as cinco regras abaixo.
 1. **É opcional e vem desligada.**
 2. **Não envia nada que a pessoa escreveu ou registrou.** Se algum dia precisar de rede, a pessoa vê exatamente o que
    vai sair e confirma antes.
-3. **"Ajuda agora" continua funcionando sem internet** e sem a integração.
+3. **"Pausa agora" continua funcionando sem internet** e sem a integração.
 4. **Nenhuma chave de API no código nem no site publicado.** Chave do mantenedor só roda em script no computador dele.
-5. **Tem um motivo de recuperação**, não só de tecnologia.
+5. **Tem utilidade clara para o cuidado ou para a manutenção**, não só interesse tecnológico.
+
+## Automação da manutenção
+
+Serviços de IA podem apoiar triagem de issues, revisão de pull requests, verificação de acessibilidade, atualização
+da documentação e preparação de releases. Essas automações recebem apenas código e informações públicas do
+repositório, nunca registros guardados no aplicativo. Toda sugestão precisa de revisão do mantenedor antes de ser
+mesclada ou publicada.
 
 Ordem de preferência:
 

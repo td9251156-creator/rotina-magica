@@ -1,6 +1,8 @@
 # Rotina Mágica
 
 [![CI](https://github.com/td9251156-creator/rotina-magica/actions/workflows/ci.yml/badge.svg)](https://github.com/td9251156-creator/rotina-magica/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/td9251156-creator/rotina-magica/actions/workflows/codeql.yml/badge.svg)](https://github.com/td9251156-creator/rotina-magica/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/td9251156-creator/rotina-magica)](https://github.com/td9251156-creator/rotina-magica/releases)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-c9a45c)](LICENSE)
 
 **Pequenos cuidados para quem está passando por momentos difíceis.**
@@ -20,7 +22,7 @@ relatos pessoais. Instale na tela inicial pelo navegador para voltar mais facilm
   de manter uma sequência ou estar melhor ao terminar.
 - **Vivências e terapias:** oito exercícios de autocuidado, organizados pelo que a pessoa precisa no momento.
   Cada um mostra a duração aproximada, o progresso, um passo de cada vez e onde uma resposta será guardada.
-- **Ajuda agora:** orientação pelos sentidos, pausa ao corpo e contatos de apoio, sem exigir cadastro nem PIN.
+- **Pausa agora:** orientação pelos sentidos e pausa ao corpo, sem exigir cadastro nem PIN.
   Com o PIN fechado, frases pessoais ficam escondidas.
 - **Diário:** humor, peso do momento e anotações opcionais. Dias sem registro não viram notas baixas.
 - **Jogos:** uma pausa para mudar o foco ou respirar, com controles visuais, toque e teclado.
@@ -30,14 +32,11 @@ As vivências incluem voltar ao aqui e agora, fazer uma pausa ao corpo, ser gent
 pensamento, escolher um passo pequeno, pedir companhia, estabelecer limites e fechar o dia sem cobrança.
 Reflexões temporárias não são salvas. As frases que viram kit pessoal só são guardadas ao concluir o exercício.
 
-## Autocuidado e apoio profissional
+## Limites do aplicativo
 
 Os exercícios são inspirados em atenção ao presente, autocompaixão, TCC, ACT e comunicação. Isso não transforma o
 app em psicoterapia nem demonstra que ele trata ansiedade, depressão ou outra condição. Você pode adaptar ou
 interromper uma prática que não estiver confortável. A espiritualidade segue opcional.
-
-Para apoio emocional no Brasil, **CVV 188** e [chat do CVV](https://cvv.org.br/). UBS e CAPS oferecem caminhos de
-cuidado pelo SUS. Em risco imediato à segurança ou emergência de saúde, procure uma emergência ou ligue **SAMU 192**.
 
 ## Quem já usava o app
 
@@ -65,8 +64,22 @@ Vite, React e TypeScript. Regras em `src/domain/`, interface em `src/features/` 
 `src/data/`. Veja [CONTRIBUTING.md](CONTRIBUTING.md), [CLAUDE.md](CLAUDE.md) e [SECURITY.md](SECURITY.md).
 O site é estático; a publicação no GitHub Pages continua pelo workflow existente.
 
+Sugestões de contribuição incluem revisão com leitor de tela, testes da instalação offline em aparelhos reais,
+melhorias de linguagem simples e tradução da documentação. Abra uma issue contando o que pretende testar ou mudar
+para combinarmos o escopo antes do pull request.
+
 O projeto permanece gratuito, sem anúncios e sem coleta de dados. [Apoie o projeto](https://github.com/sponsors/td9251156-creator)
 e veja [como o apoio é usado](docs/apoio-financeiro.md).
+
+## Projeto e comunidade
+
+O projeto está em manutenção ativa. Mudanças passam por testes automatizados, revisão e publicação pelo GitHub
+Pages. Consulte o [histórico de versões](CHANGELOG.md), a [governança](GOVERNANCE.md), o
+[guia de contribuição](CONTRIBUTING.md) e a [política de segurança](SECURITY.md).
+
+Como o aplicativo não usa analytics, seu impacto é acompanhado somente por sinais públicos e voluntários:
+estrelas, forks, issues, pull requests e relatos que as próprias pessoas decidam compartilhar. Veja como
+[participar pelas issues](https://github.com/td9251156-creator/rotina-magica/issues).
 
 Licença [MIT](LICENSE). Os áudios anteriores continuam no módulo de origem; as novas vivências usam, opcionalmente,
 a voz disponível no aparelho. Não são reutilizadas gravações com textos que não correspondam ao passo.

@@ -20,9 +20,9 @@ function setup(hash: string, locked = false, seed?: (repos: ReturnType<typeof cr
 describe('vivências e acolhimento geral', () => {
   it('mostra a nova proposta sem exigir registro de uso', async () => {
     const { user } = setup('');
-    expect(screen.getByRole('button', { name: 'Preciso de apoio agora' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Preciso de uma pausa agora' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Usei' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Preciso de apoio agora' }));
+    await user.click(screen.getByRole('button', { name: 'Preciso de uma pausa agora' }));
     expect(await screen.findByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.queryByText(/188|CAPS|SAMU|192/)).not.toBeInTheDocument();

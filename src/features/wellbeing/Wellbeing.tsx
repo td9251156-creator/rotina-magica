@@ -20,7 +20,10 @@ export function WellbeingHome() {
   const today = toLocalDate(new Date());
   const generalIds = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
   const entries = repos.practices.list().filter((p) => generalIds.has(p.techniqueId));
-  const suggestion = techniqueOfTheDay(today, entries.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), 'general');
+  const latestFeedback = new Map<string, Practice['feedback']>();
+  entries.forEach((p) => { if (p.feedback) latestFeedback.set(p.techniqueId, p.feedback); });
+  const suggestion = techniqueOfTheDay(today, entries.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), 'general', undefined, [...latestFeedback].filter(([, f]) => f === 'harder').map(([id]) => id));
+  const personalPlan = repos.plan.list('plano_noite');
   const checkin = repos.checkins.getByDate(today);
   const period = periodFor(new Date(), repos.settings.get('workEndTime', '18:00'));
   return (
@@ -37,7 +40,7 @@ export function WellbeingHome() {
         <h2>Como está sendo para você?</h2>
         <p className="muted">Você não precisa resolver tudo agora. Escolha um cuidado que caiba neste momento.</p>
       </section>
-      <button type="button" className="btn wellbeing-help" onClick={() => navigate('sos')}><Icon id="aba_ajuda" />Preciso de apoio agora</button>
+      <button type="button" className="btn wellbeing-help" onClick={() => navigate('sos')}><Icon id="aba_ajuda" />Preciso de uma pausa agora</button>
       <section className="wellbeing-quick" aria-label="Escolha um cuidado">
         <button type="button" onClick={() => navigate('treino', 'pausa_corpo')}><Icon id="passo_respirar" /><strong>Acalmar o corpo</strong><span>Uma pausa sem pressa</span></button>
         <button type="button" onClick={() => navigate('treino', 'pensamento_distante')}><Icon id="ferr_pensamento" /><strong>Cabeça cheia</strong><span>Dar espaço aos pensamentos</span></button>
@@ -47,6 +50,7 @@ export function WellbeingHome() {
         <span className="eyebrow">Um convite para hoje · cerca de {techniqueMinutes(suggestion)} min</span>
         <strong>{suggestion.title}</strong><span className="muted small">{suggestion.why}</span>
       </button>
+      {personalPlan[0]?.extra?.firstStep != null && <section className="card"><p className="eyebrow">Uma ideia sua para hoje</p><p>{String(personalPlan[0].extra.firstStep)}</p><p className="small muted">Se couber, experimente. Você pode adaptar ou deixar para outro dia.</p></section>}
       <button type="button" className="wellbeing-checkin" onClick={() => navigate('diario')}>
         <span className="item__icon"><Icon id="aba_diario" /></span>
         <span><strong>{checkin?.note || checkin?.stress != null || checkin?.mood != null ? 'Seu registro de hoje' : 'Um espaço para você'}</strong><span className="muted small">Anote como está, sem dar uma nota para o seu valor.</span></span><Icon id="seta" />
@@ -76,9 +80,9 @@ export function WellbeingJournal() {
   return (
     <Screen title="Seu diário" className="screen--tabs wellbeing-journal">
       <p className="muted">Um lugar para reconhecer o que você sente. Só você vê; escreva apenas o que quiser guardar.</p>
-      <fieldset className="wellbeing-fieldset"><legend>Como está seu dia?</legend><div className="chips">{MOODS.map((label, i) => <button key={label} type="button" className={`chip${mood === i + 1 ? ' chip--on' : ''}`} aria-pressed={mood === i + 1} onClick={() => setMood(mood === i + 1 ? null : i + 1)}>{label}</button>)}</div></fieldset>
-      <fieldset className="wellbeing-fieldset"><legend>Quanto este momento está pesando? (0 a 10)</legend><p className="muted small">0: leve · 10: muito pesado. A nota é opcional.</p><div className="rating" role="group" aria-label="Peso do momento">{Array.from({ length: 11 }, (_, n) => <button key={n} type="button" className={stress === n ? 'on' : ''} aria-pressed={stress === n} onClick={() => setStress(stress === n ? null : n)}>{n}</button>)}</div></fieldset>
-      <label className="field">O que você gostaria de registrar?<textarea rows={5} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Pode ser sobre o que pesa, o que ajudou ou o que você precisa. Não há resposta certa." /></label>
+      <fieldset className="wellbeing-fieldset"><legend>Como está seu dia?</legend><div className="chips">{MOODS.map((label, i) => <button key={label} type="button" className={`chip${mood === i + 1 ? ' chip--on' : ''}`} aria-pressed={mood === i + 1} onClick={() => (setMood(mood === i + 1 ? null : i + 1), setSavedNow(false))}>{label}</button>)}</div></fieldset>
+      <fieldset className="wellbeing-fieldset"><legend>Quanto este momento está pesando? (0 a 10)</legend><p className="muted small">0: leve · 10: muito pesado. A nota é opcional.</p><div className="rating" role="group" aria-label="Peso do momento">{Array.from({ length: 11 }, (_, n) => <button key={n} type="button" className={stress === n ? 'on' : ''} aria-pressed={stress === n} onClick={() => (setStress(stress === n ? null : n), setSavedNow(false))}>{n}</button>)}</div></fieldset>
+      <label className="field">O que você gostaria de registrar?<textarea rows={5} value={note} onChange={(e) => (setNote(e.target.value), setSavedNow(false))} placeholder="Pode ser sobre o que pesa, o que ajudou ou o que você precisa. Não há resposta certa." /></label>
       <button type="button" className="btn" disabled={mood === null && stress === null && !note.trim()} onClick={() => {
         write((r) => { saveWellbeingCheckin(r, today, { mood, stress, note: note.trim() || null }); r.routine.toggle(today, 'n_diario', true); });
         setSavedNow(true);
@@ -108,11 +112,11 @@ export function WellbeingSupport({ locked }: { locked: boolean }) {
   const { repos } = useData();
   const [exercise, setExercise] = useState<string | null>(null);
   const [returned, setReturned] = useState(false);
-  const phrase = !locked ? repos.plan.list('gentileza').at(-1)?.text : null;
+  const phrase = !locked ? (repos.settings.get<string>('letter', '').trim() || repos.plan.list('gentileza').at(-1)?.text) : null;
   if (exercise) return <TrainingSession key={exercise} id={exercise} onBack={() => setExercise(null)} onDone={() => { setExercise(null); setReturned(true); }} onMore={() => setExercise(null)} finishLabel="Voltar à ajuda" />;
   return <main className="screen screen--tabs wellbeing-support">
     <span className="wellbeing-support__icon"><Icon id="aba_ajuda" /></span>
-    <p className="eyebrow">Ajuda agora</p><h1>Vamos cuidar deste momento.</h1>
+      <p className="eyebrow">Pausa agora</p><h1>Vamos cuidar deste momento.</h1>
     <p className="muted">Não precisa explicar tudo nem resolver o dia inteiro. Comece pelo que parece possível.</p>
     {returned && <p className="card" role="status">Você reservou um momento para si. Se ainda estiver difícil, pode tentar outro cuidado ou buscar companhia.</p>}
     {phrase && <blockquote className="card"><p className="eyebrow">Uma frase sua para reler</p><p>{phrase}</p></blockquote>}

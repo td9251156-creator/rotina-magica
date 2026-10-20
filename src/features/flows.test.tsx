@@ -323,7 +323,7 @@ describe('melhorias de crise e de dados', () => {
   it('no primeiro uso, a ajuda está a um toque', async () => {
     const repos = createTestRepositories();
     const { user } = open('', repos);
-    await user.click(screen.getByRole('button', { name: 'Preciso de apoio agora' }));
+    await user.click(screen.getByRole('button', { name: 'Preciso de uma pausa agora' }));
     expect(await screen.findByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
   });
 

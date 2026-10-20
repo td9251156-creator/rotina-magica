@@ -27,7 +27,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   );
   const [reasons, setReasons] = useState<string[]>(() => repos.plan.list('razao').map((i) => i.text));
   const [customReason, setCustomReason] = useState('');
-  const plans = useMemo(() => buildEveningPlans(activityIds, customActivities), [activityIds, customActivities]);
+  const plans = useMemo(() => general && !activityIds.length && !customActivities.length ? [] : buildEveningPlans(activityIds, customActivities), [activityIds, customActivities, general]);
 
   const parsedCustom = customTime ? parseTime(customTime) : null;
   const finalTime = customTime ? parsedCustom : time;
@@ -61,7 +61,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         </p>
         {/* Quem abre o app pela primeira vez em crise não pode cair num questionário. */}
         <button type="button" className="link" onClick={() => navigate('sos')}>
-          {general ? 'Preciso de apoio agora' : 'Bateu vontade? Ajuda agora'}
+          {general ? 'Preciso de uma pausa agora' : 'Bateu vontade? Ajuda agora'}
         </button>
       </div>
 

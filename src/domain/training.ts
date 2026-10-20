@@ -365,9 +365,11 @@ export function findTechnique(id: string): Technique | undefined {
  * Técnica do dia: primeiro as que nunca foram praticadas, na ordem do catálogo (as primeiras
  * montam o kit do SOS mais rápido). Depois de todas, revezamento pelo dia.
  */
-export function techniqueOfTheDay(today: LocalDate, practicedIds: readonly string[], start: LocalDate = today, focus: SupportFocus = 'recovery', eligibleIds?: readonly string[]): Technique {
+export function techniqueOfTheDay(today: LocalDate, practicedIds: readonly string[], start: LocalDate = today, focus: SupportFocus = 'recovery', eligibleIds?: readonly string[], avoidIds: readonly string[] = []): Technique {
   const fullCatalog = focus === 'general' ? GENERAL_TECHNIQUES : TECHNIQUES;
-  const catalog = eligibleIds ? fullCatalog.filter((t) => eligibleIds.includes(t.id)) : fullCatalog;
+  const eligible = eligibleIds ? fullCatalog.filter((t) => eligibleIds.includes(t.id)) : fullCatalog;
+  const filtered = eligible.filter((t) => !avoidIds.includes(t.id));
+  const catalog = filtered.length ? filtered : eligible;
   if (!catalog.length) return fullCatalog[0];
   const untried = catalog.find((t) => !practicedIds.includes(t.id));
   if (untried) return untried;

@@ -1,5 +1,6 @@
 import { addDays } from './dates';
 import { TECHNIQUES, findTechnique, rulerHistory, techniqueOfTheDay } from './training';
+import { GENERAL_TECHNIQUES } from './wellbeing-techniques';
 
 describe('treino diário', () => {
   it('começa pelas técnicas nunca praticadas, na ordem do catálogo', () => {
@@ -14,6 +15,12 @@ describe('treino diário', () => {
     expect(a.id).toBe(TECHNIQUES[0].id);
     expect(b.id).toBe(TECHNIQUES[1].id);
     expect(techniqueOfTheDay(addDays('2026-10-16', TECHNIQUES.length), all, '2026-10-16').id).toBe(a.id);
+  });
+
+  it('evita recomendar práticas marcadas como mais difíceis, mantendo alternativas', () => {
+    const allGeneral = GENERAL_TECHNIQUES.map((t) => t.id);
+    expect(techniqueOfTheDay('2026-10-16', [], '2026-10-16', 'general', undefined, [allGeneral[0]]).id).toBe(allGeneral[1]);
+    expect(techniqueOfTheDay('2026-10-16', [], '2026-10-16', 'general', undefined, allGeneral).id).toBe(allGeneral[0]);
   });
 
   it('toda técnica tem passos e ids únicos', () => {

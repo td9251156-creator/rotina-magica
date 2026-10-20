@@ -3,16 +3,16 @@
 Obrigado por querer ajudar. Este app é usado por pessoas em um momento frágil da vida, então cada mudança passa por
 uma pergunta só:
 
-> **Isso ajuda uma pessoa em recuperação, com evidência de que funciona?**
-> Se a evidência é fraca, a mudança precisa ser barata, opcional e não pode atrapalhar o momento de crise.
+> **Isso ajuda alguém a atravessar um momento difícil, com base clara e sem prometer tratamento?**
+> Se a evidência é fraca, a mudança precisa ser simples, opcional e não pode atrapalhar o acesso a uma pausa.
 
 ## Princípios que não mudam
 
 1. **Nenhum dado sai do aparelho.** Sem analytics, crash reporting, conta ou servidor. Uma exceção só entra com
    decisão registrada no [`CLAUDE.md`](CLAUDE.md).
-2. **A ajuda abre na hora.** "Ajuda agora" abre sem dados, sem cadastro e sem PIN, em no máximo 2 toques.
-3. **Nada zera e nada culpa.** Recaída vira informação, não fracasso (efeito de violação da abstinência, Marlatt).
-   Textos diretos, acolhedores, sem moralismo e sem "você falhou".
+2. **A pausa abre na hora.** "Pausa agora" abre sem dados, sem cadastro e sem PIN, em no máximo 2 toques.
+3. **Nada zera e nada culpa.** Um dia difícil vira informação, não fracasso. Textos diretos, acolhedores,
+   sem moralismo e sem "você falhou".
 4. **Linguagem simples.** Sem jargão clínico nem esotérico sem explicação.
 5. **Discrição.** Notificações e lembretes não mencionam droga nem recaída.
 
@@ -66,7 +66,7 @@ Também abre pronto no GitHub Codespaces (`.devcontainer/`).
 1. Abra uma issue (ideia ou problema) antes de mudanças grandes.
 2. Crie um branch e faça commits pequenos, com mensagens claras no imperativo (de preferência em português): `adiciona …`, `corrige …`.
 3. Antes do PR: `npm run typecheck && npm test && npm run build`.
-4. No PR, conte o antes e o depois em linguagem simples e, se for recurso novo, a evidência por trás.
+4. No PR, conte o antes e o depois em linguagem simples e, se for recurso novo, a base por trás e seus limites.
 
 ## Evidência
 

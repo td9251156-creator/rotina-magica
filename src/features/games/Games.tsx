@@ -14,13 +14,13 @@ import { BlocksGame } from './BlocksGame';
 import { PairsGame } from './PairsGame';
 import { recordGame, type GameOutcome, type RecordedGame } from './record';
 import { GAME_ICON } from './icons';
+import { supportFocus } from '@/domain/support';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 import { StoryGame } from './StoryGame';
 import { WaveGame } from './WaveGame';
 import { GameArt } from '@/ui/illustrations';
 import { GameGuide, GAME_GUIDES } from './GameGuide';
 import './games.css';
-import { supportFocus } from '@/domain/support';
 
 export const HOW_TO: Record<GameId, string> = {
   blocos:
@@ -127,8 +127,8 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
               </span>
               <span className="tile__time">{GAME_GUIDES[g].time}</span>
               <strong>{GAME_INFO[g].title}</strong>
-              <span className="small">{general && g === 'blocos' ? 'Encaixe peças e complete linhas, uma de cada vez.' : GAME_INFO[g].pitch}</span>
-              <span className="small muted">{plays ? `recorde ${best} · ${plays}×` : 'nunca jogado'}</span>
+              <span className="small">{general ? ({ blocos: 'Encaixe peças e complete linhas, uma de cada vez.', pares: 'Encontre pares de peças no tabuleiro.', arcanos: 'Jogo da memória com cartas ilustradas.', onda: 'Uma animação guiada em etapas.' } as Record<GameId, string>)[g] : GAME_INFO[g].pitch}</span>
+              {!general && <span className="small muted">{plays ? `recorde ${best} · ${plays}×` : 'nunca jogado'}</span>}
             </button>
           );
         })}
@@ -138,15 +138,15 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
 }
 
 export function GameResult({ id, score, result, onAgain, onBack }: { id: GameId; score: number; result: RecordedGame; onAgain: () => void; onBack: () => void }) {
+  const { repos } = useData();
+  const general = supportFocus(repos) === 'general';
   return (
     <div className="result game-result">
       <span className="game-result__seal"><Icon id="feito" /></span>
       <p className="muted small">{GAME_INFO[id].title}</p>
       <h1>Prática concluída</h1>
       <p className="muted small">Você dedicou um tempo a si. Cada partida conta.</p>
-      <p className="result__score">{score}</p>
-      <p>{result.record ? 'Novo recorde!' : 'pontos'}</p>
-      <p className="xp">+{result.xp} XP</p>
+      {!general && <><p className="result__score">{score}</p><p>{result.record ? 'Novo recorde!' : 'pontos'}</p><p className="xp">+{result.xp} XP</p>
       {result.levelUp && (
         <p className="levelup">
           Subiu para o nível {result.level.level}: {result.level.name}
@@ -157,7 +157,7 @@ export function GameResult({ id, score, result, onAgain, onBack }: { id: GameId;
       </div>
       <p className="small muted">
         Nível {result.level.level} · {result.level.name} · faltam {result.level.needed - result.level.into} XP
-      </p>
+      </p></>}
       <div className="actions">
         <button type="button" className="btn btn--ghost" onClick={onBack}>
           Sair

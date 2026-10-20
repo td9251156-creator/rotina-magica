@@ -39,7 +39,9 @@ export function TrainingList({ onOpen, onBack }: { onOpen: (id: string) => void;
   const practices = repos.practices.list();
   const times = (id: string) => practices.filter((p) => p.techniqueId === id).length;
   const selectedApproach = general && need !== 'all' ? approachesFor(focus).find((a) => a.id === need) : undefined;
-  const ofTheDay = techniqueOfTheDay(today, practices.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), focus, selectedApproach ? techniqueIds(selectedApproach) : undefined);
+  const latestFeedback = new Map<string, string>();
+  practices.forEach((p) => { if (p.feedback) latestFeedback.set(p.techniqueId, p.feedback); });
+  const ofTheDay = techniqueOfTheDay(today, practices.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), focus, selectedApproach ? techniqueIds(selectedApproach) : undefined, [...latestFeedback].filter(([, f]) => f === 'harder').map(([id]) => id));
   const style = repos.settings.get<RoutineStyle | null>('routineStyle', null);
 
   if (playing) {
