@@ -9,6 +9,10 @@ const others = [1, 2, 3, 4, 5, 6].map((n) => addDays(today, -n));
 describe('clima de hoje', () => {
   it('sem dados suficientes, não arrisca previsão', () => {
     expect(forecastFor({ today, journal: [], cravings: [], useDates: [] })).toBeNull();
+    const current = Array.from({ length: 3 }, () => ({ date: today, occurredAt: `${today}T12:00:00`, intensity: 5 }));
+    expect(forecastFor({ today, journal: [], cravings: current, useDates: [] })).toBeNull();
+    const otherDays = others.slice(0, 3).map((date) => ({ date, craving: 2, triggers: [] }));
+    expect(forecastFor({ today, journal: otherDays, cravings: [], useDates: [] })).toBeNull();
   });
 
   it('marca alto quando o mesmo dia da semana tem vontade bem acima da média', () => {

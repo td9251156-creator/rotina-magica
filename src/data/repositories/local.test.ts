@@ -1,9 +1,32 @@
 import { createTestRepositories, memoryStorage } from '../test-repos';
-import { STORAGE_KEY } from './local';
+import { STORAGE_KEY, createLocalRepositories, createResilientStorage, importData } from './local';
 
 const emptyCheckin = { mood: null, craving: null, sleepQuality: null, stress: null, alcohol: null, used: null, note: null };
 
 describe('repositórios locais', () => {
+  it('mantém o SOS e os registros disponíveis na sessão com armazenamento bloqueado ou cheio', () => {
+    const blocked = createResilientStorage(() => { throw new DOMException('Bloqueado', 'SecurityError'); });
+    const repos = createLocalRepositories({ storage: blocked, newId: () => 'id-1', now: () => new Date() });
+    repos.settings.set('trackingStartDate', '2026-10-16');
+    expect(repos.settings.get('trackingStartDate', null)).toBe('2026-10-16');
+    expect(blocked.failed).toBe(true);
+
+    const full = createResilientStorage(() => ({
+      getItem: () => null,
+      setItem: () => { throw new DOMException('Cheio', 'QuotaExceededError'); },
+    }));
+    full.setItem(STORAGE_KEY, '{"version":1}');
+    expect(full.getItem(STORAGE_KEY)).toBe('{"version":1}');
+    expect(full.failed).toBe(true);
+  });
+
+  it('recusa coleções malformadas sem substituir os dados existentes', () => {
+    const storage = memoryStorage();
+    createTestRepositories(storage).settings.set('workEndTime', '17:00');
+    const before = storage.getItem(STORAGE_KEY);
+    expect(() => importData(storage, JSON.stringify({ app: 'rumo', data: { version: 1, settings: {}, journal: {} } }))).toThrow('danificado');
+    expect(storage.getItem(STORAGE_KEY)).toBe(before);
+  });
   it('mantém um check-in por dia e atualiza no lugar', () => {
     const repos = createTestRepositories();
     const first = repos.checkins.upsertForDate({ ...emptyCheckin, date: '2026-10-16', mood: 2 });
@@ -13,13 +36,16 @@ describe('repositórios locais', () => {
     expect(repos.checkins.listBetween('2026-10-01', '2026-10-31')).toHaveLength(1);
   });
 
-  it('junta episódios de uso e check-ins "usei" nos dias de uso, sem repetir', () => {
+  it('junta episódios, check-ins e fechamento da noite nos dias de uso, sem repetir', () => {
     const repos = createTestRepositories();
     repos.useEvents.add({ occurredAt: '2026-10-10T22:00:00', amountSpent: 100, note: null });
     repos.useEvents.add({ occurredAt: '2026-10-10T23:30:00', amountSpent: null, note: null });
     repos.checkins.upsertForDate({ ...emptyCheckin, date: '2026-10-12', used: true });
     repos.checkins.upsertForDate({ ...emptyCheckin, date: '2026-10-13', used: false });
-    expect(repos.useEvents.useDatesBetween('2026-10-01', '2026-10-31')).toEqual(['2026-10-10', '2026-10-12']);
+    const plan = repos.plan.add({ kind: 'plano_noite', text: 'Ligar para alguém' });
+    repos.evenings.choose('2026-10-13', plan.id);
+    repos.evenings.setOutcome('2026-10-13', 'usei');
+    expect(repos.useEvents.useDatesBetween('2026-10-01', '2026-10-31')).toEqual(['2026-10-10', '2026-10-12', '2026-10-13']);
   });
 
   it('exclusão é lógica: some das consultas, mas fica registrada', () => {

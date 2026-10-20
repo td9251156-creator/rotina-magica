@@ -2,8 +2,8 @@ import type { LocalDate } from '@/domain/dates';
 
 /**
  * Interfaces da camada de dados. A UI depende só delas. Hoje há uma implementação local
- * (armazenamento do navegador, no próprio celular); uma futura implementação com
- * sincronização ou criptografia implementa as mesmas.
+ * (armazenamento do navegador, no próprio celular). Uma implementação com criptografia
+ * local pode manter as mesmas interfaces.
  */
 
 export const planItemKinds = [
@@ -96,7 +96,7 @@ export interface UseEventRepository {
   add(input: UseEventInput): UseEvent;
   remove(id: string): void;
   /**
-   * Dias com uso: episódios registrados mais check-ins marcados como "usei".
+   * Dias com uso: episódios, check-ins e fechamento da noite marcados como "usei".
    * Fonte única para o cálculo de progresso.
    */
   useDatesBetween(from: LocalDate, to: LocalDate): LocalDate[];

@@ -19,13 +19,57 @@ import type {
  * celular. Nada sai do aparelho. Os dados cabem folgados (são textos curtos), e cada mudança é
  * gravada na hora.
  *
- * Todo registro tem id, createdAt, updatedAt e deletedAt (exclusão lógica), para uma futura
- * sincronização saber o que mudou, inclusive o que foi apagado.
+ * Todo registro tem id, createdAt, updatedAt e deletedAt (exclusão lógica), para preservar
+ * o histórico local e permitir corrigir ou remover registros sem apagar o contexto.
  */
 
 export interface KeyValueStorage {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
+}
+
+/** Mantém a ajuda utilizável quando o navegador bloqueia ou enche o armazenamento. */
+export interface ResilientStorage extends KeyValueStorage {
+  failed: boolean;
+  onFailure?: () => void;
+}
+
+export function createResilientStorage(open: () => KeyValueStorage): ResilientStorage {
+  const memory = new Map<string, string>();
+  let primary: KeyValueStorage | null = null;
+  const storage: ResilientStorage = {
+    failed: false,
+    getItem(key) {
+      if (memory.has(key)) return memory.get(key)!;
+      try {
+        const value = primary?.getItem(key) ?? null;
+        if (value !== null) memory.set(key, value);
+        return value;
+      } catch {
+        fail();
+        return null;
+      }
+    },
+    setItem(key, value) {
+      memory.set(key, value);
+      try {
+        primary?.setItem(key, value);
+        if (!primary) fail();
+      } catch {
+        fail();
+      }
+    },
+  };
+  const fail = () => {
+    storage.failed = true;
+    storage.onFailure?.();
+  };
+  try {
+    primary = open();
+  } catch {
+    fail();
+  }
+  return storage;
 }
 
 export interface RepoDeps {
@@ -57,11 +101,41 @@ function empty(): Snapshot {
   return { version: 1, settings: {}, checkins: [], cravings: [], useEvents: [], planItems: [], eveningChoices: [], practices: [], games: [], routine: [], journal: [], thoughts: [] };
 }
 
+const COLLECTIONS = ['checkins', 'cravings', 'useEvents', 'planItems', 'eveningChoices', 'practices', 'games', 'routine', 'journal', 'thoughts'] as const;
+const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const isStringArray = (value: unknown) => Array.isArray(value) && value.every((item) => typeof item === 'string');
+
+function validRow(collection: (typeof COLLECTIONS)[number], value: unknown): boolean {
+  if (!isObject(value) || typeof value.id !== 'string' || typeof value.createdAt !== 'string' || typeof value.updatedAt !== 'string' || (value.deletedAt !== null && typeof value.deletedAt !== 'string')) return false;
+  if (collection === 'planItems') return typeof value.kind === 'string' && typeof value.text === 'string' && typeof value.position === 'number';
+  if (collection === 'journal') return typeof value.date === 'string' && isStringArray(value.triggers);
+  if (collection === 'thoughts') return typeof value.date === 'string' && isStringArray(value.body) && isStringArray(value.feelings) && isStringArray(value.traps);
+  if (collection === 'cravings' || collection === 'useEvents') return typeof value.date === 'string' && typeof value.occurredAt === 'string';
+  if (collection === 'eveningChoices') return typeof value.date === 'string' && typeof value.planItemId === 'string';
+  if (collection === 'routine') return typeof value.date === 'string' && typeof value.stepId === 'string';
+  if (collection === 'practices') return typeof value.date === 'string' && typeof value.techniqueId === 'string';
+  if (collection === 'games') return typeof value.date === 'string' && typeof value.gameId === 'string';
+  return typeof value.date === 'string';
+}
+
+function parseSnapshot(value: unknown): Snapshot {
+  if (!isObject(value) || value.version !== 1 || !isObject(value.settings)) throw new Error('Formato de dados inválido');
+  const result = empty();
+  result.settings = value.settings;
+  for (const key of COLLECTIONS) {
+    const rows = value[key] ?? [];
+    if (!Array.isArray(rows) || !rows.every((row) => validRow(key, row))) throw new Error(`Dados inválidos em ${key}`);
+    // Coleções ausentes em backups antigos continuam vazias.
+    (result as unknown as Record<string, unknown>)[key] = rows;
+  }
+  return result;
+}
+
 function load(storage: KeyValueStorage): Snapshot {
   const raw = storage.getItem(STORAGE_KEY);
   if (!raw) return empty();
   try {
-    return { ...empty(), ...(JSON.parse(raw) as Partial<Snapshot>) };
+    return parseSnapshot(JSON.parse(raw));
   } catch {
     // Dado corrompido não pode travar o app (o SOS precisa abrir). Guardamos uma cópia e recomeçamos.
     storage.setItem(`${STORAGE_KEY}:corrompido:${Date.now()}`, raw);
@@ -82,15 +156,24 @@ export function importData(storage: KeyValueStorage, json: string): void {
   } catch {
     throw new Error('Arquivo não é um backup do Rumo');
   }
-  const p = parsed as { app?: unknown; data?: Partial<Snapshot> };
-  if (p.app !== 'rumo' || !p.data || p.data.version !== 1 || typeof p.data.settings !== 'object') {
+  const p = parsed as { app?: unknown; data?: unknown };
+  if (p?.app !== 'rumo') {
     throw new Error('Arquivo não é um backup do Rumo');
   }
+  let next: Snapshot;
+  try {
+    next = parseSnapshot(p.data);
+  } catch {
+    throw new Error('Backup incompleto ou danificado. Seus dados não foram alterados.');
+  }
   const current = storage.getItem(STORAGE_KEY);
-  if (current) storage.setItem(`${STORAGE_KEY}:antes-de-restaurar`, current);
+  if (current) {
+    storage.setItem(`${STORAGE_KEY}:antes-de-restaurar`, current);
+    if ('failed' in storage && storage.failed) throw new Error('Não foi possível reservar espaço para restaurar o backup. Seus dados não foram alterados.');
+  }
   // O PIN não volta com o backup: quem esqueceu o PIN apaga tudo e restaura sem ficar trancado de novo.
-  const { pinHash: _h, pinSalt: _s, ...settings } = p.data.settings as Record<string, unknown>;
-  storage.setItem(STORAGE_KEY, JSON.stringify({ ...empty(), ...p.data, settings }));
+  const { pinHash: _h, pinSalt: _s, ...settings } = next.settings;
+  storage.setItem(STORAGE_KEY, JSON.stringify({ ...next, settings }));
 }
 
 const alive = <T extends { deletedAt: string | null }>(r: T) => r.deletedAt === null;
@@ -172,6 +255,9 @@ export function createLocalRepositories({ storage, newId, now }: RepoDeps): Repo
         db.checkins
           .filter((c) => alive(c) && c.used === true && between(c.date, from, to))
           .forEach((c) => dates.add(c.date));
+        db.eveningChoices
+          .filter((e) => alive(e) && e.outcome === 'usei' && between(e.date, from, to))
+          .forEach((e) => dates.add(e.date));
         return [...dates].sort();
       },
       lastOccurredAt() {

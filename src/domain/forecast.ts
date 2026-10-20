@@ -45,19 +45,21 @@ export function forecastFor({ today, journal, cravings, useDates }: ForecastInpu
   const all = avg(scores.map((j) => j.craving!));
   const same = scores.filter((j) => sameDay(j.date)).map((j) => j.craving!);
   const sameAvg = avg(same);
-  const sameCravings = cravings.filter((c) => sameDay(c.date));
+  const validCravings = cravings.filter((c) => inWindow(c.date));
+  const sameCravings = validCravings.filter((c) => sameDay(c.date));
   const usedSameDay = useDates.some((d) => sameDay(d) && daysBetween(d, today) <= 28);
   const samples = same.length + sameCravings.length + (usedSameDay ? 1 : 0);
-  if (scores.length + cravings.length < MIN_SAMPLES) return null;
+  if (scores.length + validCravings.length + useDates.filter(inWindow).length < MIN_SAMPLES || !samples) return null;
 
   // Pedidos de ajuda neste dia da semana pesam como um sinal de risco por si só.
   const helpRate = sameCravings.length / Math.max(1, new Set(sameCravings.map((c) => c.date)).size + same.length);
   let level: ForecastLevel = 'calmo';
   if (usedSameDay || (sameAvg !== null && (sameAvg >= 7 || (all !== null && sameAvg >= all + 1.5)))) level = 'alto';
   else if ((sameAvg !== null && (sameAvg >= 5 || (all !== null && sameAvg >= all + 0.5))) || helpRate >= 0.5) level = 'atencao';
+  if (level === 'calmo' && samples < MIN_SAMPLES) return null;
 
   const hours = new Map<number, number>();
-  for (const c of cravings.filter((c) => inWindow(c.date))) {
+  for (const c of validCravings) {
     const h = new Date(c.occurredAt).getHours();
     hours.set(h, (hours.get(h) ?? 0) + 1);
   }

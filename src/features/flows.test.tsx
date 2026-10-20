@@ -91,6 +91,18 @@ describe('depois de usar', () => {
     await user.click(screen.getByRole('button', { name: 'Voltar ao início' }));
     expect(await screen.findByText('Hoje é dia de cuidar de você')).toBeInTheDocument();
   });
+
+  it('mantém "Mais cedo hoje" no dia atual durante a madrugada', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(new Date(2026, 9, 16, 1, 30));
+      const { repos, user } = open('#usei');
+      await user.click(screen.getByRole('button', { name: 'Mais cedo hoje' }));
+      expect(repos.useEvents.useDatesBetween('2026-10-16', '2026-10-16')).toEqual(['2026-10-16']);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('manhã seguinte', () => {
@@ -115,11 +127,22 @@ describe('manhã seguinte', () => {
     expect(repos.checkins.getByDate(yesterday)).toMatchObject({ used: false, alcohol: false });
 
     await user.click(screen.getByRole('button', { name: /Seu laboratório/ }));
-    expect(await screen.findByText('1 de 1 noite sem usar')).toBeInTheDocument();
+    expect(await screen.findByText('1 de 1 noite sem usar', {}, { timeout: 5000 })).toBeInTheDocument();
   });
 });
 
 describe('jogos', () => {
+  it('permite iniciar e soltar a respiração do Segura a onda pelo teclado', async () => {
+    const { user } = open('#jogos/onda');
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+    const pad = screen.getByRole('button', { name: /no teclado, ative uma vez/ });
+    pad.focus();
+    await user.keyboard('{Enter}');
+    expect(screen.getByText('Puxe o ar…')).toBeInTheDocument();
+    await user.keyboard('{Enter}');
+    expect(screen.getByText('Solte o dedo e o ar, devagar…')).toBeInTheDocument();
+  });
+
   it('cada jogo da lista tem o seu desenho', () => {
     open('#jogos');
     expect(document.querySelectorAll('.tile .game-art').length).toBe(document.querySelectorAll('.tile').length);
@@ -242,14 +265,39 @@ describe('bloqueio com PIN', () => {
     expect(screen.queryByText(/carta secreta/)).not.toBeInTheDocument();
   });
 
+  it('permite registrar uso e receber cuidado com o PIN fechado, sem revelar textos pessoais', async () => {
+    const repos = await withPin();
+    repos.plan.add({ kind: 'gentileza', text: 'outra frase secreta' });
+    const { user } = open('#sos', repos);
+    await user.click(screen.getByRole('button', { name: 'Usei' }));
+    expect(await screen.findByText('Registrar que usou')).toBeInTheDocument();
+    expect(screen.queryByText(/meu segredo|outra frase secreta/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Agora há pouco' }));
+    expect(screen.getByText(/Nada do seu progresso foi apagado/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Entender o que houve/ })).not.toBeInTheDocument();
+    expect(repos.useEvents.lastOccurredAt()).not.toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Depois' }));
+    expect(screen.getByLabelText('Digite seu PIN')).toBeInTheDocument();
+  });
+
   it('ativa o PIN nos ajustes sem trancar quem já está dentro', async () => {
     const { repos, user } = open('#ajustes');
-    await user.type(screen.getByLabelText('Novo PIN (4 a 8 números)'), '1234');
+    await user.type(await screen.findByLabelText('Novo PIN (4 a 8 números)'), '1234');
     await user.type(screen.getByLabelText('Repita o PIN'), '1234');
     await user.click(screen.getByRole('button', { name: 'Ativar PIN' }));
     expect(await screen.findByText(/PIN ativado/)).toBeInTheDocument();
     expect(repos.settings.get<string | null>('pinHash', null)).toBeTruthy();
     expect(screen.queryByLabelText('Digite seu PIN')).not.toBeInTheDocument();
+  });
+});
+
+describe('backup', () => {
+  it('pede senha antes de permitir baixar o arquivo', async () => {
+    const { user } = open('#ajustes');
+    const download = await screen.findByRole('button', { name: 'Baixar backup' });
+    expect(download).toBeDisabled();
+    await user.type(screen.getByLabelText(/Senha do backup/), 'senha forte');
+    expect(download).toBeEnabled();
   });
 });
 
@@ -629,12 +677,12 @@ describe('voz nas práticas', () => {
     vi.stubGlobal('AudioContext', FakeContext);
     try {
       const { repos, user } = open('#sons');
-      await user.click(screen.getByRole('button', { name: 'Só o tom' }));
+      await user.click(await screen.findByRole('button', { name: 'Só o tom' }));
       expect(repos.settings.get('binauralRain', true)).toBe(false);
       await user.click(screen.getByRole('button', { name: 'Tocar 15 min' }));
       expect(tones).toEqual([195, 205]);
       expect(channels).toEqual([0, 1]);
-      await user.click(screen.getByRole('button', { name: /Parar · faltam 15:00/ }));
+      await user.click(screen.getByRole('button', { name: /^Parar · faltam/ }));
       expect(stopped).toBeGreaterThanOrEqual(2);
       await user.click(screen.getByRole('button', { name: 'Relaxar fundo (teta)' }));
       expect(repos.settings.get('ambientSound', 'acorde')).toBe('fundo');

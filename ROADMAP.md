@@ -14,7 +14,7 @@ Prioridade: o que mais ajuda em momento de crise primeiro. Detalhes e justificat
 - Empacotar como app Android (TWA/Capacitor) se a agenda não bastar como lembrete.
 
 ## Depois
-- Sincronização opcional entre aparelhos (exige decisão sobre dados fora do celular).
+- Dados permanecem 100% locais; sincronização entre aparelhos não faz parte do produto.
 - ~~Recompensas~~: recusadas pelo autor; dinheiro mantido só como informação.
 
 ## Feito

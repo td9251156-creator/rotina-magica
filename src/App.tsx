@@ -1,23 +1,23 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useData } from './data/provider';
 import { GamesHub, PlayGame } from './features/games/Games';
 import { Journal } from './features/journal/Journal';
-import { Lab } from './features/lab/Lab';
 import { LockScreen } from './features/lock/LockScreen';
 import { Routine } from './features/routine/Routine';
 import { StepScreen } from './features/routine/StepScreen';
 import { Untangle } from './features/thinking/Untangle';
 import { Onboarding } from './features/onboarding/Onboarding';
-import { Settings } from './features/settings/Settings';
 import { SosScreen } from './features/sos/SosScreen';
 import { TrainingList, TrainingSession } from './features/training/Training';
-import { Sounds } from './features/sounds/Sounds';
 import { UsedFlow } from './features/used/UsedFlow';
 import { GAME_IDS, type GameId } from './domain/progression';
 import { navigate, readRoute, type Route } from './router';
 import { TabBar } from './ui/TabBar';
 
 const RELOCK_AFTER_MS = 2 * 60 * 1000;
+const Lab = lazy(async () => ({ default: (await import('./features/lab/Lab')).Lab }));
+const Settings = lazy(async () => ({ default: (await import('./features/settings/Settings')).Settings }));
+const Sounds = lazy(async () => ({ default: (await import('./features/sounds/Sounds')).Sounds }));
 
 /** Trancado ao abrir e de novo depois de 2 minutos fora do app. */
 function useLock(hasPin: boolean) {
@@ -36,6 +36,14 @@ function useLock(hasPin: boolean) {
 }
 
 export function App() {
+  return (
+    <Suspense fallback={<main className="screen" role="status">Abrindo…</main>}>
+      <AppContent />
+    </Suspense>
+  );
+}
+
+function AppContent() {
   const { repos, version } = useData();
   const [route, setRoute] = useState<Route>(() => readRoute());
   useEffect(() => {
@@ -60,8 +68,8 @@ export function App() {
         {!locked.on && <TabBar current="sos" />}
       </>
     );
+  if (route.name === 'usei') return <UsedFlow locked={locked.on} onDone={home} />;
   if (locked.on) return <LockScreen onUnlock={locked.unlock} />;
-  if (route.name === 'usei') return <UsedFlow onDone={home} />;
   void version;
   const done = repos.settings.get('onboardingDone', false);
   if (!done || route.name === 'primeiro-uso') return <Onboarding onDone={home} />;

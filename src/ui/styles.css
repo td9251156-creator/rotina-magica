@@ -101,6 +101,7 @@ p { margin: 0.4rem 0; }
 .big { font-size: 1.35rem; font-weight: 600; }
 .center { text-align: center; align-self: center; }
 .warn { color: var(--danger); }
+.storage-warning { position: sticky; top: 0; z-index: 20; padding: 8px 14px; background: var(--raised); border-bottom: 2px solid var(--danger); color: var(--text); font-size: 0.85rem; text-align: center; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .chip {
   border: 1px solid var(--border);

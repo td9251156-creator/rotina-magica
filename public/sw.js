@@ -1,18 +1,27 @@
 // Service worker do Rumo: guarda o app no celular para abrir sem internet.
 // Estratégia: rede primeiro para a página (pega versão nova quando há conexão), cache para o resto.
 // Os dados da pessoa NÃO passam por aqui: ficam no armazenamento local do navegador.
-const CACHE = 'rumo-v6';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
+const CACHE = 'rumo-v7';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './assets-manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(SHELL);
+    // As telas secundárias chegam depois do primeiro carregamento, mas também precisam abrir offline.
+    const response = await cache.match('./assets-manifest.json');
+    const manifest = await response.json();
+    const files = new Set(Object.values(manifest).flatMap((entry) => [entry.file, ...(entry.css || []), ...(entry.assets || [])]));
+    await cache.addAll([...files].map((file) => new URL(file, self.registration.scope).href));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('rumo-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

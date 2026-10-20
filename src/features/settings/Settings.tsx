@@ -26,7 +26,7 @@ const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
 ];
 
 export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: () => void }) {
-  const { repos, write } = useData();
+  const { repos, storage, write } = useData();
   const [time, setTime] = useState(() => repos.settings.get('workEndTime', '18:00'));
   const [morningTime, setMorningTime] = useState(() => repos.settings.get('dailyReminders', '08:00'));
   const [middayTime, setMiddayTime] = useState(() => repos.settings.get('middayReminder', '12:00'));
@@ -81,19 +81,21 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
   };
 
   const backup = async () => {
-    const file = await makeBackup(window.localStorage, new Date(), password || undefined);
-    download(`rumo-backup-${toLocalDate(new Date())}${password ? '-com-senha' : ''}.json`, file, 'application/json');
-    write((r) => r.settings.set('lastBackupAt', new Date().toISOString()));
-    setMsg(
-      password
-        ? 'Backup com senha baixado. Sem a senha ninguém abre, nem você: anote num lugar seguro.'
-        : 'Backup baixado. Guarde num lugar seu (Drive, e-mail para você mesmo).',
-    );
+    try {
+      const file = await makeBackup(storage, new Date(), password);
+      download(`rumo-backup-${toLocalDate(new Date())}-com-senha.json`, file, 'application/json');
+      write((r) => r.settings.set('lastBackupAt', new Date().toISOString()));
+      setMsg('Backup com senha baixado. Sem a senha ninguém abre, nem você: anote num lugar seguro.');
+    } catch (error) {
+      setMsg((error as Error).message);
+    }
   };
 
   const restore = async (f: File) => {
     try {
-      await restoreBackup(window.localStorage, await f.text(), password || undefined);
+      if (storage.failed) throw new Error('O armazenamento está indisponível. Não é seguro restaurar agora.');
+      await restoreBackup(storage, await f.text(), password || undefined);
+      if (storage.failed) throw new Error('O navegador não confirmou a gravação do backup. Não feche o app antes de baixar uma cópia dos dados.');
       window.location.reload();
     } catch (e) {
       setMsg((e as Error).message);
@@ -214,11 +216,11 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
           quando.{lastBackup ? ` Último backup: ${new Date(lastBackup).toLocaleDateString('pt-BR')}.` : ''}
         </p>
         <label className="small" htmlFor="backup-pass">
-          Senha do backup (opcional, cifra o arquivo)
+          Senha do backup (obrigatória para baixar; pelo menos 8 caracteres)
         </label>
         <input id="backup-pass" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <div className="row">
-          <button type="button" className="btn" onClick={backup}>
+          <button type="button" className="btn" onClick={backup} disabled={password.trim().length < 8}>
             Baixar backup
           </button>
           <button type="button" className="btn btn--ghost" onClick={() => file.current?.click()}>
