@@ -1,0 +1,36 @@
+name: Experiência de uso
+description: Conte voluntariamente o que ficou claro ou difícil, sem incluir dados pessoais
+body:
+  - type: markdown
+    attributes:
+      value: "Não compartilhe nomes, diagnósticos, relatos íntimos, dados de saúde ou capturas com informações reais. Este formulário é público."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Em que parte do app?
+      options:
+        - Hoje
+        - Pausa agora
+        - Diário
+        - Vivências
+        - Jogos
+        - Ajustes
+        - Instalação ou uso offline
+        - Outra parte
+    validations:
+      required: true
+  - type: textarea
+    id: ajudou
+    attributes:
+      label: O que ficou fácil ou útil?
+      description: Fale apenas sobre a experiência com a interface e os recursos.
+  - type: textarea
+    id: dificil
+    attributes:
+      label: O que ficou confuso ou difícil?
+    validations:
+      required: true
+  - type: textarea
+    id: melhoria
+    attributes:
+      label: O que poderia melhorar?

@@ -2,6 +2,19 @@
 
 Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a partir da primeira release pública.
 
+## Não lançado
+
+### Adicionado
+
+- Manutenção contínua por agentes em três papéis: Scout, Implementer e Reviewer.
+- Aprovação exclusiva do proprietário, PR em rascunho, limites de diff e bloqueio de arquivos sensíveis.
+- CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.
+
+### Segurança
+
+- O agente que altera código não recebe o token do GitHub e nunca mescla mudanças automaticamente.
+- A chave da narração Azure fica disponível somente no passo que gera os áudios.
+
 ## 0.3.0 — 2026-10-20
 
 Primeira release pública documentada.

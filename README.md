@@ -77,6 +77,9 @@ O projeto está em manutenção ativa. Mudanças passam por testes automatizados
 Pages. Consulte o [histórico de versões](CHANGELOG.md), a [governança](GOVERNANCE.md), o
 [guia de contribuição](CONTRIBUTING.md) e a [política de segurança](SECURITY.md).
 
+A manutenção pode usar [agentes com aprovação humana](docs/manutencao-agentes.md): eles propõem, implementam em
+branch isolada e revisam, mas nunca mesclam ou publicam mudanças por conta própria.
+
 Como o aplicativo não usa analytics, seu impacto é acompanhado somente por sinais públicos e voluntários:
 estrelas, forks, issues, pull requests e relatos que as próprias pessoas decidam compartilhar. Veja como
 [participar pelas issues](https://github.com/td9251156-creator/rotina-magica/issues).

@@ -16,7 +16,7 @@ body:
     id: passos
     attributes:
       label: Como repetir
-      placeholder: "1. Abri Ajuda agora\n2. Toquei em…"
+      placeholder: "1. Abri Pausa agora\n2. Toquei em…"
   - type: input
     id: aparelho
     attributes:

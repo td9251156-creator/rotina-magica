@@ -22,10 +22,11 @@ jobs:
   gerar:
     runs-on: ubuntu-latest
     env:
-      AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
       AZURE_SPEECH_REGION: brazilsouth
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -38,6 +39,7 @@ jobs:
       - run: pip install soundfile numpy
       - name: Gerar
         env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           VOZ: ${{ inputs.voz }}
           AMOSTRAS: ${{ inputs.amostras }}
         run: |
@@ -51,10 +53,13 @@ jobs:
         if: ${{ !inputs.amostras }}
         run: python -c "import re,pathlib;p=pathlib.Path('public/sw.js');s=p.read_text();p.write_text(re.sub(r\"rumo-v(\d+)\",lambda m:f'rumo-v{int(m[1])+1}',s,1))"
       - name: Enviar para o branch narracao-azure
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b narracao-azure
           git add public/audio public/sw.js
           git commit -m "gera a narração com a voz Azure" -m "$(grep -E '^(voz|estilo)' "$RUNNER_TEMP/gerar.log")"
+          gh auth setup-git
           git push -f origin narracao-azure

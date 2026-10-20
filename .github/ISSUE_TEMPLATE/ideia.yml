@@ -6,7 +6,7 @@ body:
     id: problema
     attributes:
       label: Que momento difícil isso ajudaria?
-      description: Ex.: a vontade depois do trabalho, o dia seguinte a uma recaída, o fim de semana.
+      description: "Ex.: corpo tenso, cabeça cheia, solidão, sobrecarga ou dificuldade para começar uma pausa."
     validations:
       required: true
   - type: textarea
@@ -17,4 +17,4 @@ body:
     id: evidencia
     attributes:
       label: Evidência (se souber)
-      description: Estudo, diretriz clínica ou experiência de tratamento que apoia a ideia.
+      description: Fonte, experiência de uso ou observação que apoia a ideia, incluindo seus limites.

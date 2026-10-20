@@ -1,0 +1,66 @@
+name: Agent Scout
+
+on:
+  schedule:
+    - cron: '17 9 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: agent-scout
+  cancel-in-progress: false
+
+jobs:
+  analisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Conferir configuração
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
+      - name: Analisar prioridades
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          npx -y @openai/codex@0.163.0 exec --ephemeral --ignore-user-config --sandbox read-only \
+            --output-last-message "$RUNNER_TEMP/agent-report.md" - <<'PROMPT'
+          Você é o Scout de manutenção do Rotina Mágica. Trabalhe somente em leitura e somente com o conteúdo local.
+          Leia README, ROADMAP, CONTRIBUTING, SECURITY, CHANGELOG, docs, código, testes e histórico Git.
+          Não use rede, não altere arquivos e não proponha crescimento pelo número de funcionalidades.
+
+          Produza uma proposta curta em Markdown com no máximo três problemas, nesta prioridade:
+          privacidade/integridade de dados/acesso à Pausa agora; acessibilidade/offline/bugs; atrito; por último,
+          recurso novo apenas com demanda ou base clara. Para cada item inclua problema observável, evidência local,
+          impacto, risco, esforço, critérios de aceite e arquivos prováveis. Não faça alegações clínicas.
+          Termine recomendando somente uma tarefa para aprovação humana. Não inclua comandos nem links externos.
+          PROMPT
+      - name: Criar ou atualizar a proposta
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh label create 'agent:proposal' --repo "$REPO" --color D4C5F9 --description 'Proposta automática aguardando decisão humana' --force
+          gh label create 'agent:approved' --repo "$REPO" --color 0E8A16 --description 'Aprovado pelo proprietário para implementação' --force
+          gh label create 'agent:working' --repo "$REPO" --color FBCA04 --description 'Agente trabalhando nesta tarefa' --force
+          gh label create 'agent:review' --repo "$REPO" --color 1D76DB --description 'Pull request gerado aguardando revisão' --force
+          gh label create 'agent:blocked' --repo "$REPO" --color B60205 --description 'Automação bloqueada; requer atenção' --force
+          gh label create 'agent:generated' --repo "$REPO" --color C5DEF5 --description 'Mudança gerada por agente' --force
+          ISSUE=$(gh issue list --repo "$REPO" --state open --label 'agent:proposal' --json number --jq '.[0].number // empty')
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --repo "$REPO" --body-file "$RUNNER_TEMP/agent-report.md"
+          else
+            gh issue create --repo "$REPO" --title 'Scout: proposta semanal de manutenção' \
+              --label 'agent:proposal' --body-file "$RUNNER_TEMP/agent-report.md"
+          fi
