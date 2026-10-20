@@ -5,6 +5,8 @@
  */
 import type { PlanItemKind } from '@/data/repositories/types';
 import { daysBetween, type LocalDate } from './dates';
+import { GENERAL_TECHNIQUES } from './wellbeing-techniques';
+import type { SupportFocus } from './support';
 
 export interface TechniqueStep {
   text: string;
@@ -356,18 +358,24 @@ export const TECHNIQUES: readonly Technique[] = [
 ];
 
 export function findTechnique(id: string): Technique | undefined {
-  return TECHNIQUES.find((t) => t.id === id);
+  return TECHNIQUES.find((t) => t.id === id) ?? GENERAL_TECHNIQUES.find((t) => t.id === id);
 }
 
 /**
  * Técnica do dia: primeiro as que nunca foram praticadas, na ordem do catálogo (as primeiras
  * montam o kit do SOS mais rápido). Depois de todas, revezamento pelo dia.
  */
-export function techniqueOfTheDay(today: LocalDate, practicedIds: readonly string[], start: LocalDate = today): Technique {
-  const untried = TECHNIQUES.find((t) => !practicedIds.includes(t.id));
+export function techniqueOfTheDay(today: LocalDate, practicedIds: readonly string[], start: LocalDate = today, focus: SupportFocus = 'recovery'): Technique {
+  const catalog = focus === 'general' ? GENERAL_TECHNIQUES : TECHNIQUES;
+  const untried = catalog.find((t) => !practicedIds.includes(t.id));
   if (untried) return untried;
-  const i = ((daysBetween(start, today) % TECHNIQUES.length) + TECHNIQUES.length) % TECHNIQUES.length;
-  return TECHNIQUES[i];
+  const i = ((daysBetween(start, today) % catalog.length) + catalog.length) % catalog.length;
+  return catalog[i];
+}
+
+/** Estimativa para orientar a escolha, não um tempo obrigatório. */
+export function techniqueMinutes(t: Technique): number {
+  return Math.max(1, Math.ceil(t.steps.reduce((s, step) => s + (step.pauseSeconds ?? 15) + (step.capture || step.reflect ? 30 : 0), 0) / 60));
 }
 
 /** Notas da régua (importância e confiança) ao longo do tempo, da mais antiga para a mais nova. */

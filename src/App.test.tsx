@@ -16,7 +16,9 @@ function setup(repos = createTestRepositories()) {
 
 describe('Rumo', () => {
   it('primeiro uso gera planos de noite e leva para a noite de hoje', async () => {
-    const { repos, user } = setup();
+    const legacy = createTestRepositories();
+    legacy.settings.set('supportFocus', 'recovery');
+    const { repos, user } = setup(legacy);
     expect(screen.getByRole('img', { name: 'Um novo começo, com um caminho iluminado' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '18:00' }));
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
@@ -50,7 +52,7 @@ describe('Rumo', () => {
         <App />
       </DataProvider>,
     );
-    expect(screen.getByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Voltar para o aqui e agora/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188');
   });
 
@@ -63,7 +65,7 @@ describe('Rumo', () => {
     });
     try {
       render(<DataProvider><App /></DataProvider>);
-      expect(screen.getByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Voltar para o aqui e agora/ })).toBeInTheDocument();
       expect(screen.getByRole('alert')).toHaveTextContent('Este aparelho não está salvando');
     } finally {
       Object.defineProperty(window, 'localStorage', original);

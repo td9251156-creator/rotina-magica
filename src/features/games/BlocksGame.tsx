@@ -22,6 +22,7 @@ import { sephirah } from '@/domain/games/symbols';
 import { formatRemaining } from '@/domain/urge';
 import type { GameOutcome } from './record';
 import { vibrate } from './record';
+import { GameProgress } from './GameGuide';
 
 const COLORS = ['', '#7FC8A9', '#E8C15B', '#B68CE8', '#6FB7E8', '#E8875B', '#5B8DE8', '#E8A35B'];
 const colorOf = (t: PieceType) => COLORS[COLOR_INDEX[t]];
@@ -29,6 +30,17 @@ const colorOf = (t: PieceType) => COLORS[COLOR_INDEX[t]];
 const LOCK_DELAY_MS = 500;
 
 const CLEAR_NAMES = ['', 'Linha!', 'Duas linhas!', 'Três linhas!', 'Quatro linhas!'];
+
+function ControlIcon({ action }: { action: 'hold' | 'left' | 'rotate' | 'right' | 'drop' }) {
+  const paths = {
+    hold: 'M8 20V4M4 8l4-4 4 4M16 4v16m-4-4 4 4 4-4',
+    left: 'M20 12H4m6-6-6 6 6 6',
+    rotate: 'M20 10a8 8 0 1 0-2 8M20 4v6h-6',
+    right: 'M4 12h16m-6-6 6 6-6 6',
+    drop: 'M12 3v13m-5-5 5 5 5-5M5 21h14',
+  };
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[action]} /></svg>;
+}
 
 interface Props {
   /** Com duração (modo SOS), o jogo não acaba quando enche: recomeça e o relógio manda. */
@@ -80,7 +92,7 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
 
   const act = useCallback(
     (fn: (s: BlocksState) => BlocksState) => {
-      if (!paused) setState((s) => fn(s));
+      if (!paused && !finished.current) setState((s) => s.over ? s : fn(s));
     },
     [paused],
   );
@@ -159,9 +171,13 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'p' || e.key === 'Escape') {
+        e.preventDefault();
+        if (e.repeat) return;
         if (!endless) setPaused((p) => !p);
         return;
       }
+      // Espaço e Enter em um botão devem ativar só aquele controle.
+      if (e.target instanceof Element && e.target.closest('button, input, textarea, select, summary, [contenteditable="true"]')) return;
       const map: Record<string, (s: BlocksState) => BlocksState> = {
         ArrowLeft: (s) => move(s, -1),
         ArrowRight: (s) => move(s, 1),
@@ -185,6 +201,11 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
     const c = canvas.current;
     const ctx = c?.getContext?.('2d');
     if (!c || !ctx) return;
+    const pixels = Math.round(c.getBoundingClientRect().width * Math.min(window.devicePixelRatio || 1, 2));
+    if (pixels > 0 && c.width !== pixels) {
+      c.width = pixels;
+      c.height = pixels * ROWS / COLS;
+    }
     const size = c.width / COLS;
     ctx.fillStyle = '#0d1018';
     ctx.fillRect(0, 0, c.width, c.height);
@@ -231,6 +252,8 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
   }, [state]);
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (paused || drag.current || e.button !== 0) return;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     drag.current = { x: e.clientX, y: e.clientY, t: Date.now(), moved: 0 };
   };
   const onPointerMove = (e: React.PointerEvent) => {
@@ -239,9 +262,12 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
     const cell = canvas.current.getBoundingClientRect().width / COLS;
     const steps = Math.trunc((e.clientX - d.x) / cell);
     if (steps !== 0) {
-      act((s) => move(s, Math.sign(steps)));
-      d.x += Math.sign(steps) * cell;
-      d.moved++;
+      act((s) => {
+        for (let i = 0; i < Math.abs(steps); i++) s = move(s, Math.sign(steps));
+        return s;
+      });
+      d.x += steps * cell;
+      d.moved += Math.abs(steps);
     }
   };
   const onPointerUp = (e: React.PointerEvent) => {
@@ -256,7 +282,7 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
   };
 
   return (
-    <div className="game">
+    <div className="game blocks-game">
       <div className="game__hud">
         <span>
           <strong>{state.score}</strong> pontos
@@ -269,6 +295,7 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
           </button>
         )}
       </div>
+      {!endless && <GameProgress label={`Linhas para o nível ${state.level + 1}`} value={state.lines % 10} max={10} />}
       <div className="tetris">
         <div className="tetris__side">
           <button
@@ -300,6 +327,9 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
+            onPointerCancel={() => { drag.current = null; }}
+            onLostPointerCapture={() => { drag.current = null; }}
+            tabIndex={0}
             aria-label="Tabuleiro: toque para girar, arraste para os lados, deslize para baixo para soltar e para cima para guardar"
           />
           {toast && (
@@ -329,22 +359,23 @@ export function BlocksGame({ durationMs, tree, startLevel = 1, onFinish }: Props
         </div>
       </div>
       <div className="pad pad--five">
-        <button type="button" aria-label="Guardar" onClick={() => act(holdPiece)} disabled={!state.canHold}>
-          ⇅
+        <button type="button" aria-label="Guardar" onClick={() => act(holdPiece)} disabled={paused || !state.canHold}>
+          <ControlIcon action="hold" /><span>Guardar</span>
         </button>
-        <button type="button" aria-label="Esquerda" onClick={() => act((s) => move(s, -1))}>
-          ◀
+        <button type="button" aria-label="Esquerda" disabled={paused} onClick={() => act((s) => move(s, -1))}>
+          <ControlIcon action="left" /><span>Esquerda</span>
         </button>
-        <button type="button" aria-label="Girar" onClick={() => act(rotatePiece)}>
-          ⟳
+        <button type="button" aria-label="Girar" disabled={paused} onClick={() => act(rotatePiece)}>
+          <ControlIcon action="rotate" /><span>Girar</span>
         </button>
-        <button type="button" aria-label="Direita" onClick={() => act((s) => move(s, 1))}>
-          ▶
+        <button type="button" aria-label="Direita" disabled={paused} onClick={() => act((s) => move(s, 1))}>
+          <ControlIcon action="right" /><span>Direita</span>
         </button>
-        <button type="button" aria-label="Soltar" onClick={() => act((s) => hardDrop(s, endless))}>
-          ⤓
+        <button type="button" aria-label="Soltar" disabled={paused} onClick={() => act((s) => hardDrop(s, endless))}>
+          <ControlIcon action="drop" /><span>Soltar</span>
         </button>
       </div>
+      {!endless && <p className="game-hint">Toque para girar · arraste para mover · a sombra guia a queda</p>}
       {state.toppedOut > 0 && endless && <p className="center small muted">Encheu? Sem problema, recomeça sozinho. Continue.</p>}
     </div>
   );

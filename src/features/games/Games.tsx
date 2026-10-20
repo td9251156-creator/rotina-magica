@@ -18,10 +18,13 @@ import { DEFAULT_ACTIONS } from '../sos/defaults';
 import { StoryGame } from './StoryGame';
 import { WaveGame } from './WaveGame';
 import { GameArt } from '@/ui/illustrations';
+import { GameGuide, GAME_GUIDES } from './GameGuide';
+import './games.css';
+import { supportFocus } from '@/domain/support';
 
 export const HOW_TO: Record<GameId, string> = {
   blocos:
-    'Encaixe as peças para completar linhas. Toque no tabuleiro para girar, arraste para os lados, deslize para baixo para soltar e para cima para guardar a peça. Linhas seguidas rendem combo; quatro de uma vez rendem mais. A cada 10 linhas, sobe de nível e fica mais rápido.',
+    'Encaixe as peças para completar linhas. Toque no tabuleiro para girar, arraste para os lados, deslize para baixo para soltar e para cima para guardar a peça. Linhas seguidas rendem combo; quatro de uma vez rendem mais. A cada 10 linhas, sobe de nível e fica mais rápido. No teclado: setas para os lados movem, seta para cima gira, para baixo desce, Espaço solta, C guarda e Esc pausa.',
   arcanos:
     'As cartas estão viradas para baixo. Vire duas por vez e ache os pares do mesmo arcano. Lembrar onde cada uma está é o treino. Pares seguidos sem errar valem mais, e cada arcano achado traz uma ideia para a vida (não é adivinhação).',
   pares:
@@ -94,13 +97,14 @@ export function GameView({
 
 export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onBack: () => void }) {
   const { repos, write } = useData();
+  const general = supportFocus(repos) === 'general';
   const sessions = repos.games.list();
   const symbols = useSymbols(repos);
   // O tarô só aparece para quem quer os símbolos; os outros jogos servem a todos.
-  const ids = GAME_IDS.filter((g) => symbols || g !== 'arcanos');
+  const ids = GAME_IDS.filter((g) => (symbols || g !== 'arcanos') && (!general || g !== 'noite'));
   return (
     <Screen title="Jogos" onBack={onBack}>
-      <p className="muted">Cada jogo treina uma habilidade que segura a vontade. Jogue um por dia; na hora da vontade, Blocos é o mais rápido.</p>
+      <p className="muted">{general ? 'Uma pausa para mudar o foco ou respirar com calma. Escolha o que combina com este momento, sem obrigação de fazer pontos.' : 'Cada jogo treina uma habilidade que segura a vontade. Jogue um por dia; na hora da vontade, Blocos é o mais rápido.'}</p>
       <label className="toggle">
         <input type="checkbox" checked={symbols} onChange={(e) => write((r) => r.settings.set('gameSymbols', e.target.checked))} />
         <span>
@@ -121,8 +125,9 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
                 </span>
                 {GAME_INFO[g].skill}
               </span>
+              <span className="tile__time">{GAME_GUIDES[g].time}</span>
               <strong>{GAME_INFO[g].title}</strong>
-              <span className="small">{GAME_INFO[g].pitch}</span>
+              <span className="small">{general && g === 'blocos' ? 'Encaixe peças e complete linhas, uma de cada vez.' : GAME_INFO[g].pitch}</span>
               <span className="small muted">{plays ? `recorde ${best} · ${plays}×` : 'nunca jogado'}</span>
             </button>
           );
@@ -134,8 +139,11 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
 
 export function GameResult({ id, score, result, onAgain, onBack }: { id: GameId; score: number; result: RecordedGame; onAgain: () => void; onBack: () => void }) {
   return (
-    <div className="result">
+    <div className="result game-result">
+      <span className="game-result__seal"><Icon id="feito" /></span>
       <p className="muted small">{GAME_INFO[id].title}</p>
+      <h1>Prática concluída</h1>
+      <p className="muted small">Você dedicou um tempo a si. Cada partida conta.</p>
       <p className="result__score">{score}</p>
       <p>{result.record ? 'Novo recorde!' : 'pontos'}</p>
       <p className="xp">+{result.xp} XP</p>
@@ -144,7 +152,7 @@ export function GameResult({ id, score, result, onAgain, onBack }: { id: GameId;
           Subiu para o nível {result.level.level}: {result.level.name}
         </p>
       )}
-      <div className="xpbar" aria-label={`Nível ${result.level.level}`}>
+      <div className="xpbar" role="progressbar" aria-label={`Progresso no nível ${result.level.level}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(result.level.progress * 100)}>
         <span style={{ width: `${Math.round(result.level.progress * 100)}%` }} />
       </div>
       <p className="small muted">
@@ -183,10 +191,13 @@ export function PlayGame({ id, onBack }: { id: GameId; onBack: () => void }) {
   return (
     <Screen onBack={onBack} className="screen--game">
       {stage === 'intro' && (
-        <section className="intro">
-          <span className="tile__skill">{GAME_INFO[id].skill}</span>
+        <section className="intro game-intro">
+          <div className="game-intro__art"><GameArt id={id} /></div>
+          <div className="game-intro__meta"><span className="tile__skill"><Icon id={GAME_ICON[id]} />{GAME_INFO[id].skill}</span><span>{GAME_GUIDES[id].time}</span></div>
           <h1>{GAME_INFO[id].title}</h1>
-          <p>{HOW_TO[id]}</p>
+          <p className="game-intro__goal">{GAME_GUIDES[id].goal}</p>
+          <GameGuide id={id} />
+          <details className="game-instructions"><summary>Ver todas as instruções</summary><p>{HOW_TO[id]}</p></details>
           {id === 'blocos' &&
             (fastOpen ? (
               <label className="toggle">
@@ -204,6 +215,7 @@ export function PlayGame({ id, onBack }: { id: GameId; onBack: () => void }) {
           <button type="button" className="btn" onClick={() => setStage('play')}>
             Começar
           </button>
+          {(id === 'pares' || id === 'arcanos') && <p className="small muted center">Na próxima tela, escolha uma partida curta ou maior.</p>}
         </section>
       )}
       {stage === 'play' && <GameView key={round} id={id} onFinish={finish} startLevel={id === 'blocos' && fast && fastOpen ? FAST_BLOCKS.startLevel : undefined} />}

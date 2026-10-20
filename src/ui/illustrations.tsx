@@ -1,7 +1,8 @@
 import { useId } from 'react';
+import type { GameId } from '@/domain/progression';
 
 /**
- * Ilustrações desenhadas no próprio app (SVG), leves e offline. Cada cena tem cores próprias,
+ * Ilustrações locais (SVG e capas WebP), leves e offline. Cada cena tem cores próprias,
  * pensadas para ficar bonitas no tema noite e no claro. Movimento só de leve, e nenhum com "reduzir movimento".
  */
 
@@ -88,74 +89,18 @@ export function SkyScene({ period }: { period: Period }) {
   );
 }
 
-/** Desenho de cada jogo, no topo do cartão da lista de jogos. */
-export function GameArt({ id }: { id: string }) {
-  const u = useUid();
+/** Capas locais da mesma família visual; os nomes dos jogos ficam no texto do cartão. */
+export function GameArt({ id }: { id: GameId }) {
   return (
-    <svg className="game-art" viewBox="0 0 160 64" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <linearGradient id={`${u}b`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#1d2230" />
-          <stop offset="1" stopColor="#12141c" />
-        </linearGradient>
-      </defs>
-      <rect width="160" height="64" fill={`url(#${u}b)`} />
-      {id === 'blocos' && (
-        <g stroke="#0e1017" strokeWidth="1.2">
-          {[
-            [40, 52, '#e07a5f'], [50, 52, '#e07a5f'], [60, 52, '#7fb7d9'], [70, 52, '#7fb7d9'], [80, 52, '#c9a45c'], [100, 52, '#8fc79a'], [110, 52, '#8fc79a'], [120, 52, '#a98bd6'],
-            [40, 42, '#c9a45c'], [60, 42, '#7fb7d9'], [100, 42, '#8fc79a'], [110, 42, '#a98bd6'], [120, 42, '#a98bd6'],
-          ].map(([x, y, c], i) => (
-            <rect key={i} x={x as number} y={y as number} width="10" height="10" rx="2" fill={c as string} />
-          ))}
-          <g className="game-art__fall">
-            {[[80, 12], [90, 12], [100, 12], [90, 2]].map(([x, y], i) => (
-              <rect key={i} x={x} y={y} width="10" height="10" rx="2" fill="#f1e6cf" />
-            ))}
-          </g>
-        </g>
-      )}
-      {id === 'pares' && (
-        <g>
-          {[[48, 18, 0], [72, 18, 0], [96, 18, 0], [60, 10, 1], [84, 10, 1]].map(([x, y, z], i) => (
-            <g key={i}>
-              <rect x={x + 3} y={y + 4} width="22" height="30" rx="4" fill="#8f7d55" />
-              <rect x={x} y={y} width="22" height="30" rx="4" fill={z ? '#f8eccc' : '#e8dab4'} stroke="#b9a77f" />
-            </g>
-          ))}
-          <circle cx="71" cy="25" r="5" fill="none" stroke="#c0623f" strokeWidth="2" />
-          <circle cx="95" cy="25" r="5" fill="none" stroke="#c0623f" strokeWidth="2" />
-          <path d="M107 33l4-8 4 8z" fill="#4f8a6b" />
-        </g>
-      )}
-      {id === 'arcanos' && (
-        <g>
-          <rect x="46" y="12" width="30" height="42" rx="4" fill="#1b1e2c" stroke="#c9a45c" transform="rotate(-12 61 33)" />
-          <rect x="84" y="12" width="30" height="42" rx="4" fill="#1b1e2c" stroke="#c9a45c" transform="rotate(12 99 33)" />
-          <rect x="65" y="8" width="30" height="44" rx="4" fill="#f3e7c9" stroke="#b9a77f" />
-          <path d="M80 18l3 8 8 .5-6 5 2 8-7-4.5-7 4.5 2-8-6-5 8-.5z" fill="#c9a45c" />
-        </g>
-      )}
-      {id === 'onda' && (
-        <g fill="none" strokeLinecap="round">
-          <circle className="game-art__breath" cx="80" cy="26" r="12" fill="#c9a45c" opacity="0.85" />
-          <path d="M0 46q20-8 40 0t40 0 40 0 40 0" stroke="#6fb7e8" strokeWidth="3" />
-          <path d="M0 56q20-6 40 0t40 0 40 0 40 0" stroke="#2f5f7a" strokeWidth="3" />
-        </g>
-      )}
-      {id === 'noite' && (
-        <g>
-          <circle cx="124" cy="18" r="8" fill="#e8d4a3" />
-          <circle cx="128" cy="15" r="7" fill="#1b1f2c" />
-          <path d="M10 64V40h12v-8h10v14h10V34h14v30zM104 64V44h10v-10h14v12h10v18z" fill="#0b0d12" />
-          {[[14, 46], [46, 42], [108, 50], [120, 40]].map(([x, y], i) => (
-            <rect key={i} x={x} y={y} width="4" height="4" fill="#e9b85e" opacity="0.85" />
-          ))}
-          <path d="M80 64v-12M80 52l-12-12M80 52l12-12" stroke="#c9a45c" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-          <circle cx="92" cy="40" r="3" fill="#f1e6cf" />
-        </g>
-      )}
-    </svg>
+    <img
+      className="game-art"
+      src={`${import.meta.env.BASE_URL}illustrations/games/${id}.webp`}
+      width="480"
+      height="320"
+      alt=""
+      aria-hidden="true"
+      decoding="async"
+    />
   );
 }
 

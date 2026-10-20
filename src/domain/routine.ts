@@ -250,9 +250,8 @@ export function lastWeekCount(activeDates: readonly LocalDate[], today: LocalDat
 }
 
 export const DEFAULT_OATH =
-  'Eu escolho cuidar de mim. A cocaína não manda na minha vida: ela me tira o que eu mais quero. ' +
-  'Todo dia eu fortaleço meu corpo, minha mente e a minha vontade. ' +
-  'Se eu cair, levanto, aprendo e sigo. Eu estou retomando o controle.';
+  'Eu mereço cuidado, também nos dias difíceis. Posso ir com calma, pedir ajuda e escolher um passo pequeno. ' +
+  'Não preciso resolver tudo hoje. Meu valor não depende de como este dia termina.';
 
 /** Uma fase de prática guiada: o que fazer e por quanto tempo. */
 export interface PracticePhase {

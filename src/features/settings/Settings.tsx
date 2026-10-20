@@ -11,6 +11,7 @@ import { useInstall } from '@/platform/install';
 import { Screen } from '@/ui/Screen';
 import { Setting } from '@/ui/Setting';
 import { download } from '@/ui/download';
+import { supportFocus, type SupportFocus } from '@/domain/support';
 
 const KIT_KINDS: { kind: PlanItemKind; label: string }[] = [
   { kind: 'se_entao', label: 'Se… então…' },
@@ -125,6 +126,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
   };
 
   const lastBackup = repos.settings.get<string | null>('lastBackupAt', null);
+  const focus = supportFocus(repos);
 
   return (
     <Screen title="Ajustes" className="screen--tabs">
@@ -134,6 +136,13 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         </p>
       )}
 
+      <p className="eyebrow group">Seu jeito de receber apoio</p>
+      <Setting title="Como o app pode me apoiar" hint={focus === 'general' ? 'Dias difíceis e bem-estar' : 'Hábitos e uso de substâncias'}>
+        <p className="small muted">Você pode mudar esta escolha sem apagar registros. Indicadores antigos conservam seu significado.</p>
+        <div className="support-choice">
+          {([['general', 'Dias difíceis e bem-estar', 'Cuidados para ansiedade, tristeza, solidão e sobrecarga.'], ['recovery', 'Hábitos e uso de substâncias', 'Ferramentas específicas, registros de uso e planos de prevenção.']] as const).map(([value, title, detail]) => <button key={value} type="button" aria-pressed={focus === value} onClick={() => write((r) => r.settings.set<SupportFocus>('supportFocus', value))}><strong>{title}</strong><span>{detail}</span></button>)}
+        </div>
+      </Setting>
       <p className="eyebrow group">Sua rotina</p>
       <StyleCard />
       <OathCard />
@@ -150,13 +159,13 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
         </Setting>
       )}
 
-      <Setting title="Lembrete na saída do trabalho" hint="Um evento discreto na agenda do celular">
+      <Setting title={focus === 'general' ? 'Lembrete de cuidado' : 'Lembrete na saída do trabalho'} hint="Um evento discreto na agenda do celular">
         <p className="small muted">
           O app é um site instalado e não consegue tocar alarme sozinho. A agenda do celular consegue: adicionamos um evento discreto
           com o link do app.
         </p>
         <label className="field">
-          Horário que você sai
+          {focus === 'general' ? 'Horário da sua pausa' : 'Horário que você sai'}
           <input inputMode="numeric" value={time} onChange={(e) => setTime(e.target.value)} />
         </label>
         {!parsed && <p className="warn small">Não entendi esse horário. Tente 18:30.</p>}
@@ -193,7 +202,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
       </Setting>
 
       <p className="eyebrow group">Seus dados e privacidade</p>
-      <Setting title="Gasto médio por semana (opcional)" hint="Para o laboratório mostrar quanto ficou com você">
+      {focus === 'recovery' && <Setting title="Gasto médio por semana (opcional)" hint="Para o laboratório mostrar quanto ficou com você">
         <p className="small muted">Só para mostrar no laboratório quanto dinheiro ficou com você. Fica só no celular.</p>
         <div className="inline">
           <input inputMode="numeric" placeholder="R$" value={spend} onChange={(e) => setSpend(e.target.value.replace(/\D/g, ''))} />
@@ -208,7 +217,7 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
             Salvar
           </button>
         </div>
-      </Setting>
+      </Setting>}
 
       <Setting title="Seus dados" hint={lastBackup ? `Último backup: ${new Date(lastBackup).toLocaleDateString('pt-BR')}` : 'Faça um backup com senha'}>
         <p className="small muted">

@@ -1,7 +1,9 @@
 import type { Repositories } from '@/data/repositories/types';
 import type { EveningPlanDraft } from '@/domain/evening';
+import type { SupportFocus } from '@/domain/support';
 
 export interface OnboardingAnswers {
+  supportFocus?: SupportFocus;
   workEndTime: string;
   activityIds: string[];
   customActivities: string[];
@@ -29,5 +31,6 @@ export function completeOnboarding(repos: Repositories, answers: OnboardingAnswe
   );
 
   settings.set('workEndTime', answers.workEndTime);
+  if (answers.supportFocus) settings.set('supportFocus', answers.supportFocus);
   settings.set('onboardingDone', true);
 }

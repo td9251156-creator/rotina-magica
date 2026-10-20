@@ -6,6 +6,8 @@ import { SYMBOL_ART } from './art';
 import { useFitArea } from './fit';
 import { Art, Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
+import { Icon } from '@/ui/icons';
+import { GameProgress } from './GameGuide';
 
 const MODES: { id: MemoryMode; title: string; detail: string }[] = [
   { id: 'curta', title: 'Partida curta', detail: '8 pares · uns 2 minutos' },
@@ -21,13 +23,15 @@ export function ArcanaGame({ onFinish, seed }: { onFinish: (o: GameOutcome) => v
   const [mode, setMode] = useState<MemoryMode | null>(null);
   if (!mode)
     return (
-      <section className="intro">
+      <section className="intro game-mode">
         <h2>Escolha a mesa</h2>
+        <p className="muted small">Poucas cartas para começar, uma mesa maior quando quiser.</p>
         <div className="stack">
           {MODES.map((m) => (
-            <button key={m.id} type="button" className="option" onClick={() => setMode(m.id)}>
-              <strong>{m.title}</strong>
-              <span className="small muted">{m.detail}</span>
+            <button key={m.id} type="button" className="option game-mode__option" onClick={() => setMode(m.id)}>
+              <span className="game-mode__icon"><Icon id="jogo_arcanos" /></span>
+              <span><strong>{m.title}</strong><span className="small muted">{m.detail}</span></span>
+              <Icon id="seta" />
             </button>
           ))}
         </div>
@@ -38,8 +42,11 @@ export function ArcanaGame({ onFinish, seed }: { onFinish: (o: GameOutcome) => v
 
 function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number; onFinish: (o: GameOutcome) => void }) {
   const { pairs } = MEMORY_MODES[mode];
-  const [tableRef, area] = useFitArea<HTMLDivElement>(170);
-  const { columns, cardWidth } = bestGrid(pairs * 2, area.width, area.height);
+  const [tableRef, area] = useFitArea<HTMLDivElement>(180);
+  const fit = bestGrid(pairs * 2, area.width, area.height);
+  // Em telas baixas, prefira rolar a página a deixar as cartas difíceis de tocar.
+  const columns = Math.max(3, Math.min(fit.columns, Math.floor((area.width + 8) / 52)));
+  const cardWidth = Math.max(44, Math.min(fit.cardWidth, Math.floor((area.width - (columns - 1) * 8) / columns)));
   const initial = useMemo(() => dealMemory(pairs, createRng(seed)), [pairs, seed]);
   const [state, setState] = useState(initial);
   const start = useRef(Date.now());
@@ -77,6 +84,11 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
   const found = state.found === null ? null : ARCANA[state.found];
   const matched = state.cards.filter((c) => c.matched).length / 2;
   const wide = cardWidth >= 64;
+  const cue = state.open.length === 2 ? 'São diferentes. Observe os desenhos e tente outro par.'
+    : state.open.length === 1 ? 'Agora procure a outra carta com o mesmo desenho.'
+    : matched === pairs ? 'Todos os pares encontrados!'
+    : found ? `Par encontrado!${state.streak > 1 ? ` ${state.streak} pares seguidos.` : ''}`
+    : 'Vire uma carta. Depois, tente encontrar a outra igual.';
 
   return (
     <div className="arc">
@@ -85,9 +97,11 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
           <strong>{state.score}</strong> pontos
         </span>
         <span className="muted small">
-          {matched} de {pairs} pares · {state.moves} tentativas
+          {state.moves} tentativas{state.streak > 1 ? ` · ${state.streak} pares seguidos` : ''}
         </span>
       </div>
+      <GameProgress label="Pares encontrados" value={matched} max={pairs} />
+      <p className="game-feedback" role="status">{cue}</p>
       <div ref={tableRef} className="arc__fit">
       <div className="arc__table" style={{ gridTemplateColumns: `repeat(${columns}, ${cardWidth}px)`, fontSize: Math.max(13, cardWidth * 0.26) }}>
         {state.cards.map((c) => {
@@ -100,6 +114,7 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
               className={`arc__card${up ? ' arc__card--up' : ''}${c.matched ? ' arc__card--done' : ''}`}
               onClick={() => tap(c.id)}
               aria-label={up ? `${roman(a.n)}, ${a.name}` : 'Carta virada para baixo'}
+              aria-pressed={up}
               disabled={c.matched}
             >
               <span className="arc__inner">
@@ -112,6 +127,7 @@ function ArcanaTable({ mode, seed, onFinish }: { mode: MemoryMode; seed: number;
                   {wide && <span className="arc__name">{a.name.replace(/^(O|A|Os) /, '')}</span>}
                 </span>
               </span>
+              {c.matched && <span className="arc__matched" aria-hidden="true"><Icon id="feito" /></span>}
             </button>
           );
         })}

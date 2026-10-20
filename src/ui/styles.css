@@ -332,7 +332,7 @@ h1, h2 { color: var(--title); }
 .hero__brand { display: flex; align-items: center; gap: 14px; }
 .hero__illustration { width: 72px; height: 72px; border-radius: 22px; flex: 0 0 auto; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28); }
 .hero__brand h1 { margin-top: 0.2rem; }
-.welcome-illustration { display: block; width: 100%; max-height: 190px; object-fit: cover; border-radius: 24px; margin: 4px 0 20px; border: 1px solid rgba(201, 164, 92, 0.3); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); }
+.welcome-illustration { display: block; width: 100%; height: auto; max-height: 190px; object-fit: cover; border-radius: 24px; margin: 4px 0 20px; border: 1px solid rgba(201, 164, 92, 0.3); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); }
 .lab-empty { align-items: center; text-align: center; }
 .lab-empty img { display: block; width: min(100%, 320px); border-radius: 18px; margin: -2px auto 6px; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; color: var(--accent); margin: 0; }
@@ -675,13 +675,16 @@ h1, h2 { color: var(--title); }
 .sos-screen .wave__pad { height: max(240px, calc(100dvh - 400px)); }
 
 /* ---- Ilustrações (src/ui/illustrations.tsx) ---- */
-.hero--sky { position: relative; overflow: hidden; border-radius: 24px; padding: 16px 16px 18px; margin: 0 0 4px; min-height: 190px; display: flex; align-items: flex-end; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); }
+.hero--sky { position: relative; overflow: hidden; border: 1px solid rgba(201, 164, 92, 0.2); border-radius: 24px; padding: 24px 20px; margin: 0 0 4px; min-height: 188px; display: flex; align-items: flex-end; background: #0e1017; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16); }
 .hero--sky .sky { position: absolute; inset: 0; width: 100%; height: 100%; }
-.hero--sky .hero__brand { position: relative; }
+.hero--sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14, 16, 23, 0.75), rgba(14, 16, 23, 0.2)); pointer-events: none; }
+.hero--sky .hero__brand { position: relative; z-index: 1; width: 100%; }
+.hero--sky .hero__brand > div { min-width: 0; width: 100%; }
+.hero--sky .hero__title { display: flex; align-items: center; gap: 10px; margin: 12px 0 10px; }
 .hero--sky .eyebrow { color: #e9cf95; }
-.hero--sky h1 { color: #f1e6cf; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45); }
-.hero--sky .tagline { color: rgba(241, 230, 207, 0.86); }
-.hero--sky .hero__illustration { background: rgba(14, 16, 23, 0.55); }
+.hero--sky h1 { margin: 0; font-size: clamp(1.5rem, 6.5vw, 2rem); color: #f1e6cf; line-height: 1.15; }
+.hero--sky .tagline { margin: 0; max-width: 28ch; font-family: inherit; font-size: 0.95rem; font-style: normal; line-height: 1.5; color: #e0d7c5; }
+.hero--sky .hero__illustration { width: 40px; height: 40px; border-radius: 12px; box-shadow: none; }
 .sky__stars circle { animation: twinkle 4s ease-in-out infinite; }
 .sky__glow { animation: glow 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .sky__cloud { animation: drift 18s ease-in-out infinite alternate; }
@@ -689,15 +692,13 @@ h1, h2 { color: var(--title); }
 @keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 @keyframes glow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 @keyframes drift { from { transform: translateX(-8px); } to { transform: translateX(10px); } }
-.game-art { display: block; width: calc(100% + 28px); height: 64px; margin: -14px -14px 6px; border-radius: 15px 15px 0 0; }
-.game-art__fall { animation: fall 2.4s ease-in infinite; }
-.game-art__breath { animation: glow 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-@keyframes fall { 0% { transform: translateY(-6px); opacity: 0; } 15% { opacity: 1; } 70%, 100% { transform: translateY(18px); opacity: 1; } }
+.game-art { display: block; width: calc(100% + 28px); height: 100px; object-fit: cover; margin: -14px -14px 10px; border-radius: 15px 15px 0 0; background: #0e1017; }
+.tile--noite .game-art { height: 160px; object-position: center 35%; }
 .sound-art { display: block; width: 100%; height: 72px; margin-bottom: 8px; border-radius: 12px; }
 .sound--on .sound-art__wave { animation: drift 3s ease-in-out infinite alternate; }
 .illus { display: block; width: 100%; height: auto; border-radius: 22px; margin: 4px 0 8px; }
 .sprout { animation: grow 1.4s ease-out both; transform-box: fill-box; transform-origin: bottom center; }
 @keyframes grow { from { transform: scaleY(0.2); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .sky__stars circle, .sky__glow, .sky__cloud, .sky__window, .game-art__fall, .game-art__breath, .sound-art__wave, .sprout { animation: none; }
+  .sky__stars circle, .sky__glow, .sky__cloud, .sky__window, .sound-art__wave, .sprout { animation: none; }
 }

@@ -17,7 +17,7 @@ it('guarda os blocos de código para uso offline e apaga só caches do próprio 
   };
   const caches = {
     open: async () => cache,
-    keys: async () => ['rumo-v6', 'rumo-v7', 'outro-app-v2'],
+    keys: async () => ['rumo-v7', 'rumo-v8', 'outro-app-v2'],
     delete: async (key: string) => { deleted.push(key); return true; },
   };
   const self = {
@@ -34,10 +34,14 @@ it('guarda os blocos de código para uso offline e apaga só caches do próprio 
   listeners.get('install')!(event);
   await pending;
   expect(batches[0]).toContain('./assets-manifest.json');
+  expect(batches[0]).toContain('./illustrations/welcome.webp');
+  for (const id of ['blocos', 'pares', 'arcanos', 'onda', 'noite']) {
+    expect(batches[0]).toContain(`./illustrations/games/${id}.webp`);
+  }
   expect(batches[1]).toContain(`${scope}assets/Lab.js`);
   expect(batches[1]).toContain(`${scope}assets/index.css`);
 
   listeners.get('activate')!(event);
   await pending;
-  expect(deleted).toEqual(['rumo-v6']);
+  expect(deleted).toEqual(['rumo-v7']);
 });

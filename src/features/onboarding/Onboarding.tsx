@@ -4,6 +4,7 @@ import { ACTIVITIES, REASONS, buildEveningPlans, parseTime } from '@/domain/even
 import { navigate } from '@/router';
 import { Chip } from '@/ui/Chip';
 import { completeOnboarding } from './complete-onboarding';
+import { supportFocus, type SupportFocus } from '@/domain/support';
 
 const TIMES = ['16:00', '17:00', '18:00', '19:00', '20:00'];
 const STEPS = 4;
@@ -13,6 +14,8 @@ const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x
 export function Onboarding({ onDone }: { onDone: () => void }) {
   const { repos, write } = useData();
   const [step, setStep] = useState(0);
+  const [focus, setFocus] = useState<SupportFocus>(() => supportFocus(repos));
+  const general = focus === 'general';
   const [time, setTime] = useState(() => repos.settings.get('workEndTime', '18:00'));
   const [customTime, setCustomTime] = useState('');
   const [activityIds, setActivityIds] = useState<string[]>(() =>
@@ -31,7 +34,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
   const finish = () => {
     write((r) =>
-      completeOnboarding(r, { workEndTime: finalTime ?? '18:00', activityIds, customActivities, reasons, plans }),
+      completeOnboarding(r, { supportFocus: focus, workEndTime: finalTime ?? '18:00', activityIds, customActivities, reasons, plans }),
     );
     onDone();
   };
@@ -50,17 +53,19 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         </p>
         {/* Quem abre o app pela primeira vez em crise não pode cair num questionário. */}
         <button type="button" className="link" onClick={() => navigate('sos')}>
-          Bateu vontade? Ajuda agora
+          {general ? 'Preciso de apoio agora' : 'Bateu vontade? Ajuda agora'}
         </button>
       </div>
 
       {step === 0 && (
         <section>
-          <img className="welcome-illustration" src={`${import.meta.env.BASE_URL}illustrations/welcome.svg`} alt="Um novo começo, com um caminho iluminado" />
-          <h1>Que horas você costuma sair do trabalho?</h1>
-          <p className="muted">É a hora em que o app vai te ajudar a decidir a noite.</p>
+          <img className="welcome-illustration" src={`${import.meta.env.BASE_URL}illustrations/welcome.webp`} width="960" height="420" alt="Um novo começo, com um caminho iluminado" />
+          <p className="eyebrow">Rotina Mágica</p>
+          <h1>{general ? 'Um cuidado para os dias difíceis.' : 'Que horas você costuma sair do trabalho?'}</h1>
+          <p className="muted">{general ? 'Você não precisa estar bem para começar. Escolha um horário para sua pausa; lembretes são opcionais.' : 'É a hora em que o app vai te ajudar a decidir a noite.'}</p>
+          <p className="small">{general ? 'Em que horário uma pausa costuma caber no seu dia?' : 'Seu horário de saída'}</p>
           <div className="chips">
-            {TIMES.map((t) => (
+            {(general ? ['08:00', '12:00', '16:00', '18:00', '20:00'] : TIMES).map((t) => (
               <Chip key={t} selected={!customTime && time === t} onClick={() => (setTime(t), setCustomTime(''))}>
                 {t}
               </Chip>
@@ -71,13 +76,14 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             <input inputMode="numeric" placeholder="ex.: 18:30" value={customTime} onChange={(e) => setCustomTime(e.target.value)} />
           </label>
           {customTime && !parsedCustom && <p className="warn small">Não entendi esse horário. Tente 18:30.</p>}
+          <details className="wellbeing-emergency"><summary>Quero apoio específico para hábitos ou uso de substâncias</summary><div className="support-choice"><button type="button" aria-pressed={focus === 'general'} onClick={() => setFocus('general')}><strong>Dias difíceis e bem-estar</strong></button><button type="button" aria-pressed={focus === 'recovery'} onClick={() => setFocus('recovery')}><strong>Hábitos e uso de substâncias</strong></button></div></details>
         </section>
       )}
 
       {step === 1 && (
         <section>
           <h1>O que você curte fazer, ou curtia?</h1>
-          <p className="muted">Escolha quantas quiser. Daqui saem seus planos de noite.</p>
+          <p className="muted">{general ? 'Escolha o que costuma fazer bem, ou o que gostaria de retomar. Você pode deixar em branco.' : 'Escolha quantas quiser. Daqui saem seus planos de noite.'}</p>
           <div className="chips">
             {ACTIVITIES.map((a) => (
               <Chip key={a.id} selected={activityIds.includes(a.id)} onClick={() => setActivityIds(toggle(activityIds, a.id))}>
@@ -107,8 +113,8 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       {step === 2 && (
         <section>
-          <h1>Por que você quer parar?</h1>
-          <p className="muted">Isso aparece quando a vontade bater. Só você vê.</p>
+          <h1>{general ? 'O que você gostaria de cuidar?' : 'Por que você quer parar?'}</h1>
+          <p className="muted">{general ? 'Pode ser algo importante para você. Não precisa ter um objetivo pronto; só você vê suas respostas.' : 'Isso aparece quando a vontade bater. Só você vê.'}</p>
           <div className="chips">
             {[...REASONS, ...reasons.filter((r) => !REASONS.includes(r))].map((r) => (
               <Chip key={r} selected={reasons.includes(r)} onClick={() => setReasons(toggle(reasons, r))}>
@@ -133,10 +139,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       {step === 3 && (
         <section>
-          <h1>Seus planos de noite</h1>
+          <h1>{general ? 'Pequenos cuidados possíveis' : 'Seus planos de noite'}</h1>
           <p className="muted">
-            Todo dia, na saída do trabalho, você escolhe um. Os que tiram de casa vêm primeiro, porque chegar sozinho é o
-            momento mais difícil.
+            {general ? 'Estas são ideias a partir do que você escolheu. Não são tarefas obrigatórias. Você também terá vivências curtas para acalmar, acolher e buscar apoio.' : 'Todo dia, na saída do trabalho, você escolhe um. Os que tiram de casa vêm primeiro, porque chegar sozinho é o momento mais difícil.'}
           </p>
           <ol className="plans">
             {plans.map((p) => (

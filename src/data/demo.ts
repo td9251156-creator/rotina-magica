@@ -34,11 +34,12 @@ export function createDemoRepositories(today = new Date()): Repositories {
   const useDays = new Set([days[3], days[11]]);
 
   repos.settings.set('onboardingDone', true);
+  repos.settings.set('supportFocus', 'general');
   repos.settings.set('trackingStartDate', start);
   repos.settings.set('workEndTime', '18:00');
   repos.settings.set('weeklySpending', 250);
   repos.settings.set('routineStyle', 'magica');
-  repos.settings.set('letter', 'Ei, eu sei que está pesado agora. Lembra de como você acorda depois: cansado, sem dinheiro, com vergonha. Você já atravessou isso antes. Respira, toma um banho, come alguma coisa. A vontade passa, e amanhã você vai agradecer.');
+  repos.settings.set('letter', 'Ei, eu sei que está pesado agora. Você não precisa resolver tudo hoje. Faça uma pausa, tome água e procure alguém de confiança, se puder. Você merece cuidado também nos dias difíceis.');
   repos.settings.set('lastBackupAt', at(addDays(todayStr, -3), 21).toISOString());
 
   repos.plan.add({ kind: 'razao', text: 'Acordar inteiro para o trabalho' });

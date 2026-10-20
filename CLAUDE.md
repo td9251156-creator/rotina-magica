@@ -3,9 +3,15 @@
 Guia para quem (humano ou IA) trabalha neste repositório. Mantenha atualizado a cada ciclo.
 
 ## O que é
-App de código aberto (MIT; web instalável, usado no Android) para ajudar a parar de usar cocaína: SOS de fissura, plano de prevenção de recaída,
-check-in diário, registro de fissuras e progresso sem culpa. Desenhado em volta de uma persona de referência anônima (ver a visão).
-Visão completa e evidências: [`docs/visao-produto.md`](docs/visao-produto.md). Andamento: [`ROADMAP.md`](ROADMAP.md).
+App de código aberto (MIT; PWA para celular) com pequenos cuidados para quem atravessa ansiedade, tristeza,
+solidão, cansaço ou sobrecarga. Vivências guiadas, diário de sentimentos, jogos e ajuda rápida, sem conta nem nuvem.
+É autocuidado, não psicoterapia, diagnóstico ou promessa de tratar uma condição. O nome e a identidade visual seguem Rotina Mágica.
+
+Novas instalações usam `supportFocus: general`. Quem já concluiu o primeiro uso, sem essa configuração, conserva
+`recovery`, com as ferramentas anteriores para hábitos e uso de substâncias. A troca é explícita em Ajustes e não
+apaga dados. O diário geral usa humor/estresse/notas dos check-ins; não converta fissura ou uso antigos em mal-estar.
+O catálogo geral tem IDs próprios e usa voz do aparelho quando disponível; não reutilize áudios com roteiros antigos.
+Guia da proposta e transição: `docs/proposta-acolhimento.md`. Visão histórica e evidências: `docs/visao-produto.md`.
 
 ## Critério de decisão
 "Isso ajuda uma pessoa em recuperação, com evidência de que funciona?" Se não há evidência, a feature
@@ -14,6 +20,9 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 ## Decisões tomadas
 | Data | Decisão | Por quê |
 |---|---|---|
+| 2026-10-19 | Proposta ampliada para apoiar pessoas em momentos difíceis: oito vivências gerais, escolha pelo momento, diário de humor/estresse, ajuda pública sem cadastro e nova tela inicial. Recursos de hábitos e substâncias preservados em foco próprio, com compatibilidade dos registros antigos | Pedido explícito do autor; separar autocuidado de tratamento e manter privacidade, histórico e acesso rápido à ajuda |
+| 2026-10-19 | Experiência dos cinco jogos: instruções em três passos com ícones, progresso e retorno de cada jogada; Blocos com botões nomeados e layout horizontal; Pares e Arcanos com alvos mínimos de 44 px; respiração com fases e contagem; história com cenário e escolhas numeradas. Corrigidos Espaço acionando duas quedas, contagem do último par e vibração contínua ao segurar o ar. Testes em `features/games/interactions.test.tsx` | Pedido do autor para jogos mais visuais e fáceis de usar; manter pontuação, XP, privacidade e acesso pelo SOS |
+| 2026-10-19 | Identidade visual: logo com caminho conectado ao sol, favicon próprio para 16–32 px, ícones com traço 1,75 e Ajustes em engrenagem, cabeçalho com marca menor, cinco capas WebP e boas-vindas com a mesma paleta; capa de compartilhamento 1200×630 com fonte SVG. `CACHE` passou para `rumo-v8` e pré-carrega as novas ilustrações. Guia em `docs/identidade-visual.md` | Pedido do autor para executar todas as melhorias visuais identificadas; manter discrição, leitura no celular e funcionamento offline |
 | 2026-10-19 | Dias sem resposta aparecem como "sem registro", inclusive no histórico antigo; com PIN fechado, "Usei" permite registro e cuidado sem revelar conteúdo pessoal; exportação de backup exige senha, mas backups antigos sem senha ainda podem ser restaurados | Decisões confirmadas pelo autor após revisão de dados, privacidade e acesso em crise |
 | 2026-10-16 | Dados 100% locais, sem conta nem nuvem | Privacidade; uso pessoal |
 | 2026-10-16 | ~~Expo (React Native)~~ substituído no mesmo dia | O autor não quer Expo Go nem ferramentas de dev no celular |

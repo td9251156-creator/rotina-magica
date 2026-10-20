@@ -1,40 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <title>Rotina Mágica</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Rotina Mágica</title>
+  <desc id="desc">Um caminho dourado conduz ao sol nascente, sob uma estrela.</desc>
   <defs>
-    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2a3150"/>
-      <stop offset="0.55" stop-color="#171b2a"/>
-      <stop offset="1" stop-color="#0e1017"/>
-    </linearGradient>
-    <radialGradient id="brilho" cx="256" cy="318" r="230" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#e9b85e" stop-opacity="0.55"/>
-      <stop offset="0.45" stop-color="#c9a45c" stop-opacity="0.18"/>
-      <stop offset="1" stop-color="#c9a45c" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="sol" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff1c9"/>
-      <stop offset="1" stop-color="#d9a94f"/>
-    </linearGradient>
-    <linearGradient id="caminho" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0" stop-color="#f1e6cf"/>
-      <stop offset="1" stop-color="#c9a45c" stop-opacity="0.35"/>
-    </linearGradient>
-    <clipPath id="forma"><rect width="512" height="512" rx="0"/></clipPath>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#192237"/><stop offset="1" stop-color="#0e1017"/></linearGradient>
+    <linearGradient id="sun" x2="0" y2="1"><stop stop-color="#fff0c4"/><stop offset="1" stop-color="#e8c77b"/></linearGradient>
+    <linearGradient id="road" x2="0" y2="1"><stop stop-color="#efd497"/><stop offset="1" stop-color="#c9a45c"/></linearGradient>
   </defs>
-  <g clip-path="url(#forma)">
-    <rect width="512" height="512" fill="url(#ceu)"/>
-    <rect width="512" height="512" fill="url(#brilho)"/>
-    <g fill="#f1e6cf">
-      <circle cx="132" cy="118" r="4"/>
-      <circle cx="196" cy="74" r="3"/>
-      <circle cx="112" cy="206" r="2.5"/>
-      <circle cx="420" cy="232" r="3"/>
-      <circle cx="300" cy="96" r="2.5"/>
-    </g>
-    <path d="M366 112 C369 138 378 147 404 150 C378 153 369 162 366 188 C363 162 354 153 328 150 C354 147 363 138 366 112Z" fill="#f1e6cf"/>
-    <circle cx="256" cy="322" r="110" fill="url(#sol)"/>
-    <path d="M0 330 C90 296 170 300 256 316 C342 332 420 318 512 296 V512 H0Z" fill="#1b1f2e"/>
-    <path d="M0 382 C110 352 190 360 270 374 C360 390 430 380 512 360 V512 H0Z" fill="#0e1017"/>
-    <path d="M206 512 C228 470 300 448 276 410 C262 388 236 370 252 330 C260 352 300 372 306 404 C316 452 262 476 286 512Z" fill="url(#caminho)"/>
-  </g>
-</svg>
+  <rect width="512" height="512" rx="0" fill="url(#sky)"/>
+  <g transform="translate(40 40) scale(.84375)"><path d="M256 256m-108 0a108 108 0 1 1 216 0Z" fill="url(#sun)"/>
+  <path d="M0 258Q100 226 200 251T400 250L512 244V512H0Z" fill="#202c42"/>
+  <path d="M0 303Q130 270 256 265T512 300V512H0Z" fill="#0e1017"/>
+  <path d="M256 261C313 270 205 283 231 304S374 337 360 380C345 426 287 453 324 512H70C105 463 230 441 272 397C318 349 166 335 202 299C219 282 292 272 256 261Z" fill="url(#road)"/>
+  <path d="M374 76Q377 105 406 108Q377 111 374 140Q371 111 342 108Q371 105 374 76Z" fill="#efd497"/>
+</g></svg>

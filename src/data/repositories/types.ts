@@ -214,6 +214,7 @@ export interface SettingsRepository {
 }
 
 export type SettingKey =
+  | 'supportFocus'
   | 'onboardingDone'
   | 'trackingStartDate'
   | 'quitDate'

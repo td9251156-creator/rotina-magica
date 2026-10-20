@@ -6,6 +6,8 @@ import type { Sign } from '@/domain/games/symbols';
 import { useFitArea } from './fit';
 import { Glyph } from './Glyph';
 import { vibrate, type GameOutcome } from './record';
+import { Icon } from '@/ui/icons';
+import { GameProgress } from './GameGuide';
 
 const MODES: { id: LayoutId; title: string; detail: string }[] = [
   { id: 'curta', title: 'Partida curta', detail: '34 peças · uns 3 minutos' },
@@ -23,24 +25,28 @@ export function PairsGame({ onFinish, seed, signs }: { onFinish: (o: GameOutcome
   const challenge = dailyPairsChallenge(toLocalDate(new Date()));
   if (!layout)
     return (
-      <section className="intro">
+      <section className="intro game-mode">
         <h2>Escolha a partida</h2>
+        <p className="muted small">Comece pela curta. Você pode terminar quando quiser.</p>
         <button
           type="button"
-          className="option"
+          className="option game-mode__option game-mode__daily"
+          aria-label="Desafio de hoje"
           onClick={() => {
             setLayout(challenge.layout);
             setChallengeSeed(challenge.seed);
           }}
         >
-          <strong>Desafio de hoje</strong>
-          <span className="small muted">Uma partida igual para você repetir, se quiser · {challenge.layout}</span>
+          <span className="game-mode__icon"><Icon id="nivel" /></span>
+          <span><strong>Desafio de hoje</strong><span className="small muted">A mesma partida para repetir · {MODES.find((m) => m.id === challenge.layout)?.title}</span></span>
+          <Icon id="seta" />
         </button>
         <div className="stack">
           {MODES.map((m) => (
-            <button key={m.id} type="button" className="option" onClick={() => setLayout(m.id)}>
-              <strong>{m.title}</strong>
-              <span className="small muted">{m.detail}</span>
+            <button key={m.id} type="button" className="option game-mode__option" onClick={() => setLayout(m.id)}>
+              <span className="game-mode__icon"><Icon id="jogo_pares" /></span>
+              <span><strong>{m.title}</strong><span className="small muted">{m.detail}</span></span>
+              <Icon id="seta" />
             </button>
           ))}
         </div>
@@ -55,11 +61,12 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
   const nameOf = (t: Tile) => (signs ? signs[t.symbol].name : SYMBOLS[t.symbol]);
   const total = useRef(board.length);
   const size = useRef({ maxX: Math.max(...board.map((t) => t.x), 0) + 2, maxY: Math.max(...board.map((t) => t.y), 0) + 2 });
-  const [stageRef, area] = useFitArea<HTMLDivElement>(120);
+  const [stageRef, area] = useFitArea<HTMLDivElement>(180);
   const [selected, setSelected] = useState<number | null>(null);
   const [hint, setHint] = useState<number[]>([]);
   const [shake, setShake] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [message, setMessage] = useState('Toque em uma peça iluminada. Depois, encontre outra igual.');
   const [history, setHistory] = useState<{ board: Tile[]; score: number }[]>([]);
   const lastMatch = useRef<number | null>(null);
   const start = useRef(Date.now());
@@ -84,13 +91,14 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     onFinish({
       score: finalScore + bonus,
       durationMs: Date.now() - start.current,
-      extra: { layout, cleared, pairs: (total.current - board.length) / 2 },
+      extra: { layout, cleared, pairs: cleared ? total.current / 2 : (total.current - board.length) / 2 },
     });
   };
 
   const tap = (t: Tile) => {
     setHint([]);
     if (!free.has(t.id)) {
+      setMessage('Essa peça está presa. Escolha uma sem outra por cima e com um lado livre.');
       setShake(t.id);
       vibrate(10);
       setTimeout(() => setShake(null), 300);
@@ -98,11 +106,13 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     }
     if (selected === null || selected === t.id) {
       setSelected(selected === t.id ? null : t.id);
+      setMessage(selected === t.id ? 'Escolha uma peça para começar o par.' : `Agora encontre outra peça livre com o mesmo desenho: ${nameOf(t)}.`);
       return;
     }
     const other = board.find((b) => b.id === selected)!;
     if (!canMatch(other, t, board)) {
       setSelected(t.id);
+      setMessage(`São diferentes. Procure outra peça livre com este desenho: ${nameOf(t)}.`);
       return;
     }
     vibrate(20);
@@ -114,6 +124,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     setBoard(next);
     setSelected(null);
     setScore((s) => s + gained);
+    setMessage(`Par encontrado! +${gained} pontos. Continue no seu ritmo.`);
     if (!next.length) finish(true, score + gained);
   };
 
@@ -121,6 +132,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     const pair = findPair(board);
     if (!pair) return;
     setHint(pair.map((t) => t.id));
+    setMessage(`Dica: as duas peças marcadas formam um par. Custo: até ${HINT_COST} pontos.`);
     setScore((s) => Math.max(0, s - HINT_COST));
   };
   const doShuffle = (isFreeShuffle: boolean) => {
@@ -128,6 +140,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     setBoard(reshuffle(board, rng));
     setSelected(null);
     setHint([]);
+    setMessage(isFreeShuffle ? 'Peças reorganizadas, sem custo. Procure um novo par.' : `Peças reorganizadas. Custo: até ${SHUFFLE_COST} pontos.`);
     if (!isFreeShuffle) setScore((s) => Math.max(0, s - SHUFFLE_COST));
   };
   const undo = () => {
@@ -138,12 +151,14 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
     setBoard(prev.board);
     setScore(prev.score);
     setSelected(null);
+    setHint([]);
+    setMessage('Última jogada desfeita. As peças e os pontos foram restaurados.');
     lastMatch.current = null;
   };
 
   // Medidas: a peça cresce até o tabuleiro inteiro (do começo da partida) ocupar o espaço livre da tela.
   const { maxX, maxY } = size.current;
-  const u = Math.max(14, Math.min(44, area.width / (maxX + 0.9), area.height / (maxY * 1.25 + 0.9)));
+  const u = Math.max(22, Math.min(44, (area.width - 24) / (maxX + 0.9), area.height / (maxY * 1.25 + 0.9)));
   // Cada camada sobe e vai para a esquerda, com a lateral da peça aparecendo: dá a sensação de pilha.
   const depth = Math.round(u * 0.28);
   const ordered = [...board].sort((a, b) => a.z - b.z || a.y - b.y || a.x - b.x);
@@ -158,7 +173,9 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
           {board.length / 2} pares · {fmt(elapsed)}
         </span>
       </div>
-      <div ref={stageRef} className="mj__stage">
+      <GameProgress label="Pares encontrados" value={(total.current - board.length) / 2} max={total.current / 2} />
+      <p className="game-feedback" role="status">{message}</p>
+      <div ref={stageRef} className="mj__stage" aria-label="Tabuleiro de Pares">
       <div
         className="mj__board"
         style={{
@@ -182,6 +199,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
               className={cls}
               aria-label={`${nameOf(t)}${isFreeTile ? '' : ', presa'}`}
               aria-pressed={selected === t.id}
+              aria-disabled={!isFreeTile}
               onClick={() => tap(t)}
               style={{
                 left: t.x * u + (3 - t.z) * depth,
@@ -200,6 +218,7 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
           );
         })}
       </div>
+      {maxX * u + depth * 3 > area.width - 24 && <p className="game-hint">Arraste o tabuleiro para ver as peças das bordas.</p>}
       </div>
       {stuck && (
         <div className="card mj__stuck">
@@ -211,13 +230,13 @@ function PairsBoard({ layout, seed, onFinish, signs }: { layout: LayoutId; seed:
       )}
       <div className="mj__tools">
         <button type="button" className="chip" onClick={showHint} disabled={stuck}>
-          Dica −{HINT_COST}
+          <Icon id="dica" />Dica −{HINT_COST}
         </button>
         <button type="button" className="chip" onClick={() => doShuffle(false)} disabled={stuck}>
-          Embaralhar −{SHUFFLE_COST}
+          <Icon id="backup" />Embaralhar −{SHUFFLE_COST}
         </button>
         <button type="button" className="chip" onClick={undo} disabled={!history.length}>
-          Desfazer
+          <Icon id="voltar" />Desfazer
         </button>
         <button type="button" className="chip" onClick={() => finish(false, score)}>
           Terminar

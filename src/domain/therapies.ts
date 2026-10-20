@@ -4,6 +4,7 @@
  * prática espiritual fica à parte, como apoio opcional que não substitui tratamento.
  */
 import type { PracticeId } from './routine';
+import type { SupportFocus } from './support';
 
 export type TherapyItem =
   | { kind: 'tecnica'; id: string }
@@ -101,11 +102,43 @@ export const APPROACHES: readonly Approach[] = [
   },
 ];
 
+/** Autocuidado inspirado nessas abordagens; não equivale a oferecer psicoterapia pelo app. */
+export const GENERAL_APPROACHES: readonly Approach[] = [
+  {
+    id: 'presenca', title: 'Acalmar e se orientar', name: 'Atenção ao presente e ao corpo',
+    what: 'Notar o ambiente e encontrar um pouco mais de conforto, no seu ritmo.',
+    evidence: 'Práticas de atenção ao presente e orientação pelos sentidos. A resposta varia; você pode adaptar ou parar se não estiver confortável.',
+    items: [t('ancorar_sentidos'), t('pausa_corpo'), { kind: 'atalho', route: 'sons', title: 'Sons para relaxar', why: 'Uma opção de som, se isso for agradável para você.' }],
+  },
+  {
+    id: 'acolhimento', title: 'Acolher o que estou sentindo', name: 'Autocompaixão e aceitação',
+    what: 'Encontrar palavras gentis sem exigir que a tristeza ou o cansaço desapareçam.',
+    evidence: 'Exercícios inspirados em autocompaixão e aceitação. São recursos de autocuidado, sem promessa de tratar um diagnóstico.',
+    items: [t('acolher_momento'), t('revisao_gentil')],
+  },
+  {
+    id: 'clareza', title: 'Dar espaço e escolher um passo', name: 'TCC e terapia de aceitação e compromisso',
+    what: 'Observar pensamentos e diminuir o tamanho da próxima ação.',
+    evidence: 'Inspiração no registro de pensamentos da TCC e na desfusão da ACT. Um exercício breve não substitui o acompanhamento de um profissional.',
+    items: [t('pensamento_distante'), t('proximo_passo'), { kind: 'atalho', route: 'pensamento', title: 'Desatar um pensamento', why: 'Olhar para corpo, emoção, pensamento e uma resposta mais justa.' }],
+  },
+  {
+    id: 'conexao', title: 'Buscar apoio e respeitar limites', name: 'Rede de apoio e comunicação',
+    what: 'Pedir companhia e cuidar dos seus limites com pessoas de confiança.',
+    evidence: 'Práticas de comunicação e construção de apoio. Procure relações seguras; conversar com alguém da família nem sempre é a melhor opção.',
+    items: [t('pedir_apoio'), t('limites_cuidado')],
+  },
+];
+
+export function approachesFor(focus: SupportFocus): readonly Approach[] {
+  return focus === 'general' ? GENERAL_APPROACHES : APPROACHES;
+}
+
 /** Ids das técnicas de uma abordagem, para contar quantas a pessoa já praticou. */
 export function techniqueIds(approach: Approach): string[] {
   return approach.items.flatMap((i) => (i.kind === 'tecnica' ? [i.id] : []));
 }
 
 export function approachOf(techniqueId: string): Approach | undefined {
-  return APPROACHES.find((a) => techniqueIds(a).includes(techniqueId));
+  return [...APPROACHES, ...GENERAL_APPROACHES].find((a) => techniqueIds(a).includes(techniqueId));
 }

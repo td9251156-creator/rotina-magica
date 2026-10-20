@@ -2,7 +2,7 @@
 
 O guia completo está em `CLAUDE.md`; aqui vai o essencial.
 
-- App web instalável (PWA) para quem quer parar de usar cocaína. Vite + React + TypeScript, testes com Vitest.
+- App web instalável (PWA) de autocuidado e apoio a quem atravessa momentos difíceis, com ferramentas específicas opcionais para hábitos e substâncias. Vite + React + TypeScript, testes com Vitest.
 - Português (pt-BR) na interface, nos comentários e nos commits (`adiciona…`, `corrige…`).
 - Dados 100% no aparelho (`localStorage` via `src/data/repositories`). Nunca adicione analytics, crash reporting
   ou qualquer envio de dados para fora sem decisão registrada no `CLAUDE.md`.

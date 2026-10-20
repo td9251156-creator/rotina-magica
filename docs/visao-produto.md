@@ -1,3 +1,9 @@
+> **Proposta atual:** o autor ampliou o app para pequenos cuidados em momentos difíceis. O público inclui pessoas
+> passando por ansiedade, tristeza, solidão, cansaço ou sobrecarga, sem exigir um diagnóstico ou histórico de uso.
+> Consulte [a proposta atual e a transição](proposta-acolhimento.md). Os estudos e a persona de recuperação abaixo
+> documentam a origem e o módulo específico de hábitos e substâncias; seus resultados não devem ser generalizados
+> para todo sofrimento emocional nem tratados como validação clínica do app.
+
 # Visão de produto — Rotina Mágica
 
 Ciclo 0 · 2026-10-16. Documento vivo: atualizar quando uma decisão mudar.

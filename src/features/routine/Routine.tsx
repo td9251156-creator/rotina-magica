@@ -78,10 +78,12 @@ export function Routine() {
       <header className="hero hero--sky">
         <SkyScene period={current} />
         <div className="hero__brand">
-          <img className="hero__illustration" src={`${import.meta.env.BASE_URL}icons/logo.svg`} alt="" />
           <div>
             <p className="eyebrow">{dateLabel}</p>
-            <h1>Rotina Mágica</h1>
+            <div className="hero__title">
+              <img className="hero__illustration" src={`${import.meta.env.BASE_URL}icons/icon-192.png`} width="40" height="40" alt="" />
+              <h1>Rotina Mágica</h1>
+            </div>
             <p className="tagline">Retome o controle da sua vida, um dia de cada vez.</p>
           </div>
         </div>

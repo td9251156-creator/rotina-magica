@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useData } from '@/data/provider';
 import { BODY_NEEDS, FEELINGS, TRAPS, bodyTip } from '@/domain/thinking';
 import { Screen } from '@/ui/Screen';
+import { supportFocus } from '@/domain/support';
 
 const STEPS = ['Corpo', 'Emoção', 'Pensamento', 'Resposta'] as const;
 
@@ -28,7 +29,8 @@ function Chips({ options, value, onChange }: { options: readonly string[]; value
  * da terapia cognitivo-comportamental em linguagem simples.
  */
 export function Untangle({ onBack }: { onBack: () => void }) {
-  const { write } = useData();
+  const { repos, write } = useData();
+  const general = supportFocus(repos) === 'general';
   const [step, setStep] = useState(0);
   const [body, setBody] = useState<string[]>([]);
   const [feelings, setFeelings] = useState<string[]>([]);
@@ -77,7 +79,7 @@ export function Untangle({ onBack }: { onBack: () => void }) {
       {step === 0 && (
         <>
           <h1>Como está seu corpo?</h1>
-          <p className="muted">Fome, sono e cansaço aumentam qualquer vontade. Comece por aqui.</p>
+          <p className="muted">{general ? 'Fome, sono e cansaço podem deixar um dia difícil ainda mais pesado. Comece pelo que seu corpo precisa.' : 'Fome, sono e cansaço aumentam qualquer vontade. Comece por aqui.'}</p>
           <Chips options={BODY_NEEDS} value={body} onChange={setBody} />
           {tip && <p className="card card--accent">{tip}</p>}
         </>
@@ -94,7 +96,7 @@ export function Untangle({ onBack }: { onBack: () => void }) {
           <h1>O que sua cabeça está dizendo?</h1>
           <label className="field">
             Escreva do jeito que veio, sem filtro
-            <textarea rows={3} value={thought} onChange={(e) => setThought(e.target.value)} placeholder='Ex.: "Só hoje, eu mereço depois dessa semana"' />
+            <textarea rows={3} value={thought} onChange={(e) => setThought(e.target.value)} placeholder={general ? 'Ex.: “Não vou dar conta de tudo.”' : 'Ex.: “Só hoje, eu mereço depois dessa semana”'} />
           </label>
           <p className="muted small">Algum destes jeitos de pensar aparece aí? Toque para ver a pergunta que desmonta.</p>
           <div className="stack">

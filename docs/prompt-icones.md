@@ -27,7 +27,7 @@ Regras de formato (obrigatórias):
   `transform`, `fill`, `stroke`, `stroke-width`, `stroke-linecap`, `stroke-linejoin`, `opacity`, `fill-opacity`,
   `stroke-opacity`, `fill-rule`.
 - Cor: só `currentColor` ou `none` (o app pinta conforme o tema claro ou escuro).
-- O app já aplica `fill="none"`, `stroke="currentColor"`, `stroke-width="1.6"` e pontas e junções arredondadas. Só
+- O app já aplica `fill="none"`, `stroke="currentColor"`, `stroke-width="1.75"` e pontas e junções arredondadas. Só
   repita esses atributos se precisar de algo diferente (ex.: um ponto cheio com `fill="currentColor"`).
 - Nada de texto, letras, `<text>`, imagens, `style`, `class`, `id`, links, scripts ou eventos.
 - Deixe 2 px de margem dentro do quadrado 24×24.

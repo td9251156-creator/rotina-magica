@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Rotina Mágica — Um novo começo, um dia de cada vez</title>
+  <desc id="desc">Capa azul noturna e dourada com o nome do app e um caminho em direção ao sol.</desc>
+  <defs>
+    <linearGradient id="sky" x2="1" y2="1"><stop stop-color="#1b2941"/><stop offset="1" stop-color="#0e1017"/></linearGradient>
+    <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff0c4"/><stop offset="1" stop-color="#c9a45c"/></linearGradient>
+    <clipPath id="art"><rect x="690" y="40" width="470" height="550" rx="160"/></clipPath>
+  </defs>
+  <rect width="1200" height="630" fill="#0e1017"/>
+  <rect x="24" y="24" width="1152" height="582" rx="30" fill="none" stroke="#c9a45c" stroke-opacity=".28"/>
+  <g clip-path="url(#art)">
+    <rect x="690" y="40" width="470" height="550" fill="url(#sky)"/>
+    <circle cx="925" cy="285" r="112" fill="url(#gold)"/>
+    <path d="M650 310Q770 245 925 295T1210 275V630H650Z" fill="#27364e"/>
+    <path d="M650 375Q820 315 925 305T1210 360V630H650Z" fill="#101823"/>
+    <path d="M925 300C1004 314 850 335 895 361S1100 419 1000 489C956 520 947 558 972 630H720C758 559 922 512 945 467C968 423 820 407 850 364C868 337 968 314 925 300Z" fill="url(#gold)"/>
+    <path d="M1050 103Q1053 130 1080 133Q1053 136 1050 163Q1047 136 1020 133Q1047 130 1050 103Z" fill="#efd497"/>
+  </g>
+  <text x="76" y="118" fill="#d6b779" font-family="DejaVu Sans, sans-serif" font-size="19" letter-spacing="4">ROTINA MÁGICA</text>
+  <path d="M76 150h64" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#f1e6cf" font-family="DejaVu Serif, serif" font-size="56">
+    <text x="72" y="255">Um novo começo,</text>
+    <text x="72" y="337">um dia de cada vez.</text>
+  </g>
+  <text x="76" y="414" fill="#d4cbb9" font-family="DejaVu Sans, sans-serif" font-size="23">Pequenos passos. No seu tempo.</text>
+  <g font-family="DejaVu Sans, sans-serif" font-size="18" fill="#e6d4af">
+    <rect x="76" y="480" width="119" height="42" rx="21" fill="#1d2330"/>
+    <text x="135.5" y="507" text-anchor="middle">Gratuito</text>
+    <rect x="207" y="480" width="119" height="42" rx="21" fill="#1d2330"/>
+    <text x="266.5" y="507" text-anchor="middle">Privado</text>
+    <rect x="338" y="480" width="198" height="42" rx="21" fill="#1d2330"/>
+    <text x="437" y="507" text-anchor="middle">Funciona offline</text>
+  </g>
+</svg>

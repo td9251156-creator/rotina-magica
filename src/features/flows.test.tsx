@@ -323,8 +323,8 @@ describe('melhorias de crise e de dados', () => {
   it('no primeiro uso, a ajuda está a um toque', async () => {
     const repos = createTestRepositories();
     const { user } = open('', repos);
-    await user.click(screen.getByRole('button', { name: 'Bateu vontade? Ajuda agora' }));
-    expect(await screen.findByText(/Jogar Blocos/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Preciso de apoio agora' }));
+    expect(await screen.findByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
   });
 
   it('lembra do backup depois de uma semana e respeita o "agora não"', async () => {
@@ -527,7 +527,7 @@ describe('rodada 3', () => {
   it('Terapias, parte 2: as coisas boas da revisão da noite vão para o Diário', async () => {
     const { repos, user } = open('#treino/revisao');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    expect(screen.getByText('Opcional. Vai para o Diário de hoje.')).toBeInTheDocument();
+    expect(screen.getByText('Opcional. Ao concluir, vai para o Diário de hoje.')).toBeInTheDocument();
     await user.type(screen.getByRole('textbox'), 'o café com minha irmã');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.click(screen.getByRole('button', { name: 'Concluir' }));

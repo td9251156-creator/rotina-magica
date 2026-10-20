@@ -13,6 +13,8 @@ import { UsedFlow } from './features/used/UsedFlow';
 import { GAME_IDS, type GameId } from './domain/progression';
 import { navigate, readRoute, type Route } from './router';
 import { TabBar } from './ui/TabBar';
+import { supportFocus } from './domain/support';
+import { WellbeingHome, WellbeingJournal, WellbeingProgress, WellbeingSupport } from './features/wellbeing/Wellbeing';
 
 const RELOCK_AFTER_MS = 2 * 60 * 1000;
 const Lab = lazy(async () => ({ default: (await import('./features/lab/Lab')).Lab }));
@@ -58,13 +60,14 @@ function AppContent() {
     else document.documentElement.dataset.theme = theme === 'claro' ? 'light' : 'dark';
   }, [theme]);
   const locked = useLock(!!repos.settings.get<string | null>('pinHash', null));
+  const general = supportFocus(repos) === 'general';
 
   // O SOS e o registro de uso abrem sempre, mesmo antes do primeiro uso: crise não espera cadastro.
   // Com PIN, o SOS abre sem pedir o PIN (só esconde o que a pessoa escreveu); o resto pede.
   if (route.name === 'sos')
     return (
       <>
-        <SosScreen locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />
+        {general ? <WellbeingSupport locked={locked.on} /> : <SosScreen locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />}
         {!locked.on && <TabBar current="sos" />}
       </>
     );
@@ -75,7 +78,7 @@ function AppContent() {
   if (!done || route.name === 'primeiro-uso') return <Onboarding onDone={home} />;
   if (route.name === 'treino')
     return route.param ? (
-      <TrainingSession id={route.param} onDone={home} onMore={() => navigate('treino')} onBack={() => navigate('treino')} />
+      <TrainingSession key={route.param} id={route.param} onDone={home} onMore={() => navigate('treino')} onBack={() => navigate('treino')} />
     ) : (
       <TrainingList onOpen={(id) => navigate('treino', id)} onBack={home} />
     );
@@ -85,14 +88,14 @@ function AppContent() {
     ) : (
       <GamesHub onOpen={(id) => navigate('jogos', id)} onBack={home} />
     );
-  if (route.name === 'lab') return <Lab onBack={home} />;
+  if (route.name === 'lab') return general ? <WellbeingProgress onBack={home} /> : <Lab onBack={home} />;
   if (route.name === 'sons') return <Sounds onBack={() => (history.length > 1 ? history.back() : home())} />;
   if (route.name === 'pensamento') return <Untangle onBack={() => (history.length > 1 ? history.back() : home())} />;
   if (route.name === 'rotina' && route.param) return <StepScreen id={route.param} onBack={home} />;
   const tab = route.name === 'ajustes' || route.name === 'diario' ? route.name : 'home';
   return (
     <>
-      {tab === 'ajustes' ? <Settings onBack={home} onEditPlans={() => navigate('primeiro-uso')} /> : tab === 'diario' ? <Journal /> : <Routine />}
+      {tab === 'ajustes' ? <Settings onBack={home} onEditPlans={() => navigate('primeiro-uso')} /> : tab === 'diario' ? (general ? <WellbeingJournal /> : <Journal />) : (general ? <WellbeingHome /> : <Routine />)}
       <TabBar current={tab} />
     </>
   );
