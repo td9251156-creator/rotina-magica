@@ -54,6 +54,22 @@ describe('Rumo', () => {
     expect(screen.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188');
   });
 
+  it('a Ajuda agora abre com aviso mesmo se o navegador bloquear o armazenamento', () => {
+    const original = Object.getOwnPropertyDescriptor(window, 'localStorage')!;
+    window.location.hash = '#sos';
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      get: () => { throw new DOMException('Bloqueado', 'SecurityError'); },
+    });
+    try {
+      render(<DataProvider><App /></DataProvider>);
+      expect(screen.getByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toHaveTextContent('Este aparelho não está salvando');
+    } finally {
+      Object.defineProperty(window, 'localStorage', original);
+    }
+  });
+
   it('da tela inicial ao SOS é um toque', async () => {
     const repos = createTestRepositories();
     repos.settings.set('onboardingDone', true);

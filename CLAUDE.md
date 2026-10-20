@@ -14,7 +14,8 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 ## Decisões tomadas
 | Data | Decisão | Por quê |
 |---|---|---|
-| 2026-10-16 | Dados 100% locais, sem conta nem nuvem por enquanto | Privacidade; uso pessoal |
+| 2026-10-19 | Dias sem resposta aparecem como "sem registro", inclusive no histórico antigo; com PIN fechado, "Usei" permite registro e cuidado sem revelar conteúdo pessoal; exportação de backup exige senha, mas backups antigos sem senha ainda podem ser restaurados | Decisões confirmadas pelo autor após revisão de dados, privacidade e acesso em crise |
+| 2026-10-16 | Dados 100% locais, sem conta nem nuvem | Privacidade; uso pessoal |
 | 2026-10-16 | ~~Expo (React Native)~~ substituído no mesmo dia | O autor não quer Expo Go nem ferramentas de dev no celular |
 | 2026-10-16 | ~~SQLite + Drizzle~~ substituído no mesmo dia | Ver PWA abaixo |
 | 2026-10-16 | Progresso nunca "zera" | Evita o efeito de violação da abstinência (Marlatt): recaída vira dado, não fracasso |
@@ -22,7 +23,7 @@ precisa ser barata, opcional e não atrapalhar o fluxo de crise.
 | 2026-10-16 | ~~Nome "Rumo"~~ trocado por "Rotina Mágica" (tela inicial e app); pacote `dev.recomeco.app` | Pedido do autor: "retomar o controle da vida". Lembretes da agenda seguem discretos ("Rotina: …") |
 | 2026-10-16 | Progresso começa a contar no primeiro uso do app (`trackingStartDate`) | Serve também a quem ainda não parou; o Dia D é opcional |
 | 2026-10-16 | PWA (Vite + React + TypeScript) publicado no GitHub Pages | Abre por um link e instala na tela inicial ("Adicionar à tela inicial"), sem loja nem Expo Go. Funciona offline via service worker |
-| 2026-10-16 | Dados no `localStorage` do navegador, acesso só via repositórios (`repositories/types.ts`) | Simples e síncrono; o site é público mas os dados nunca saem do celular. Trocar por IndexedDB/sync/criptografia só implementa as mesmas interfaces |
+| 2026-10-16 | Dados no `localStorage` do navegador, acesso só via repositórios (`repositories/types.ts`) | Simples e síncrono; o site é público mas os dados nunca saem do celular. Uma eventual troca de armazenamento ou criptografia local deve preservar as interfaces e os dados antigos |
 | 2026-10-16 | Conceito: "a noite como experimento" + "o eu calmo prepara o eu com vontade" | O autor pediu que Claude decidisse tudo. Treino diário gera o kit do SOS; SOS aprende o que funciona (Beta(1,1)); laboratório mostra o que funcionou com os dados da pessoa. Ver `docs/visao-produto.md` |
 | 2026-10-16 | Jogos no centro do app (Blocos, Desvia, Rebate, Segura a onda) + XP/nível que só cresce + missão diária | O autor achou o app pouco interativo. Cada jogo tem base: Tetris baixa fissura (Skorka-Brown 2014/15), treino de esquiva (AAT, Wiers/Eberl), reestruturação cognitiva, respiração lenta. XP mede prática, não abstinência (recompensas por abstinência seguem recusadas) |
 | 2026-10-16 | SOS começa por jogar, com nota da vontade antes/depois | Na fissura ninguém lê texto; jogar é fazível. As notas mostram, com os dados da própria pessoa, o que baixa a vontade |
@@ -95,7 +96,7 @@ docs/                      visao-produto.md, integracoes.md (regras para serviç
 ```
 Regras:
 - UI nunca mexe no `localStorage` direto; usa `useData()` (`repos` para ler, `write()` para gravar e re-renderizar).
-- Toda entidade tem `id` (UUID), `createdAt`, `updatedAt` e `deletedAt` (exclusão lógica), para permitir sync depois.
+- Toda entidade tem `id` (UUID), `createdAt`, `updatedAt` e `deletedAt` (exclusão lógica), preservando o histórico local.
 - Regras de domínio (progresso, planos de noite, horários) são funções puras com testes.
 - SOS: abre sem depender de dados, do primeiro uso nem do PIN (com PIN, esconde o kit). Do Android: segurar o ícone do app → "Agora" (atalho do manifest) = 2 toques.
 - Dado corrompido nunca trava o app: `local.ts` guarda uma cópia e recomeça.

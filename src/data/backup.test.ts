@@ -1,5 +1,5 @@
 import { makeBackup, restoreBackup } from './backup';
-import { STORAGE_KEY } from './repositories/local';
+import { STORAGE_KEY, exportData } from './repositories/local';
 import { createTestRepositories, memoryStorage } from './test-repos';
 
 describe('backup com senha', () => {
@@ -22,11 +22,12 @@ describe('backup com senha', () => {
     expect(to.getItem(STORAGE_KEY)).toContain('minha filha');
   });
 
-  it('backup sem senha continua funcionando', async () => {
+  it('a exportação exige senha, mas backups antigos sem senha ainda podem ser restaurados', async () => {
     const from = memoryStorage();
     createTestRepositories(from).plan.add({ kind: 'razao', text: 'saúde' });
     const to = memoryStorage();
-    await restoreBackup(to, await makeBackup(from, new Date()));
+    await expect(makeBackup(from, new Date(), 'curta')).rejects.toThrow('pelo menos 8');
+    await restoreBackup(to, exportData(from, new Date()));
     expect(createTestRepositories(to).plan.list('razao')).toHaveLength(1);
   });
 });

@@ -94,8 +94,15 @@ export function WaveGame({ onFinish }: { onFinish: (o: GameOutcome) => void }) {
           }}
           onPointerUp={release}
           onPointerCancel={release}
+          onClick={(event) => {
+            // Teclado e controles assistivos ativam o botão por clique, sem eventos de ponteiro.
+            if (event.detail === 0) {
+              if (phase === 'inspire' || phase === 'segure') release();
+              else press();
+            }
+          }}
           onContextMenu={(e) => e.preventDefault()}
-        aria-label="Segure para puxar o ar, solte para expirar"
+        aria-label="Segure para puxar o ar e solte para expirar; no teclado, ative uma vez para começar e outra para soltar"
       >
         <span className="wave__circle" style={{ transform: `scale(${scale})` }} />
         <span className="wave__label">{label}</span>

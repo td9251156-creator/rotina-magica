@@ -16,7 +16,11 @@ export function Lab({ onBack }: { onBack: () => void }) {
   const today = toLocalDate(new Date());
   const start = repos.settings.get('trackingStartDate', today);
   const useDates = repos.useEvents.useDatesBetween(addDays(start, -1), today);
-  const progress = computeProgress({ startDate: start, today, useDates });
+  const noUseDates = [
+    ...repos.checkins.listBetween(start, today).filter((entry) => entry.used === false).map((entry) => entry.date),
+    ...repos.evenings.listBetween(start, today).filter((entry) => entry.outcome === 'sem_uso').map((entry) => entry.date),
+  ];
+  const progress = computeProgress({ startDate: start, today, useDates, noUseDates });
   const plans = repos.plan.list('plano_noite');
   const personal = repos.plan.list('se_entao');
 
@@ -30,7 +34,7 @@ export function Lab({ onBack }: { onBack: () => void }) {
   const journalNight = cravingNightLink(nights, repos.journal.listBetween(start, today));
   const weekday = riskiestWeekday(useDates);
   const alcohol = alcoholLink(nights);
-  const money = moneyKept(repos.settings.get<number | null>('weeklySpending', null), progress.cleanDays);
+  const money = progress.cleanDays ? moneyKept(repos.settings.get<number | null>('weeklySpending', null), progress.cleanDays) : null;
   const cravings = repos.cravings.listBetween(start, today);
   const crossed = cravings.filter((c) => c.outcome === 'passou').length;
   const names = new Map<string, string>([
@@ -60,23 +64,23 @@ export function Lab({ onBack }: { onBack: () => void }) {
       <section className="grid">
         <div className="stat">
           <strong>{progress.cleanDays}</strong>
-          <span>dias sem usar desde {start.split('-').reverse().slice(0, 2).join('/')}</span>
+          <span>dias registrados sem uso desde {start.split('-').reverse().slice(0, 2).join('/')}</span>
         </div>
         <div className="stat">
-          <strong>{progress.currentStreak}</strong>
-          <span>dias seguidos agora</span>
+          <strong>{progress.todayStatus === 'sem_registro' ? '–' : progress.currentStreak}</strong>
+          <span>dias seguidos confirmados</span>
         </div>
         <div className="stat">
           <strong>{progress.bestStreak}</strong>
-          <span>maior sequência</span>
+          <span>maior sequência confirmada</span>
         </div>
         <div className="stat">
           <strong>{crossed}</strong>
           <span>vontades atravessadas</span>
         </div>
       </section>
-      <p className="small muted">Usar um dia não apaga nada daqui. Os dias sem usar continuam seus.</p>
-      {money !== null && <p className="card">Ficaram com você cerca de {BRL.format(money)} que iriam para a droga.</p>}
+      <p className="small muted">{progress.unknownDays} {progress.unknownDays === 1 ? 'dia sem registro' : 'dias sem registro'} não {progress.unknownDays === 1 ? 'entra' : 'entram'} nessa conta. Um uso não apaga os dias anteriores.</p>
+      {money !== null && <p className="card">Nos dias registrados sem uso, ficaram com você cerca de {BRL.format(money)}.</p>}
 
       {drops.length > 0 && (
         <section>

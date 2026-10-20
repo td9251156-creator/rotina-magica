@@ -84,7 +84,7 @@ Resumo prático, com o que cada achado muda no app. Referências no fim; quando 
 
 | Abordagem | Força da evidência | O que vira no app |
 |---|---|---|
-| **Manejo de contingência (CM)**: recompensas concretas e imediatas por abstinência verificada | A mais forte para cocaína/estimulantes; em meta-análises em rede, CM (sozinho ou com CRA) é a intervenção psicossocial com maior efeito | Recompensas que você define e libera por dias sem uso. **Alerta honesto:** sem verificação (exame, pessoa de confiança) o efeito cai muito. Por isso a pessoa verificadora opcional existe no roadmap |
+| **Manejo de contingência (CM)**: recompensas concretas e imediatas por abstinência verificada | A mais forte para cocaína/estimulantes; em meta-análises em rede, CM (sozinho ou com CRA) é a intervenção psicossocial com maior efeito | O autor recusou recompensas por abstinência. O app mostra dinheiro só como informação e XP só por prática. |
 | **TCC / prevenção de recaída (Marlatt)**: identificar situações de risco, treinar enfrentamento, analisar lapsos | Boa; base dos programas digitais validados (CBT4CBT, reSET) | Plano pessoal, registro de fissura com "o que funcionou", análise em cadeia após lapso, micro-lições |
 | **Abordagem de reforço comunitário (CRA)**: tornar a vida sem droga mais recompensadora (atividades, relações, trabalho) | Boa, especialmente combinada com CM | Lista de atividades prazerosas no SOS e no planejamento das "horas vazias" |
 | **TCC digital (CBT4CBT, reSET)** | RCTs positivos para cocaína como complemento ao tratamento; reSET teve autorização da FDA | Mostra que conteúdo curto e interativo funciona; formato de 3–5 min por lição |
@@ -108,12 +108,12 @@ Resumo prático, com o que cada achado muda no app. Referências no fim; quando 
 
 | Erro comum | Nossa resposta |
 |---|---|
-| Contador de dias que volta a zero | Dias sem uso **acumulados**, % de dias limpos no mês, maior sequência como recorde (não como placar) |
+| Contador de dias que volta a zero | Dias sem uso **confirmados** acumulados; dias sem resposta aparecem como "sem registro" e não são presumidos como dias sem uso |
 | SOS escondido atrás de menus e carregamento | SOS a 1 toque da tela inicial do app e a 2 toques da tela inicial do Android (widget/atalho), abre instantâneo |
 | Diário longo que vira obrigação e é abandonado | Check-in de 30 s com toques; texto sempre opcional |
 | Excesso de notificações genéricas | Poucas, adaptadas aos seus horários de risco, desliga fácil; app recua sozinho se você ignora |
 | Conteúdo genérico, motivacional e moralista | Conteúdo seu (suas razões, sua voz, suas fotos) e técnicas com evidência |
-| Gamificação vazia (medalhas por abrir o app) | Recompensas reais definidas por você, ligadas a dias sem uso |
+| Gamificação vazia (medalhas por abrir o app) | XP e níveis medem prática; não há recompensa por abstinência |
 | Privacidade fraca: nome do app, notificações reveladoras, dados na nuvem | Dados locais, bloqueio por PIN/biometria, nome/ícone discretos opcionais, notificações neutras |
 | Silêncio depois da recaída (quando a pessoa mais precisa) | Fluxo próprio de lapso: acolher, entender a cadeia, ajustar o plano, seguir |
 | Onboarding enorme antes de ajudar | SOS funciona no primeiro minuto com conteúdo padrão; personalização acontece aos poucos |
@@ -130,14 +130,13 @@ Princípio: **o app precisa ser útil nos 5 piores minutos do dia e agradável n
    pessoas, barreiras de acesso, razões para parar, horários de risco.
 3. **Check-in diário (30 s)**: humor, fissura 0–10, sono, álcool, estresse, usou hoje (sim/não, sem julgamento).
 4. **Registro de fissura (3 toques)**: intensidade, contexto/gatilho, o que fiz, resultado. Também nasce do SOS.
-5. **Progresso sem culpa**: dias sem uso acumulados, % de dias limpos, dinheiro e horas recuperados,
+5. **Progresso sem culpa**: dias sem uso confirmados acumulados, dias sem registro separados, dinheiro estimado só sobre dias confirmados,
    fissuras superadas (cada uma conta como vitória).
 6. **Lapso/recaída**: acolhimento → cuidado imediato → análise em cadeia (o que veio antes) → um ajuste no plano.
 7. **Padrões e insights locais**: "suas fissuras se concentram sexta 18–23h", "dias com álcool têm 3× mais fissura".
 8. **Habilidades**: micro-lições de 3–5 min (recusar oferta, pensamentos permissivos, resolver problemas,
    planejar fins de semana), com prática registrada.
-9. **Recompensas**: metas por dias sem uso com recompensa que você escolhe; poupança virtual do dinheiro
-   não gasto; pessoa verificadora opcional para aproximar do CM real.
+9. **Prática**: XP e níveis por jogos e exercícios, nunca por dias sem uso. Dinheiro estimado é só informação.
 10. **Lembretes inteligentes**: check-in diário, alerta antes do horário de risco, celebração de marcos; adaptativos.
 11. **Privacidade**: bloqueio, modo discreto, exportação/backup criptografado; pronto para publicar.
 
@@ -151,7 +150,7 @@ Princípio: **o app precisa ser útil nos 5 piores minutos do dia e agradável n
 | 4 | Progresso sem culpa + fluxo de lapso | Mantém você usando o app justamente quando mais importa |
 | 5 | Lembretes, widget/atalho de SOS, bloqueio e modo discreto | Leva o SOS para a tela inicial; protege a privacidade antes do uso diário real |
 
-Fica fora do MVP: insights, lições, recompensas, backup. Entram logo depois, em ciclos próprios.
+Esta é a ordem histórica do MVP; insights, lições e backup já foram feitos em ciclos posteriores. Recompensas por abstinência foram recusadas.
 
 ## 5. Plataforma
 

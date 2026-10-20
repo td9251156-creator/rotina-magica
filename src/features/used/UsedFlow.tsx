@@ -13,10 +13,10 @@ type Step = 'when' | 'care' | 'questions' | 'adjust' | 'done';
  * Depois de usar: registrar em 1 toque, sem sermão; cuidar; e, quando a pessoa quiser, 3 perguntas
  * que viram UM ajuste concreto no plano. Nada do progresso é apagado.
  */
-export function UsedFlow({ onDone }: { onDone: () => void }) {
+export function UsedFlow({ onDone, locked = false }: { onDone: () => void; locked?: boolean }) {
   const { repos, write } = useData();
-  const kindWords = repos.plan.list('gentileza').at(-1)?.text;
-  const startAtQuestions = window.location.hash.endsWith('/entender');
+  const kindWords = locked ? undefined : repos.plan.list('gentileza').at(-1)?.text;
+  const startAtQuestions = !locked && window.location.hash.endsWith('/entender');
   const [step, setStep] = useState<Step>(startAtQuestions ? 'questions' : 'when');
   const [tags, setTags] = useState<string[]>([]);
   const [turning, setTurning] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
       when === 'agora'
         ? now.toISOString()
         : when === 'hoje'
-          ? new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString()
+          ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.min(now.getHours(), 12), 0).toISOString()
           : `${addDays(toLocalDate(now), -1)}T23:00:00`;
     write((r) => r.useEvents.add({ occurredAt, amountSpent: null, note: null }));
     setStep('care');
@@ -58,9 +58,9 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
             Ontem à noite
           </button>
         </div>
-        <button type="button" className="link" onClick={() => setStep('questions')}>
+        {!locked && <button type="button" className="link" onClick={() => setStep('questions')}>
           Já registrei, quero só entender o que aconteceu
-        </button>
+        </button>}
       </Screen>
     );
   }
@@ -68,7 +68,7 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
   if (step === 'care') {
     return (
       <Screen title="Anotado. Agora, cuide de você.">
-        <p>Nada do seu progresso foi apagado. Os dias sem usar continuam contando.</p>
+        <p>Nada do seu progresso foi apagado. O que você já registrou continua aqui.</p>
         <ul className="ticks">
           {CARE_STEPS.map((s) => (
             <li key={s}>{s}</li>
@@ -85,9 +85,9 @@ export function UsedFlow({ onDone }: { onDone: () => void }) {
           <button type="button" className="btn btn--ghost" onClick={onDone}>
             Depois
           </button>
-          <button type="button" className="btn" onClick={() => setStep('questions')}>
+          {!locked && <button type="button" className="btn" onClick={() => setStep('questions')}>
             Entender o que houve (1 min)
-          </button>
+          </button>}
         </div>
       </Screen>
     );

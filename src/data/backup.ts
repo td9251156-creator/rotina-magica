@@ -2,9 +2,10 @@ import { decryptText, encryptText, isEncryptedFile } from '@/platform/crypto';
 import { exportData, importData, type KeyValueStorage } from './repositories/local';
 
 /** Backup para baixar. Com senha, o arquivo vai cifrado (AES-GCM): sem a senha, ninguém lê. */
-export async function makeBackup(storage: KeyValueStorage, now: Date, password?: string): Promise<string> {
+export async function makeBackup(storage: KeyValueStorage, now: Date, password: string): Promise<string> {
+  if (password.trim().length < 8) throw new Error('Crie uma senha de pelo menos 8 caracteres para o backup.');
   const plain = exportData(storage, now);
-  return password ? JSON.stringify(await encryptText(plain, password)) : plain;
+  return JSON.stringify(await encryptText(plain, password));
 }
 
 /** Restaura backup comum ou cifrado. Diz quando falta a senha em vez de falhar calado. */

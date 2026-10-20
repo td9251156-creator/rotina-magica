@@ -33,5 +33,4 @@ ativar; se alguma pedir cartão, pare e não cadastre.
 ## Recusados de propósito
 
 - **Sentry** e outros monitores de erro: mandam dados do aparelho para fora. Contra a regra do `CLAUDE.md`.
-- **Azure (US$ 100), Heroku, Appwrite, MongoDB Atlas**: servidor e nuvem. O Rumo é 100% local de propósito;
-  só reavaliar se um dia houver sincronização entre aparelhos, com decisão registrada.
+- **Azure (US$ 100), Heroku, Appwrite, MongoDB Atlas**: servidor e nuvem. O Rumo é 100% local de propósito.
