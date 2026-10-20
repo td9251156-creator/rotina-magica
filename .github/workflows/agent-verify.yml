@@ -1,0 +1,89 @@
+name: Agent Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Número do pull request de agente
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+concurrency:
+  group: agent-verify-${{ inputs.pr }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validar origem
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr view "$PR" --repo "$REPO" --json headRefName,headRefOid,isCrossRepository,labels > "$RUNNER_TEMP/pr.json"
+          test "$(jq -r '.isCrossRepository' "$RUNNER_TEMP/pr.json")" = 'false' || { echo 'PR de fork não permitido.'; exit 1; }
+          test "$(jq -r '.headRefName' "$RUNNER_TEMP/pr.json")" = "$GITHUB_REF_NAME" || { echo 'Branch não corresponde ao PR.'; exit 1; }
+          test "$(jq -r '.headRefOid' "$RUNNER_TEMP/pr.json")" = "$GITHUB_SHA" || { echo 'Commit não corresponde ao PR.'; exit 1; }
+          jq -e '.labels | map(.name) | contains(["agent:generated"])' "$RUNNER_TEMP/pr.json" > /dev/null
+          [[ "$GITHUB_REF_NAME" == agent/issue-* ]] || { echo 'Branch de agente inválido.'; exit 1; }
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+      - run: npm ci
+      - name: Testar mudança
+        run: npm run typecheck && npm test && npm run build
+      - uses: github/codeql-action/analyze@v4
+      - name: Conferir configuração do revisor
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
+      - name: Revisar mudança
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          npx --no-install codex exec review --ephemeral --ignore-user-config \
+            -c 'sandbox_mode="read-only"' \
+            -c 'shell_environment_policy.inherit="core"' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
+            --base origin/main --output-last-message "$RUNNER_TEMP/agent-review.md" - <<'PROMPT'
+          Revise este PR como um revisor independente. Priorize bugs, perda ou exposição de dados, compatibilidade
+          com registros antigos, funcionamento offline, acesso à Pausa agora, acessibilidade e testes ausentes.
+          Verifique promessas clínicas, ampliação de escopo e arquivos protegidos. Não altere arquivos. Liste
+          achados por gravidade e mencione os riscos que ainda dependem de teste humano.
+          PROMPT
+          test "$(wc -c < "$RUNNER_TEMP/agent-review.md")" -le 30000 || { echo 'Revisão excedeu 30 KB.'; exit 1; }
+          ! grep -Fq -- "$OPENAI_API_KEY" "$RUNNER_TEMP/agent-review.md" || { echo 'Possível segredo na saída.'; exit 1; }
+          ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' "$RUNNER_TEMP/agent-review.md" || { echo 'Padrão de segredo na saída.'; exit 1; }
+      - name: Publicar revisão
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+          REPO: ${{ github.repository }}
+        run: |
+          {
+            printf '<!-- agent-review -->\nRevisão do commit `%s`.\n\n' "$GITHUB_SHA"
+            cat "$RUNNER_TEMP/agent-review.md"
+          } > "$RUNNER_TEMP/review-comment.md"
+          COMMENT=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- agent-review -->")) | .id' | head -1)
+          jq -n --rawfile body "$RUNNER_TEMP/review-comment.md" '{body: $body}' > "$RUNNER_TEMP/review-payload.json"
+          if [ -n "$COMMENT" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT" --input "$RUNNER_TEMP/review-payload.json" > /dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR/comments" --input "$RUNNER_TEMP/review-payload.json" > /dev/null
+          fi

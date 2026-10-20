@@ -17,4 +17,5 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - run: node --test .github/agents/maintenance-report.node-test.cjs
       - run: npm run build

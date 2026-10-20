@@ -26,27 +26,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Conferir configuração
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
-      - name: Analisar prioridades
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          npx -y @openai/codex@0.163.0 exec --ephemeral --ignore-user-config --sandbox read-only \
-            --output-last-message "$RUNNER_TEMP/agent-report.md" - <<'PROMPT'
-          Você é o Scout de manutenção do Rotina Mágica. Trabalhe somente em leitura e somente com o conteúdo local.
-          Leia README, ROADMAP, CONTRIBUTING, SECURITY, CHANGELOG, docs, código, testes e histórico Git.
-          Não use rede, não altere arquivos e não proponha crescimento pelo número de funcionalidades.
-
-          Produza uma proposta curta em Markdown com no máximo três problemas, nesta prioridade:
-          privacidade/integridade de dados/acesso à Pausa agora; acessibilidade/offline/bugs; atrito; por último,
-          recurso novo apenas com demanda ou base clara. Para cada item inclua problema observável, evidência local,
-          impacto, risco, esforço, critérios de aceite e arquivos prováveis. Não faça alegações clínicas.
-          Termine recomendando somente uma tarefa para aprovação humana. Não inclua comandos nem links externos.
-          PROMPT
-      - name: Criar ou atualizar a proposta
+      - run: npm ci
+      - name: Preparar etiquetas
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -57,9 +38,42 @@ jobs:
           gh label create 'agent:review' --repo "$REPO" --color 1D76DB --description 'Pull request gerado aguardando revisão' --force
           gh label create 'agent:blocked' --repo "$REPO" --color B60205 --description 'Automação bloqueada; requer atenção' --force
           gh label create 'agent:generated' --repo "$REPO" --color C5DEF5 --description 'Mudança gerada por agente' --force
-          ISSUE=$(gh issue list --repo "$REPO" --state open --label 'agent:proposal' --json number --jq '.[0].number // empty')
+          gh label create 'agent:done' --repo "$REPO" --color 5319E7 --description 'Mudança de agente revisada e mesclada' --force
+      - name: Conferir configuração
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
+      - name: Analisar prioridades
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          npx --no-install codex exec --ephemeral --ignore-user-config --sandbox read-only \
+            -c 'shell_environment_policy.inherit="core"' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
+            --output-last-message "$RUNNER_TEMP/agent-report.md" - <<'PROMPT'
+          Você é o Scout de manutenção do Rotina Mágica. Trabalhe somente em leitura e somente com o conteúdo local.
+          Leia README, ROADMAP, CONTRIBUTING, SECURITY, CHANGELOG, docs, código, testes e histórico Git.
+          Não use rede, não altere arquivos e não proponha crescimento pelo número de funcionalidades.
+
+          Produza uma proposta curta em Markdown com no máximo três problemas, nesta prioridade:
+          privacidade/integridade de dados/acesso à Pausa agora; acessibilidade/offline/bugs; atrito; por último,
+          recurso novo apenas com demanda ou base clara. Para cada item inclua problema observável, evidência local,
+          impacto, risco, esforço, critérios de aceite e arquivos prováveis. Não faça alegações clínicas.
+          Termine com uma seção `## Tarefa aprovada` contendo somente a tarefa recomendada, critérios de aceite e
+          limites. O mantenedor poderá editar essa seção antes de aplicar a etiqueta. Não inclua comandos nem links.
+          PROMPT
+          test "$(wc -c < "$RUNNER_TEMP/agent-report.md")" -le 30000 || { echo 'Relatório excedeu 30 KB.'; exit 1; }
+          ! grep -Fq -- "$OPENAI_API_KEY" "$RUNNER_TEMP/agent-report.md" || { echo 'Possível segredo na saída.'; exit 1; }
+          ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' "$RUNNER_TEMP/agent-report.md" || { echo 'Padrão de segredo na saída.'; exit 1; }
+      - name: Criar ou atualizar a proposta
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          ISSUE=$(gh issue list --repo "$REPO" --state open --label 'agent:proposal' --json number,createdAt \
+            --jq 'sort_by(.createdAt) | .[0].number // empty')
           if [ -n "$ISSUE" ]; then
-            gh issue comment "$ISSUE" --repo "$REPO" --body-file "$RUNNER_TEMP/agent-report.md"
+            gh issue edit "$ISSUE" --repo "$REPO" --body-file "$RUNNER_TEMP/agent-report.md"
           else
             gh issue create --repo "$REPO" --title 'Scout: proposta semanal de manutenção' \
               --label 'agent:proposal' --body-file "$RUNNER_TEMP/agent-report.md"

@@ -9,10 +9,13 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 - Manutenção contínua por agentes em três papéis: Scout, Implementer e Reviewer.
 - Aprovação exclusiva do proprietário, PR em rascunho, limites de diff e bloqueio de arquivos sensíveis.
 - CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.
+- Verificação explícita do primeiro commit de cada agente e relatório mensal de manutenção com dados públicos.
 
 ### Segurança
 
 - O agente que altera código não recebe o token do GitHub e nunca mescla mudanças automaticamente.
+- O escopo aprovado, os caminhos permitidos, o tamanho do diff e o estado do Git são validados antes da publicação.
+- O Codex CLI tem versão fixa, ambiente mínimo e verificação de possíveis segredos nas saídas publicadas.
 - A chave da narração Azure fica disponível somente no passo que gera os áudios.
 
 ## 0.3.0 — 2026-10-20

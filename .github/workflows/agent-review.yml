@@ -2,10 +2,11 @@ name: Agent Reviewer
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
 
 permissions:
   contents: read
+  issues: write
   pull-requests: write
 
 concurrency:
@@ -14,7 +15,12 @@ concurrency:
 
 jobs:
   revisar:
-    if: startsWith(github.head_ref, 'agent/') && github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event.action != 'closed' &&
+      startsWith(github.head_ref, 'agent/') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      contains(github.event.pull_request.labels.*.name, 'agent:generated')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -26,6 +32,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Conferir configuração
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -34,7 +42,10 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          npx -y @openai/codex@0.163.0 exec review --ephemeral --ignore-user-config \
+          npx --no-install codex exec review --ephemeral --ignore-user-config \
+            -c 'sandbox_mode="read-only"' \
+            -c 'shell_environment_policy.inherit="core"' \
+            -c 'shell_environment_policy.exclude=["OPENAI_API_KEY","GH_TOKEN","GITHUB_TOKEN"]' \
             --base origin/main --output-last-message "$RUNNER_TEMP/agent-review.md" - <<'PROMPT'
           Revise este PR como um revisor independente. Priorize bugs, perda ou exposição de dados, compatibilidade
           com registros antigos, funcionamento offline, acesso à Pausa agora, acessibilidade e testes ausentes.
@@ -42,9 +53,47 @@ jobs:
           Não altere arquivos. Liste achados por gravidade com arquivo e justificativa. Se não houver achados,
           diga isso explicitamente e mencione riscos que ainda dependem de teste humano.
           PROMPT
+          test "$(wc -c < "$RUNNER_TEMP/agent-review.md")" -le 30000 || { echo 'Revisão excedeu 30 KB.'; exit 1; }
+          ! grep -Fq -- "$OPENAI_API_KEY" "$RUNNER_TEMP/agent-review.md" || { echo 'Possível segredo na saída.'; exit 1; }
+          ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' "$RUNNER_TEMP/agent-review.md" || { echo 'Padrão de segredo na saída.'; exit 1; }
       - name: Publicar revisão sem aprovar
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
-        run: gh pr comment "$PR" --repo "$REPO" --body-file "$RUNNER_TEMP/agent-review.md"
+        run: |
+          {
+            printf '<!-- agent-review -->\nRevisão do commit `%s`.\n\n' "$GITHUB_SHA"
+            cat "$RUNNER_TEMP/agent-review.md"
+          } > "$RUNNER_TEMP/review-comment.md"
+          COMMENT=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- agent-review -->")) | .id' | head -1)
+          jq -n --rawfile body "$RUNNER_TEMP/review-comment.md" '{body: $body}' > "$RUNNER_TEMP/review-payload.json"
+          if [ -n "$COMMENT" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT" --input "$RUNNER_TEMP/review-payload.json" > /dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR/comments" --input "$RUNNER_TEMP/review-payload.json" > /dev/null
+          fi
+  finalizar:
+    if: >-
+      github.event.action == 'closed' &&
+      startsWith(github.head_ref, 'agent/issue-') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Atualizar a issue de origem
+        env:
+          BRANCH: ${{ github.head_ref }}
+          GH_TOKEN: ${{ github.token }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REPO: ${{ github.repository }}
+        run: |
+          ISSUE=$(printf '%s' "$BRANCH" | sed -nE 's#^agent/issue-([0-9]+)-.*#\1#p')
+          test -n "$ISSUE" || { echo 'Branch sem número de issue.'; exit 1; }
+          if [ "$MERGED" = 'true' ]; then
+            gh issue edit "$ISSUE" --repo "$REPO" --remove-label 'agent:review' --add-label 'agent:done' --state closed
+          else
+            gh issue edit "$ISSUE" --repo "$REPO" --remove-label 'agent:review' --add-label 'agent:blocked' --state open
+            gh issue comment "$ISSUE" --repo "$REPO" --body "O PR $PR_URL foi fechado sem merge. Revise o escopo antes de tentar outra abordagem manual."
+          fi
