@@ -97,6 +97,13 @@ interface Snapshot {
 
 export const STORAGE_KEY = 'rumo:dados:v1';
 
+/** Remove dados e cópias de segurança internas sem tocar em outros apps do mesmo domínio. */
+export function clearLocalData(storage: Pick<Storage, 'length' | 'key' | 'removeItem'>): void {
+  const keys = Array.from({ length: storage.length }, (_, index) => storage.key(index))
+    .filter((key): key is string => key === STORAGE_KEY || key?.startsWith(`${STORAGE_KEY}:`) === true);
+  keys.forEach((key) => storage.removeItem(key));
+}
+
 function empty(): Snapshot {
   return { version: 1, settings: {}, checkins: [], cravings: [], useEvents: [], planItems: [], eveningChoices: [], practices: [], games: [], routine: [], journal: [], thoughts: [] };
 }

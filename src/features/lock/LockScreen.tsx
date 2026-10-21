@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '@/data/provider';
-import { STORAGE_KEY } from '@/data/repositories/local';
+import { clearLocalData } from '@/data/repositories/local';
 import { verifyPin } from '@/platform/crypto';
 import { navigate } from '@/router';
 
@@ -12,6 +12,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [forgot, setForgot] = useState(false);
+  const [eraseError, setEraseError] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +28,12 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
 
   const eraseAll = () => {
     if (!window.confirm('Apagar todos os dados deste celular? Depois você pode restaurar um backup.')) return;
-    window.localStorage.removeItem(STORAGE_KEY);
-    window.location.reload();
+    try {
+      clearLocalData(window.localStorage);
+      window.location.reload();
+    } catch {
+      setEraseError(true);
+    }
   };
 
   return (
@@ -67,6 +72,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           <button type="button" className="btn btn--ghost" onClick={eraseAll}>
             Apagar dados e recomeçar
           </button>
+          {eraseError && <p role="alert">Não foi possível apagar os dados neste navegador. Tente liberar o armazenamento ou use as configurações do navegador.</p>}
         </div>
       )}
     </main>

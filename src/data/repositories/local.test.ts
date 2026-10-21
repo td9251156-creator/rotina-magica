@@ -1,9 +1,20 @@
 import { createTestRepositories, memoryStorage } from '../test-repos';
-import { STORAGE_KEY, createLocalRepositories, createResilientStorage, importData } from './local';
+import { STORAGE_KEY, clearLocalData, createLocalRepositories, createResilientStorage, importData } from './local';
 
 const emptyCheckin = { mood: null, craving: null, sleepQuality: null, stress: null, alcohol: null, used: null, note: null };
 
 describe('repositórios locais', () => {
+  it('apaga dados e cópias internas sem remover dados de outro app', () => {
+    localStorage.setItem(STORAGE_KEY, 'principal');
+    localStorage.setItem(`${STORAGE_KEY}:antes-de-restaurar`, 'anterior');
+    localStorage.setItem(`${STORAGE_KEY}:corrompido:123`, 'cópia');
+    localStorage.setItem('outro-app', 'preservar');
+    clearLocalData(localStorage);
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(`${STORAGE_KEY}:antes-de-restaurar`)).toBeNull();
+    expect(localStorage.getItem(`${STORAGE_KEY}:corrompido:123`)).toBeNull();
+    expect(localStorage.getItem('outro-app')).toBe('preservar');
+  });
   it('mantém o SOS e os registros disponíveis na sessão com armazenamento bloqueado ou cheio', () => {
     const blocked = createResilientStorage(() => { throw new DOMException('Bloqueado', 'SecurityError'); });
     const repos = createLocalRepositories({ storage: blocked, newId: () => 'id-1', now: () => new Date() });
