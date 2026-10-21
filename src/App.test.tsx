@@ -39,7 +39,9 @@ describe('Rumo', () => {
   });
 
   it('não aceita horário inválido', async () => {
-    const { user } = setup();
+    const repos = createTestRepositories();
+    repos.settings.set('supportFocus', 'recovery');
+    const { user } = setup(repos);
     await user.type(screen.getByPlaceholderText('ex.: 18:30'), '27');
     expect(screen.getByText(/Não entendi esse horário/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Continuar' })).toBeDisabled();

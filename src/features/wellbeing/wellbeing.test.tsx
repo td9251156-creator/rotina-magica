@@ -168,6 +168,20 @@ describe('vivências e acolhimento geral', () => {
     expect(repos.plan.list('plano_noite')).toHaveLength(0);
   });
 
+  it('conclui a configuração geral em dois passos e aproveita texto ainda não adicionado', async () => {
+    const repos = createTestRepositories();
+    window.location.hash = '';
+    const user = userEvent.setup();
+    render(<DataProvider repos={repos}><App /></DataProvider>);
+    expect(screen.getByText('1 de 2')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText('2 de 2')).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText('Outra coisa'), 'Sentar no quintal');
+    await user.click(screen.getByRole('button', { name: 'Começar' }));
+    expect(await screen.findByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
+    expect(repos.plan.list('atividade').map((item) => item.text)).toContain('Sentar no quintal');
+  });
+
   it('um id inválido seguido de um válido não quebra a ordem dos hooks', () => {
     const repos = createTestRepositories();
     const callbacks = { onDone: vi.fn(), onMore: vi.fn(), onBack: vi.fn() };

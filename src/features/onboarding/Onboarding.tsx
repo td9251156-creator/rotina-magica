@@ -7,7 +7,7 @@ import { completeOnboarding } from './complete-onboarding';
 import { supportFocus, type SupportFocus } from '@/domain/support';
 
 const TIMES = ['16:00', '17:00', '18:00', '19:00', '20:00'];
-const STEPS = 4;
+const RECOVERY_STEPS = 4;
 
 const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
@@ -16,6 +16,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState(0);
   const [focus, setFocus] = useState<SupportFocus>(() => supportFocus(repos));
   const general = focus === 'general';
+  const totalSteps = general ? 2 : RECOVERY_STEPS;
   const [time, setTime] = useState(() => repos.settings.get('workEndTime', '18:00'));
   const [customTime, setCustomTime] = useState('');
   const [activityIds, setActivityIds] = useState<string[]>(() =>
@@ -33,8 +34,10 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   const finalTime = customTime ? parsedCustom : time;
 
   const finish = () => {
+    const pendingActivity = customActivity.trim();
+    const finalCustomActivities = pendingActivity && !customActivities.includes(pendingActivity) ? [...customActivities, pendingActivity] : customActivities;
     write((r) =>
-      completeOnboarding(r, { supportFocus: focus, workEndTime: finalTime ?? '18:00', activityIds, customActivities, reasons, plans }),
+      completeOnboarding(r, { supportFocus: focus, workEndTime: finalTime ?? '18:00', activityIds, customActivities: finalCustomActivities, reasons: general ? [] : reasons, plans: buildEveningPlans(activityIds, finalCustomActivities) }),
     );
     onDone();
   };
@@ -57,7 +60,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     <main className="screen">
       <div className="top">
         <p className="muted small">
-          {step + 1} de {STEPS}
+          {step + 1} de {totalSteps}
         </p>
         {/* Quem abre o app pela primeira vez em crise não pode cair num questionário. */}
         <button type="button" className="link" onClick={() => navigate('sos')}>
@@ -70,27 +73,25 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           <img className="welcome-illustration" src={`${import.meta.env.BASE_URL}illustrations/welcome.webp`} width="960" height="420" alt="Um novo começo, com um caminho iluminado" />
           <p className="eyebrow">Rotina Mágica</p>
           <h1>{general ? 'Um cuidado para os dias difíceis.' : 'Que horas você costuma sair do trabalho?'}</h1>
-          <p className="muted">{general ? 'Você não precisa estar bem para começar. Escolha um horário para sua pausa; lembretes são opcionais.' : 'É a hora em que o app vai te ajudar a decidir a noite.'}</p>
-          <p className="small">{general ? 'Em que horário uma pausa costuma caber no seu dia?' : 'Seu horário de saída'}</p>
-          <div className="chips">
-            {(general ? ['08:00', '12:00', '16:00', '18:00', '20:00'] : TIMES).map((t) => (
+          <p className="muted">{general ? 'Você pode entrar agora e escolher um cuidado quando precisar. A configuração é curta e opcional.' : 'É a hora em que o app vai te ajudar a decidir a noite.'}</p>
+          {!general && <><p className="small">Seu horário de saída</p><div className="chips">
+            {TIMES.map((t) => (
               <Chip key={t} selected={!customTime && time === t} onClick={() => (setTime(t), setCustomTime(''))}>
                 {t}
               </Chip>
             ))}
-          </div>
-          <label className="field">
+          </div><label className="field">
             Outro horário
             <input inputMode="numeric" placeholder="ex.: 18:30" value={customTime} onChange={(e) => setCustomTime(e.target.value)} />
           </label>
-          {customTime && !parsedCustom && <p className="warn small">Não entendi esse horário. Tente 18:30.</p>}
+          {customTime && !parsedCustom && <p className="warn small">Não entendi esse horário. Tente 18:30.</p>}</>}
           <details className="wellbeing-emergency"><summary>Quero apoio específico para hábitos ou uso de substâncias</summary><div className="support-choice"><button type="button" aria-pressed={focus === 'general'} onClick={() => { setFocus('general'); write((r) => r.settings.set<SupportFocus>('supportFocus', 'general')); }}><strong>Dias difíceis e bem-estar</strong></button><button type="button" aria-pressed={focus === 'recovery'} onClick={() => { setFocus('recovery'); write((r) => r.settings.set<SupportFocus>('supportFocus', 'recovery')); }}><strong>Hábitos e uso de substâncias</strong></button></div></details>
         </section>
       )}
 
       {step === 1 && (
         <section>
-          <h1>O que você curte fazer, ou curtia?</h1>
+          <h1>{general ? 'O que poderia trazer um pouco de cuidado?' : 'O que você curte fazer, ou curtia?'}</h1>
           <p className="muted">{general ? 'Escolha o que costuma fazer bem, ou o que gostaria de retomar. Você pode deixar em branco.' : 'Escolha quantas quiser. Daqui saem seus planos de noite.'}</p>
           <div className="chips">
             {ACTIVITIES.map((a) => (
@@ -168,8 +169,8 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             Voltar
           </button>
         )}
-        {step < STEPS - 1 ? (
-          <button type="button" className="btn" disabled={step === 0 && !finalTime} onClick={() => setStep(step + 1)}>
+        {step < totalSteps - 1 ? (
+          <button type="button" className="btn" disabled={!general && step === 0 && !finalTime} onClick={() => setStep(step + 1)}>
             Continuar
           </button>
         ) : (
