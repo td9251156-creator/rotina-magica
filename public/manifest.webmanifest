@@ -3,10 +3,10 @@
   "short_name": "Rotina Mágica",
   "description": "Rotina Mágica: pequenos cuidados para atravessar momentos difíceis",
   "lang": "pt-BR",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0e1017",
   "theme_color": "#0e1017",
   "icons": [

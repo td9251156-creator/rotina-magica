@@ -176,7 +176,7 @@ describe('jogos', () => {
 
   it('o diário guarda o dia e marca o passo da noite', async () => {
     const { repos, user } = open('#diario');
-    await user.click(screen.getByRole('button', { name: '6' }));
+    await user.click(await screen.findByRole('button', { name: '6' }));
     await user.click(screen.getByRole('button', { name: 'Tédio' }));
     await user.click(screen.getByRole('button', { name: 'Mais uma' }));
     await user.type(screen.getByLabelText('Como você venceu?'), 'respirei');
@@ -188,7 +188,7 @@ describe('jogos', () => {
 
   it('desata um pensamento em quatro degraus e mostra no diário', async () => {
     const { repos, user } = open('#pensamento');
-    await user.click(screen.getByRole('button', { name: 'Fome' }));
+    await user.click(await screen.findByRole('button', { name: 'Fome' }));
     expect(screen.getByText(/coma algo/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Próximo' }));
     await user.click(screen.getByRole('button', { name: 'Tédio' }));
@@ -227,7 +227,7 @@ describe('jogos', () => {
     const repos = ready();
     repos.settings.set('oath', 'Meu templo, minha lei.');
     const { user } = open('#rotina/m_juramento', repos);
-    expect(screen.getByText('Meu templo, minha lei.')).toBeInTheDocument();
+    expect(await screen.findByText('Meu templo, minha lei.')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Li em voz alta' }));
     expect(repos.routine.doneOn(toLocalDate(new Date()))).toContain('m_juramento');
   });

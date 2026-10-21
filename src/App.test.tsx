@@ -31,7 +31,7 @@ describe('Rumo', () => {
     await user.click(screen.getByRole('button', { name: 'Começar' }));
 
     expect(repos.plan.list('plano_noite').map((p) => p.text)).toEqual(['Ver amigos ou família', 'Cozinhar']);
-    expect(screen.getByText('Como vai ser sua noite?')).toBeInTheDocument();
+    expect(await screen.findByText('Como vai ser sua noite?')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Cozinhar' }));
     expect(screen.getByText('Sua noite de hoje')).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('Rumo', () => {
     const repos = createTestRepositories();
     repos.settings.set('onboardingDone', true);
     const { user } = setup(repos);
-    await user.click(screen.getByRole('button', { name: /Bateu vontade/ }));
+    await user.click(await screen.findByRole('button', { name: /Bateu vontade/ }));
     expect(await screen.findByRole('button', { name: /Jogar Blocos/ })).toBeInTheDocument();
   });
 
@@ -94,7 +94,7 @@ describe('Rumo', () => {
     act(() => {
       window.dispatchEvent(prompt);
     });
-    const card = screen.getByText('Leve o app para a tela inicial').closest('section')!;
+    const card = (await screen.findByText('Leve o app para a tela inicial')).closest('section')!;
     await user.click(within(card).getByRole('button', { name: 'Agora não' }));
     expect(screen.queryByText('Leve o app para a tela inicial')).not.toBeInTheDocument();
     expect(repos.settings.get('installDismissed', false)).toBe(true);

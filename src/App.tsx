@@ -1,15 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useData } from './data/provider';
 import { GamesHub, PlayGame } from './features/games/Games';
-import { Journal } from './features/journal/Journal';
 import { LockScreen } from './features/lock/LockScreen';
-import { Routine } from './features/routine/Routine';
-import { StepScreen } from './features/routine/StepScreen';
-import { Untangle } from './features/thinking/Untangle';
 import { Onboarding } from './features/onboarding/Onboarding';
 import { SosScreen } from './features/sos/SosScreen';
 import { TrainingList, TrainingSession } from './features/training/Training';
-import { UsedFlow } from './features/used/UsedFlow';
 import { GAME_IDS, type GameId } from './domain/progression';
 import { navigate, readRoute, type Route } from './router';
 import { TabBar } from './ui/TabBar';
@@ -20,6 +15,11 @@ const RELOCK_AFTER_MS = 2 * 60 * 1000;
 const Lab = lazy(async () => ({ default: (await import('./features/lab/Lab')).Lab }));
 const Settings = lazy(async () => ({ default: (await import('./features/settings/Settings')).Settings }));
 const Sounds = lazy(async () => ({ default: (await import('./features/sounds/Sounds')).Sounds }));
+const Journal = lazy(async () => ({ default: (await import('./features/journal/Journal')).Journal }));
+const Routine = lazy(async () => ({ default: (await import('./features/routine/Routine')).Routine }));
+const StepScreen = lazy(async () => ({ default: (await import('./features/routine/StepScreen')).StepScreen }));
+const Untangle = lazy(async () => ({ default: (await import('./features/thinking/Untangle')).Untangle }));
+const UsedFlow = lazy(async () => ({ default: (await import('./features/used/UsedFlow')).UsedFlow }));
 
 /** Trancado ao abrir e de novo depois de 2 minutos fora do app. */
 function useLock(hasPin: boolean) {
