@@ -1,7 +1,8 @@
 // Service worker do Rumo: guarda o app no celular para abrir sem internet.
 // Estratégia: rede primeiro para a página (pega versão nova quando há conexão), cache para o resto.
 // Os dados da pessoa NÃO passam por aqui: ficam no armazenamento local do navegador.
-const CACHE = 'rumo-v8';
+const BUILD = new URL(self.location.href).searchParams.get('v') || 'local';
+const CACHE = `rumo-${BUILD.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'local'}`;
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './assets-manifest.json',
   './icons/icon-192.png', './icons/icon-512.png', './icons/favicon.svg',
@@ -20,9 +21,15 @@ self.addEventListener('install', (event) => {
     const response = await cache.match('./assets-manifest.json');
     const manifest = await response.json();
     const files = new Set(Object.values(manifest).flatMap((entry) => [entry.file, ...(entry.css || []), ...(entry.assets || [])]));
-    await cache.addAll([...files].map((file) => new URL(file, self.registration.scope).href));
-    await self.skipWaiting();
+    // Um arquivo secundário ausente não deve impedir a instalação do shell essencial.
+    await Promise.all([...files].map((file) => cache.add(new URL(file, self.registration.scope).href).catch(() => undefined)));
   })());
+});
+
+// Uma versão nova só assume o controle quando a pessoa escolhe atualizar.
+// Isso evita apagar chunks que ainda estão em uso por uma aba antiga.
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -42,11 +49,15 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put('./index.html', copy));
-          return res;
+          const contentType = res.headers.get('content-type') || '';
+          if (res.ok && contentType.includes('text/html')) {
+            const update = caches.open(CACHE).then((c) => c.put('./index.html', res.clone()));
+            event.waitUntil(update);
+            return res;
+          }
+          return caches.match('./index.html').then((cached) => cached || res);
         })
-        .catch(() => caches.match('./index.html')),
+        .catch(() => caches.match('./index.html').then((cached) => cached || Response.error())),
     );
     return;
   }

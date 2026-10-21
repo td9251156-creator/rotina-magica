@@ -26,6 +26,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          VITE_BUILD_SHA: ${{ github.sha }}
       - uses: actions/configure-pages@v6
         with:
           enablement: true
