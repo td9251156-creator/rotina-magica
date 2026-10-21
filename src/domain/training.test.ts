@@ -1,5 +1,5 @@
 import { addDays } from './dates';
-import { TECHNIQUES, findTechnique, rulerHistory, techniqueOfTheDay } from './training';
+import { TECHNIQUES, findTechnique, latestHarderTechniqueIds, rulerHistory, techniqueOfTheDay } from './training';
 import { GENERAL_TECHNIQUES } from './wellbeing-techniques';
 
 describe('treino diário', () => {
@@ -21,6 +21,15 @@ describe('treino diário', () => {
     const allGeneral = GENERAL_TECHNIQUES.map((t) => t.id);
     expect(techniqueOfTheDay('2026-10-16', [], '2026-10-16', 'general', undefined, [allGeneral[0]]).id).toBe(allGeneral[1]);
     expect(techniqueOfTheDay('2026-10-16', [], '2026-10-16', 'general', undefined, allGeneral).id).toBe(allGeneral[0]);
+  });
+
+  it('reabilita uma vivência quando chega um feedback mais recente', () => {
+    expect(latestHarderTechniqueIds([
+      { techniqueId: 'pausa_corpo', feedback: 'harder' },
+      { techniqueId: 'sem_resposta' },
+      { techniqueId: 'pausa_corpo', feedback: 'helped' },
+      { techniqueId: 'pensamento_distante', feedback: 'harder' },
+    ])).toEqual(['pensamento_distante']);
   });
 
   it('toda técnica tem passos e ids únicos', () => {

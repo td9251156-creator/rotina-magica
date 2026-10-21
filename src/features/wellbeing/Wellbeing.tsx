@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useData } from '@/data/provider';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { periodFor } from '@/domain/routine';
-import { findTechnique, techniqueOfTheDay, techniqueMinutes } from '@/domain/training';
+import { findTechnique, latestHarderTechniqueIds, techniqueOfTheDay, techniqueMinutes } from '@/domain/training';
 import { GENERAL_TECHNIQUES } from '@/domain/wellbeing-techniques';
 import type { Practice } from '@/data/repositories/types';
 import { navigate } from '@/router';
@@ -14,15 +14,23 @@ import { TrainingSession } from '../training/Training';
 import './wellbeing.css';
 
 const MOODS = ['Muito pesado', 'Pesado', 'Mais ou menos', 'Um pouco melhor', 'Bem'];
+const QUICK_CARES = [
+  { id: 'pausa_corpo', icon: 'passo_respirar' as const, title: 'Acalmar o corpo', detail: 'Uma pausa sem pressa' },
+  { id: 'pensamento_distante', icon: 'ferr_pensamento' as const, title: 'Cabeça cheia', detail: 'Dar espaço aos pensamentos' },
+  { id: 'pedir_apoio', icon: 'ter_apoio' as const, title: 'Buscar companhia', detail: 'Preparar um pedido de apoio' },
+  { id: 'proximo_passo', icon: 'feito' as const, title: 'Uma coisa de cada vez', detail: 'Escolher só o próximo passo' },
+  { id: 'acolher_momento', icon: 'ter_aceitacao' as const, title: 'Dia pesado', detail: 'Encontrar palavras menos duras' },
+];
 
 export function WellbeingHome() {
   const { repos } = useData();
   const today = toLocalDate(new Date());
   const generalIds = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
   const entries = repos.practices.list().filter((p) => generalIds.has(p.techniqueId));
-  const latestFeedback = new Map<string, Practice['feedback']>();
-  entries.forEach((p) => { if (p.feedback) latestFeedback.set(p.techniqueId, p.feedback); });
-  const suggestion = techniqueOfTheDay(today, entries.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), 'general', undefined, [...latestFeedback].filter(([, f]) => f === 'harder').map(([id]) => id));
+  const harder = new Set(latestHarderTechniqueIds(entries));
+  const suggestion = techniqueOfTheDay(today, entries.map((p) => p.techniqueId), repos.settings.get('trackingStartDate', today), 'general', undefined, [...harder]);
+  const quickCares = QUICK_CARES.filter((care) => !harder.has(care.id));
+  const visibleCares = (quickCares.length >= 3 ? quickCares : QUICK_CARES).slice(0, 3);
   const personalPlan = repos.plan.list('plano_noite');
   const checkin = repos.checkins.getByDate(today);
   const period = periodFor(new Date(), repos.settings.get('workEndTime', '18:00'));
@@ -42,9 +50,7 @@ export function WellbeingHome() {
       </section>
       <button type="button" className="btn wellbeing-help" onClick={() => navigate('sos')}><Icon id="aba_ajuda" />Preciso de uma pausa agora</button>
       <section className="wellbeing-quick" aria-label="Escolha um cuidado">
-        <button type="button" onClick={() => navigate('treino', 'pausa_corpo')}><Icon id="passo_respirar" /><strong>Acalmar o corpo</strong><span>Uma pausa sem pressa</span></button>
-        <button type="button" onClick={() => navigate('treino', 'pensamento_distante')}><Icon id="ferr_pensamento" /><strong>Cabeça cheia</strong><span>Dar espaço aos pensamentos</span></button>
-        <button type="button" onClick={() => navigate('treino', 'pedir_apoio')}><Icon id="ter_apoio" /><strong>Buscar companhia</strong><span>Preparar um pedido de apoio</span></button>
+        {visibleCares.map((care) => <button key={care.id} type="button" onClick={() => navigate('treino', care.id)}><Icon id={care.icon} /><strong>{care.title}</strong><span>{care.detail}</span></button>)}
       </section>
       <button type="button" className="next wellbeing-suggestion" onClick={() => navigate('treino', suggestion.id)}>
         <span className="eyebrow">Um convite para hoje · cerca de {techniqueMinutes(suggestion)} min</span>
@@ -91,10 +97,10 @@ export function WellbeingJournal() {
       {saved && <button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(true)}>Excluir registro de hoje</button>}
       {confirmDelete && <div className="card" role="alertdialog" aria-label="Excluir registro de hoje?"><h2>Excluir registro de hoje?</h2><p>O texto e as notas deste dia sairão do diário e do histórico.</p><div className="actions"><button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(false)}>Cancelar</button><button type="button" className="btn" onClick={() => { write((r) => r.checkins.removeByDate(today)); setMood(null); setStress(null); setNote(''); setSavedNow(false); setConfirmDelete(false); }}>Excluir</button></div></div>}
       {savedNow && <p className="card" role="status">Guardado neste aparelho. Obrigado por reservar esse espaço para você.</p>}
-      <section className="card"><h2>Seus últimos 14 dias</h2><p className="small muted">A altura indica o peso que você registrou. Dias vazios significam “sem registro”, não um dia melhor ou pior.</p><div className="wellbeing-history" aria-label="Peso registrado nos últimos 14 dias">{Array.from({ length: 14 }, (_, i) => {
+      <section className="card"><h2>Seus últimos 14 dias</h2><p className="small muted">A altura indica o peso que você registrou. Dias vazios significam “sem registro”, não um dia melhor ou pior.</p><div className="wellbeing-history" aria-hidden="true">{Array.from({ length: 14 }, (_, i) => {
         const day = addDays(today, i - 13); const entry = entries.find((e) => e.date === day);
         return <span key={day} title={`${day}: ${entry?.stress ?? 'sem registro'}`} className={entry?.stress == null ? 'is-empty' : ''} style={{ height: `${entry?.stress == null ? 4 : 8 + entry.stress * 9}%` }} />;
-      })}</div></section>
+      })}</div><details><summary>Ver registros por dia</summary><ul aria-label="Registros dos últimos 14 dias">{Array.from({ length: 14 }, (_, i) => { const day = addDays(today, i - 13); const entry = entries.find((e) => e.date === day); return <li key={day}>{day.split('-').reverse().join('/')}: {entry?.stress == null ? 'sem registro' : `peso ${entry.stress} de 10`}</li>; })}</ul></details></section>
     </Screen>
   );
 }
@@ -116,6 +122,16 @@ export function WellbeingSupport({ locked, onReturnToLock }: { locked: boolean; 
   const [exercise, setExercise] = useState<string | null>(null);
   const [returned, setReturned] = useState(false);
   const phrase = !locked ? (repos.settings.get<string>('letter', '').trim() || repos.plan.list('gentileza').at(-1)?.text) : null;
+  // A tela bloqueada não consulta o histórico para não revelar preferências por ausência ou ordem.
+  const harder = new Set(locked ? [] : latestHarderTechniqueIds(repos.practices.list()));
+  const actions = [
+    { id: 'ancorar_sentidos', icon: 'ter_atencao' as const, title: 'Voltar para o aqui e agora', detail: 'Olhar ao redor e notar o ambiente · cerca de 2 min' },
+    { id: 'pausa_corpo', icon: 'passo_respirar' as const, title: 'Dar uma pausa ao corpo', detail: 'Respiração no seu ritmo, sem forçar · cerca de 2 min' },
+    { id: 'pensamento_distante', icon: 'ferr_pensamento' as const, title: 'Dar espaço ao que passa na cabeça', detail: 'Uma opção sem foco na respiração · cerca de 2 min' },
+    { id: 'pedir_apoio', icon: 'ter_apoio' as const, title: 'Preparar um pedido de companhia', detail: 'Encontrar palavras para chamar alguém · cerca de 2 min' },
+  ];
+  const saferActions = actions.filter((action) => !harder.has(action.id));
+  const visibleActions = (saferActions.length >= 3 ? saferActions : actions).slice(0, 3);
   if (exercise) return <TrainingSession key={exercise} id={exercise} onBack={() => setExercise(null)} onDone={() => { setExercise(null); setReturned(true); }} onMore={() => setExercise(null)} finishLabel="Voltar à ajuda" />;
   return <main className="screen screen--tabs wellbeing-support">
     <span className="wellbeing-support__icon"><Icon id="aba_ajuda" /></span>
@@ -124,8 +140,7 @@ export function WellbeingSupport({ locked, onReturnToLock }: { locked: boolean; 
     {returned && <p className="card" role="status">Você reservou um momento para si. Se ainda estiver difícil, pode tentar outro cuidado ou buscar companhia.</p>}
     {phrase && <blockquote className="card"><p className="eyebrow">Uma frase sua para reler</p><p>{phrase}</p></blockquote>}
     <div className="stack">
-      <button type="button" className="wellbeing-action" onClick={() => setExercise('ancorar_sentidos')}><Icon id="ter_atencao" /><span><strong>Voltar para o aqui e agora</strong><span>Olhar ao redor e sentir o apoio do corpo · cerca de 2 min</span></span><Icon id="seta" /></button>
-      <button type="button" className="wellbeing-action" onClick={() => setExercise('pausa_corpo')}><Icon id="passo_respirar" /><span><strong>Dar uma pausa ao corpo</strong><span>Respiração no seu ritmo, sem forçar · cerca de 2 min</span></span><Icon id="seta" /></button>
+      {visibleActions.map((action) => <button key={action.id} type="button" className="wellbeing-action" onClick={() => setExercise(action.id)}><Icon id={action.icon} /><span><strong>{action.title}</strong><span>{action.detail}</span></span><Icon id="seta" /></button>)}
     </div>
     {locked && onReturnToLock && <button type="button" className="btn btn--ghost" onClick={onReturnToLock}>Voltar para entrar com PIN</button>}
     {!locked && <button type="button" className="link" onClick={() => navigate('treino')}>Ver outras vivências →</button>}

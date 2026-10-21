@@ -4,6 +4,7 @@
  * (prevenção de recaída: ensaiar a resposta fora da crise).
  */
 import type { PlanItemKind } from '@/data/repositories/types';
+import type { Practice } from '@/data/repositories/types';
 import { daysBetween, type LocalDate } from './dates';
 import { GENERAL_TECHNIQUES } from './wellbeing-techniques';
 import type { SupportFocus } from './support';
@@ -359,6 +360,13 @@ export const TECHNIQUES: readonly Technique[] = [
 
 export function findTechnique(id: string): Technique | undefined {
   return TECHNIQUES.find((t) => t.id === id) ?? GENERAL_TECHNIQUES.find((t) => t.id === id);
+}
+
+/** A percepção mais recente substitui a anterior; só `harder` suspende sugestões automáticas. */
+export function latestHarderTechniqueIds(practices: readonly Pick<Practice, 'techniqueId' | 'feedback'>[]): string[] {
+  const latest = new Map<string, Practice['feedback']>();
+  practices.forEach((practice) => { if (practice.feedback) latest.set(practice.techniqueId, practice.feedback); });
+  return [...latest].filter(([, feedback]) => feedback === 'harder').map(([id]) => id);
 }
 
 /**

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useData } from './data/provider';
 import { GamesHub, PlayGame } from './features/games/Games';
 import { Journal } from './features/journal/Journal';
@@ -48,11 +48,19 @@ export function App() {
 function AppContent() {
   const { repos, version } = useData();
   const [route, setRoute] = useState<Route>(() => readRoute());
+  const firstRoute = useRef(true);
   useEffect(() => {
     const onHash = () => setRoute(readRoute());
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
+  useEffect(() => {
+    if (firstRoute.current) { firstRoute.current = false; return; }
+    const heading = document.querySelector<HTMLElement>('main h1');
+    if (!heading) return;
+    heading.tabIndex = -1;
+    heading.focus();
+  }, [route.name, route.param]);
   const home = () => navigate('home');
   const theme = repos.settings.get<'auto' | 'claro' | 'noite'>('theme', 'auto');
   useEffect(() => {

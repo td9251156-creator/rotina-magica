@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '@/App';
 import { DataProvider } from '@/data/provider';
@@ -88,6 +88,20 @@ describe('vivências e acolhimento geral', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Você pode mudar essa resposta');
   });
 
+  it('retira das recomendações uma vivência marcada como mais difícil', () => {
+    setup('', false, (repos) => {
+      const practice = repos.practices.add('pausa_corpo', toLocalDate(new Date()));
+      repos.practices.setFeedback(practice.id, 'harder');
+    });
+    expect(screen.queryByRole('button', { name: /Acalmar o corpo/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Uma coisa de cada vez/ })).toBeInTheDocument();
+  });
+
+  it('oferece na Pausa uma alternativa sem foco na respiração', () => {
+    setup('#sos');
+    expect(screen.getByRole('button', { name: /Dar espaço ao que passa na cabeça.*sem foco na respiração/ })).toBeInTheDocument();
+  });
+
   it('permite concluir uma vivência geral sem escrever nem guardar frase', async () => {
     const { repos, user } = setup('#treino/proximo_passo');
     await user.click(screen.getByRole('button', { name: 'Uma tarefa' }));
@@ -109,6 +123,17 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
     expect(repos.checkins.getByDate(today)).toBeNull();
     expect(screen.getByRole('textbox')).toHaveValue('');
+  });
+
+  it('expõe o histórico diário em texto e move o foco ao navegar', async () => {
+    const today = toLocalDate(new Date());
+    const { user } = setup('', false, (repos) => {
+      repos.checkins.upsertForDate({ date: today, mood: 2, stress: 7, note: null, craving: null, sleepQuality: null, alcohol: null, used: null });
+    });
+    await user.click(screen.getByRole('button', { name: 'Diário' }));
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Seu diário' })).toHaveFocus());
+    const history = screen.getByRole('list', { name: 'Registros dos últimos 14 dias' });
+    expect(within(history).getByText(new RegExp(`${today.split('-').reverse().join('/')}.*peso 7 de 10`))).toBeInTheDocument();
   });
 
   it('progresso geral não mistura práticas antigas do outro foco', () => {
