@@ -76,10 +76,11 @@ export function WellbeingJournal() {
   const [stress, setStress] = useState<number | null>(saved?.stress ?? null);
   const [note, setNote] = useState(saved?.note ?? '');
   const [savedNow, setSavedNow] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const entries = repos.checkins.listBetween(addDays(today, -13), today);
   return (
     <Screen title="Seu diário" className="screen--tabs wellbeing-journal">
-      <p className="muted">Um lugar para reconhecer o que você sente. Só você vê; escreva apenas o que quiser guardar.</p>
+      <p className="muted">Um lugar para reconhecer o que você sente. O registro fica neste navegador; escreva apenas o que quiser guardar.</p>
       <fieldset className="wellbeing-fieldset"><legend>Como está seu dia?</legend><div className="chips">{MOODS.map((label, i) => <button key={label} type="button" className={`chip${mood === i + 1 ? ' chip--on' : ''}`} aria-pressed={mood === i + 1} onClick={() => (setMood(mood === i + 1 ? null : i + 1), setSavedNow(false))}>{label}</button>)}</div></fieldset>
       <fieldset className="wellbeing-fieldset"><legend>Quanto este momento está pesando? (0 a 10)</legend><p className="muted small">0: leve · 10: muito pesado. A nota é opcional.</p><div className="rating" role="group" aria-label="Peso do momento">{Array.from({ length: 11 }, (_, n) => <button key={n} type="button" className={stress === n ? 'on' : ''} aria-pressed={stress === n} onClick={() => (setStress(stress === n ? null : n), setSavedNow(false))}>{n}</button>)}</div></fieldset>
       <label className="field">O que você gostaria de registrar?<textarea rows={5} value={note} onChange={(e) => (setNote(e.target.value), setSavedNow(false))} placeholder="Pode ser sobre o que pesa, o que ajudou ou o que você precisa. Não há resposta certa." /></label>
@@ -87,6 +88,8 @@ export function WellbeingJournal() {
         write((r) => { saveWellbeingCheckin(r, today, { mood, stress, note: note.trim() || null }); r.routine.toggle(today, 'n_diario', true); });
         setSavedNow(true);
       }}>{saved ? 'Atualizar meu registro' : 'Guardar meu registro'}</button>
+      {saved && <button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(true)}>Excluir registro de hoje</button>}
+      {confirmDelete && <div className="card" role="alertdialog" aria-label="Excluir registro de hoje?"><h2>Excluir registro de hoje?</h2><p>O texto e as notas deste dia sairão do diário e do histórico.</p><div className="actions"><button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(false)}>Cancelar</button><button type="button" className="btn" onClick={() => { write((r) => r.checkins.removeByDate(today)); setMood(null); setStress(null); setNote(''); setSavedNow(false); setConfirmDelete(false); }}>Excluir</button></div></div>}
       {savedNow && <p className="card" role="status">Guardado neste aparelho. Obrigado por reservar esse espaço para você.</p>}
       <section className="card"><h2>Seus últimos 14 dias</h2><p className="small muted">A altura indica o peso que você registrou. Dias vazios significam “sem registro”, não um dia melhor ou pior.</p><div className="wellbeing-history" aria-label="Peso registrado nos últimos 14 dias">{Array.from({ length: 14 }, (_, i) => {
         const day = addDays(today, i - 13); const entry = entries.find((e) => e.date === day);
@@ -108,7 +111,7 @@ export function WellbeingProgress({ onBack }: { onBack: () => void }) {
   return <Screen title="Seus cuidados" onBack={onBack}><p className="muted">Isto é uma memória do que você fez e de como cada vivência pareceu para você. Não é uma medida de saúde ou uma competição.</p><div className="wellbeing-stats"><section className="card"><strong>{practices.length}</strong><span>vivências praticadas</span></section><section className="card"><strong>{days}</strong><span>dias com algum cuidado</span></section><section className="card"><strong>{records.length}</strong><span>registros no diário</span></section></div>{helpfulIds.length > 0 && <section className="card"><h2>Você marcou que estas ajudaram</h2><p className="small muted">É a sua percepção; pode mudar de um dia para outro.</p><div className="stack">{helpfulIds.map((id) => { const technique = findTechnique(id); return technique && <button key={id} className="wellbeing-action" onClick={() => navigate('treino', id)}><span><strong>{technique.title}</strong><span>Fazer de novo, se quiser</span></span><Icon id="seta" /></button>; })}</div></section>}<section className="card"><h2>O cuidado pode mudar</h2><p>Uma prática pode ajudar num dia e não em outro. Você pode contar como foi ao concluir uma vivência; essa resposta fica neste aparelho.</p><button type="button" className="btn" onClick={() => navigate('treino')}>Escolher uma vivência</button></section></Screen>;
 }
 
-export function WellbeingSupport({ locked }: { locked: boolean }) {
+export function WellbeingSupport({ locked, onReturnToLock }: { locked: boolean; onReturnToLock?: () => void }) {
   const { repos } = useData();
   const [exercise, setExercise] = useState<string | null>(null);
   const [returned, setReturned] = useState(false);
@@ -124,6 +127,7 @@ export function WellbeingSupport({ locked }: { locked: boolean }) {
       <button type="button" className="wellbeing-action" onClick={() => setExercise('ancorar_sentidos')}><Icon id="ter_atencao" /><span><strong>Voltar para o aqui e agora</strong><span>Olhar ao redor e sentir o apoio do corpo · cerca de 2 min</span></span><Icon id="seta" /></button>
       <button type="button" className="wellbeing-action" onClick={() => setExercise('pausa_corpo')}><Icon id="passo_respirar" /><span><strong>Dar uma pausa ao corpo</strong><span>Respiração no seu ritmo, sem forçar · cerca de 2 min</span></span><Icon id="seta" /></button>
     </div>
+    {locked && onReturnToLock && <button type="button" className="btn btn--ghost" onClick={onReturnToLock}>Voltar para entrar com PIN</button>}
     {!locked && <button type="button" className="link" onClick={() => navigate('treino')}>Ver outras vivências →</button>}
     <p className="wellbeing-note">Você pode parar qualquer exercício se ele não estiver confortável. Este espaço oferece pausas de autocuidado.</p>
   </main>;

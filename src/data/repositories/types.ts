@@ -83,6 +83,7 @@ export interface CheckinRepository {
   upsertForDate(input: CheckinInput): Checkin;
   getByDate(date: LocalDate): Checkin | null;
   listBetween(from: LocalDate, to: LocalDate): Checkin[];
+  removeByDate(date: LocalDate): void;
 }
 
 export interface CravingRepository {
@@ -190,6 +191,7 @@ export interface JournalRepository {
   upsert(input: JournalInput): JournalEntry;
   getByDate(date: LocalDate): JournalEntry | null;
   listBetween(from: LocalDate, to: LocalDate): JournalEntry[];
+  removeByDate(date: LocalDate): void;
 }
 
 /** Registro de pensamentos (TCC): corpo, emoção, pensamento, armadilhas e uma resposta mais justa. */

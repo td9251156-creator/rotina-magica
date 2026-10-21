@@ -67,7 +67,7 @@ function AppContent() {
   if (route.name === 'sos')
     return (
       <>
-        {general ? <WellbeingSupport locked={locked.on} /> : <SosScreen locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />}
+        {general ? <WellbeingSupport locked={locked.on} onReturnToLock={home} /> : <SosScreen locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />}
         {!locked.on && <TabBar current="sos" />}
       </>
     );

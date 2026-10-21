@@ -1,14 +1,14 @@
 name: Agent Scout
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/agents/run-codex.sh
-      - .github/workflows/agent-scout.yml
   schedule:
     - cron: '17 9 * * 3'
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Refazer a análise mesmo com uma proposta aberta'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -25,16 +25,35 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
+      - name: Evitar gasto repetido
+        id: budget
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          FORCE: ${{ inputs.force || false }}
+        run: |
+          ISSUE=$(gh issue list --repo "$REPO" --state open --label 'agent:proposal' --json number \
+            --jq '.[0].number // empty')
+          if [ -n "$ISSUE" ] && [ "$FORCE" != 'true' ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "Análise não executada: a proposta #$ISSUE ainda aguarda decisão." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v7
+        if: steps.budget.outputs.run == 'true'
         with:
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@v7
+        if: steps.budget.outputs.run == 'true'
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - if: steps.budget.outputs.run == 'true'
+        run: npm ci
       - name: Preparar etiquetas
+        if: steps.budget.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -47,10 +66,12 @@ jobs:
           gh label create 'agent:generated' --repo "$REPO" --color C5DEF5 --description 'Mudança gerada por agente' --force
           gh label create 'agent:done' --repo "$REPO" --color 5319E7 --description 'Mudança de agente revisada e mesclada' --force
       - name: Conferir configuração
+        if: steps.budget.outputs.run == 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: test -n "$OPENAI_API_KEY" || { echo 'Falta configurar o secret OPENAI_API_KEY.'; exit 1; }
       - name: Analisar prioridades
+        if: steps.budget.outputs.run == 'true'
         env:
           CODEX_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -74,6 +95,7 @@ jobs:
           ! grep -Fq -- "$OPENAI_API_KEY" "$RUNNER_TEMP/agent-report.md" || { echo 'Possível segredo na saída.'; exit 1; }
           ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' "$RUNNER_TEMP/agent-report.md" || { echo 'Padrão de segredo na saída.'; exit 1; }
       - name: Criar ou atualizar a proposta
+        if: steps.budget.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}

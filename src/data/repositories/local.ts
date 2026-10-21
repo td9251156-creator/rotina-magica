@@ -215,6 +215,10 @@ export function createLocalRepositories({ storage, newId, now }: RepoDeps): Repo
           .sort((a, b) => a.date.localeCompare(b.date))
           .map(strip);
       },
+      removeByDate(date) {
+        const row = db.checkins.find((c) => alive(c) && c.date === date);
+        if (row) softDelete(db.checkins, row.id);
+      },
     },
 
     cravings: {
@@ -389,6 +393,10 @@ export function createLocalRepositories({ storage, newId, now }: RepoDeps): Repo
           .filter((j) => alive(j) && between(j.date, from, to))
           .sort((a, b) => a.date.localeCompare(b.date))
           .map(strip);
+      },
+      removeByDate(date) {
+        const row = db.journal.find((j) => alive(j) && j.date === date);
+        if (row) softDelete(db.journal, row.id);
       },
     },
 

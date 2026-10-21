@@ -259,7 +259,7 @@ describe('bloqueio com PIN', () => {
     const repos = await withPin();
     repos.settings.set('letter', 'carta secreta');
     const { user } = open('', repos);
-    await user.click(screen.getByRole('button', { name: 'Preciso de ajuda agora' }));
+    await user.click(screen.getByRole('button', { name: 'Preciso de uma pausa agora' }));
     expect(await screen.findByText(/Jogar Blocos/)).toBeInTheDocument();
     expect(screen.queryByText(/meu segredo/)).not.toBeInTheDocument();
     expect(screen.queryByText(/carta secreta/)).not.toBeInTheDocument();

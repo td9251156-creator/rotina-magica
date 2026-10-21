@@ -16,6 +16,7 @@ export function Journal() {
   const [trick, setTrick] = useState(saved?.trick ?? '');
   const [victory, setVictory] = useState(saved?.victory ?? '');
   const [ok, setOk] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const from = addDays(today, -13);
   const past = new Map(repos.journal.listBetween(from, today).map((e) => [e.date, e]));
   const days = Array.from({ length: 14 }, (_, i) => addDays(from, i));
@@ -86,6 +87,8 @@ export function Journal() {
       <button type="button" className="btn" onClick={save}>
         {saved ? 'Atualizar o diário' : 'Guardar no diário'}
       </button>
+      {saved && <button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(true)}>Excluir registro de hoje</button>}
+      {confirmDelete && <div className="card" role="alertdialog" aria-label="Excluir registro de hoje?"><h2>Excluir registro de hoje?</h2><p>Este registro sairá do diário e dos gráficos.</p><div className="actions"><button type="button" className="btn btn--ghost" onClick={() => setConfirmDelete(false)}>Cancelar</button><button type="button" className="btn" onClick={() => { write((r) => r.journal.removeByDate(today)); setCraving(null); setTriggers([]); setBreaks(0); setTrick(''); setVictory(''); setConfirmDelete(false); setOk(false); }}>Excluir</button></div></div>}
       {ok && <p className="center">Guardado. Mais um dia observado com clareza.</p>}
 
       <section className="card">

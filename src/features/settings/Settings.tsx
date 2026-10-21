@@ -247,8 +247,8 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
       <Setting title="Bloqueio com PIN" hint={hasPin ? 'Ativado' : 'Desligado'}>
         <p className="small muted">
           {hasPin
-            ? 'Ativo. O botão de ajuda continua abrindo sem PIN, mas sem mostrar o que você escreveu.'
-            : 'Para ninguém abrir o app se pegar o seu celular. O botão de ajuda continua abrindo sem PIN.'}
+            ? 'Ativo. O PIN bloqueia a tela do app neste navegador; o botão de ajuda abre sem mostrar o que você escreveu.'
+            : 'O PIN bloqueia a tela do app neste navegador, mas não cifra o armazenamento do aparelho. O botão de ajuda continua acessível.'}
         </p>
         {hasPin ? (
           <button type="button" className="btn btn--ghost" onClick={removePin}>

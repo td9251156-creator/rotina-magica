@@ -7,6 +7,7 @@ import { navigate } from '@/router';
 /** Tela de PIN. O SOS fica sempre a um toque, sem PIN: crise não espera senha. */
 export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const { repos } = useData();
+  const general = repos.settings.get('supportFocus', 'general') === 'general';
   const [pin, setPin] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -51,7 +52,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
         </button>
       </form>
       <button type="button" className="sos" onClick={() => navigate('sos')}>
-        Preciso de ajuda agora
+        {general ? 'Preciso de uma pausa agora' : 'Preciso de ajuda agora'}
       </button>
       {!forgot ? (
         <button type="button" className="btn btn--ghost small" onClick={() => setForgot(true)}>

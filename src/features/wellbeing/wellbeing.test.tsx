@@ -70,6 +70,9 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: /Voltar para o aqui e agora/ }));
     expect(screen.getByRole('progressbar', { name: 'Progresso da vivência' })).toBeInTheDocument();
     expect(screen.queryByText('Frase pessoal secreta')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '← Voltar' }));
+    await user.click(screen.getByRole('button', { name: 'Voltar para entrar com PIN' }));
+    expect(screen.getByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
   });
 
   it('pede retorno opcional e guarda a percepção junto da vivência', async () => {
@@ -83,6 +86,29 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: 'Ajudou um pouco' }));
     expect(repos.practices.list()[0]).toMatchObject({ techniqueId: 'proximo_passo', feedback: 'helped' });
     expect(screen.getByRole('status')).toHaveTextContent('Você pode mudar essa resposta');
+  });
+
+  it('permite concluir uma vivência geral sem escrever nem guardar frase', async () => {
+    const { repos, user } = setup('#treino/proximo_passo');
+    await user.click(screen.getByRole('button', { name: 'Uma tarefa' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    await user.click(screen.getByRole('button', { name: 'Continuar sem guardar' }));
+    await user.click(screen.getByRole('button', { name: 'Concluir' }));
+    expect(screen.getByRole('heading', { name: 'Um cuidado feito.' })).toBeInTheDocument();
+    expect(repos.plan.list('se_entao')).toHaveLength(0);
+    expect(repos.practices.list()).toHaveLength(1);
+  });
+
+  it('deixa excluir o registro sensível do dia após confirmação', async () => {
+    const today = toLocalDate(new Date());
+    const { repos, user } = setup('#diario', false, (r) => {
+      r.checkins.upsertForDate({ date: today, mood: 2, stress: 8, note: 'Texto privado', craving: null, sleepQuality: null, alcohol: null, used: null });
+    });
+    await user.click(screen.getByRole('button', { name: 'Excluir registro de hoje' }));
+    expect(screen.getByRole('alertdialog', { name: 'Excluir registro de hoje?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Excluir' }));
+    expect(repos.checkins.getByDate(today)).toBeNull();
+    expect(screen.getByRole('textbox')).toHaveValue('');
   });
 
   it('progresso geral não mistura práticas antigas do outro foco', () => {

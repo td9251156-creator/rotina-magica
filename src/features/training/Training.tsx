@@ -127,7 +127,10 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
   const last = i === total - 1;
   const answer = answers[i] ?? { text: '' };
   const needsOption = !!step.options && !answer.option;
-  const blocked = !!((step.capture && !answer.text.trim()) || needsOption);
+  // No foco geral, escrever é sempre opcional. A pessoa pode viver o exercício
+  // sem entregar ou guardar algo íntimo.
+  const missingRequiredCapture = !general && step.capture && !answer.text.trim();
+  const blocked = !!(missingRequiredCapture || needsOption);
   const setText = (text: string) => setAnswers({ ...answers, [i]: { ...answer, text } });
   const phaseIcon: IconId = step.pauseSeconds ? 'ter_atencao' : step.capture || step.reflect ? 'passo_escrever' : step.options ? 'ferr_pensamento' : 'ter_aceitacao';
   const phaseLabel = step.pauseSeconds ? 'Um momento de pausa' : step.capture ? 'Uma frase para levar' : step.reflect ? 'Um espaço para refletir' : step.options ? 'Escolha o que combina com você' : 'Observe com gentileza';
@@ -189,10 +192,10 @@ function TrainingExercise({ technique, onDone, onMore, onBack, finishLabel = 'Vo
     {step.pauseSeconds && !pauseDone[i] && <Pause key={i} seconds={step.pauseSeconds} onEnd={() => setPauseDone((p) => ({ ...p, [i]: true }))} />}
     {step.pauseSeconds && pauseDone[i] && <p className="training-pause-done" role="status">Pausa feita. Siga quando quiser.</p>}
     {step.options && <div className="chips" role="group" aria-label="Opções para este passo">{step.options.map((o) => <Chip key={o} selected={answer.option === o} onClick={() => setAnswers({ ...answers, [i]: { ...answer, option: o } })}>{o}</Chip>)}</div>}
-    {step.capture && (!step.options || answer.option) && <label className="field">{step.capture.prompt}<textarea rows={4} placeholder={step.capture.placeholder} value={answer.text} onChange={(e) => setText(e.target.value)} /><span className="small muted">Você escolhe o que escrever. Só fica guardado ao concluir a vivência.</span></label>}
+    {step.capture && (!step.options || answer.option) && <label className="field">{step.capture.prompt}<textarea rows={4} placeholder={step.capture.placeholder} value={answer.text} onChange={(e) => setText(e.target.value)} /><span className="small muted">{general ? 'Opcional. Se deixar em branco, nada será guardado.' : 'Você escolhe o que escrever. Só fica guardado ao concluir a vivência.'}</span></label>}
     {step.reflect && <label className="field">{step.reflect.prompt}<textarea rows={4} placeholder={step.reflect.placeholder} value={answer.text} onChange={(e) => setText(e.target.value)} /><span className="small muted">{step.reflect.journal ? 'Opcional. Ao concluir, vai para o Diário de hoje.' : 'Opcional. É só para você pensar: isto não fica guardado.'}</span></label>}
     {blocked && <p className="training-helper">{needsOption ? 'Escolha uma opção para continuar.' : 'Escreva uma frase para levar com você.'}</p>}
-    <div className="actions">{i > 0 && <button type="button" className="btn btn--ghost" onClick={() => setI(i - 1)}>Voltar</button>}<button type="button" className="btn" disabled={blocked} onClick={last ? finish : () => setI(i + 1)}>{last ? 'Concluir' : step.pauseSeconds && !pauseDone[i] ? 'Pular' : 'Continuar'}</button></div>
+    <div className="actions">{i > 0 && <button type="button" className="btn btn--ghost" onClick={() => setI(i - 1)}>Voltar</button>}<button type="button" className="btn" disabled={blocked} onClick={last ? finish : () => setI(i + 1)}>{general && step.capture && !answer.text.trim() ? (last ? 'Concluir sem guardar' : 'Continuar sem guardar') : last ? 'Concluir' : step.pauseSeconds && !pauseDone[i] ? 'Pular' : 'Continuar'}</button></div>
   </Screen>;
 }
 /** Texto pronto para mandar: abre o compartilhar do celular ou copia. Nada sai sem o toque da pessoa. */

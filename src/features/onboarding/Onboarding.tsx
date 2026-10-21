@@ -122,7 +122,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       {step === 2 && (
         <section>
           <h1>{general ? 'O que você gostaria de cuidar?' : 'Por que você quer parar?'}</h1>
-          <p className="muted">{general ? 'Pode ser algo importante para você. Não precisa ter um objetivo pronto; só você vê suas respostas.' : 'Isso aparece quando a vontade bater. Só você vê.'}</p>
+          <p className="muted">{general ? 'Pode ser algo importante para você. Não precisa ter um objetivo pronto; suas respostas ficam neste navegador.' : 'Isso aparece quando a vontade bater. Suas respostas ficam neste navegador.'}</p>
           <div className="chips">
             {[...REASONS, ...reasons.filter((r) => !REASONS.includes(r))].map((r) => (
               <Chip key={r} selected={reasons.includes(r)} onClick={() => setReasons(toggle(reasons, r))}>
