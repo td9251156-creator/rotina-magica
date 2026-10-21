@@ -44,3 +44,12 @@
 .training-finished p { line-height: 1.65; }
 .training-leave { margin-top: 20px; }
 @media (max-width: 350px) { .training-approach { padding: 14px 10px; } .training-session .training-step-label { flex-direction: column; gap: 4px; } }
+
+@media (min-width: 900px) {
+  .training-list { max-width: 1080px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-content: start; }
+  .training-list > :not(.training-approach) { grid-column: 1 / -1; }
+  .training-list > .training-approach { margin: 0; }
+  .training-landscape { max-height: 220px; }
+  .training-session { max-width: 760px; }
+  .training-session h1 { font-size: 1.65rem; }
+}

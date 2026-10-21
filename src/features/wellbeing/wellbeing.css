@@ -6,7 +6,7 @@
 .wellbeing-quick button { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; padding: 14px 10px; min-height: 146px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text); text-align: left; cursor: pointer; }
 .wellbeing-quick svg { color: var(--accent); width: 26px; height: 26px; }
 .wellbeing-quick strong { font-size: .86rem; line-height: 1.3; }
-.wellbeing-quick button > span { font-size: .73rem; line-height: 1.45; color: var(--muted); }
+.wellbeing-quick button > span { font-size: .875rem; line-height: 1.45; color: var(--muted); }
 .wellbeing-suggestion { display: grid; gap: 8px; text-align: left; }
 .wellbeing-suggestion > strong { font: 600 1.3rem var(--serif); color: var(--title); }
 .wellbeing-checkin { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: 18px; padding: 16px; color: var(--text); background: var(--surface); text-align: left; cursor: pointer; }
@@ -43,3 +43,26 @@
 .support-choice button[aria-pressed='true'] { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); }
 .support-choice button > span { font-size: .82rem; color: var(--muted); }
 @media (max-width: 350px) { .wellbeing-quick { grid-template-columns: 1fr; } .wellbeing-quick button { min-height: 84px; padding: 14px; gap: 6px; } .wellbeing-quick strong { font-size: .95rem; } }
+
+@media (min-width: 900px) {
+  .wellbeing-home { max-width: 1080px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; align-content: start; }
+  .wellbeing-home > * { grid-column: span 6; min-width: 0; }
+  .wellbeing-home > .hero--sky,
+  .wellbeing-home > .wellbeing-welcome,
+  .wellbeing-home > .wellbeing-help,
+  .wellbeing-home > .wellbeing-quick,
+  .wellbeing-home > .tools,
+  .wellbeing-home > .wellbeing-note { grid-column: 1 / -1; }
+  .wellbeing-home > .hero--sky { min-height: 260px; padding: 34px; }
+  .hero--sky h1 { font-size: 2.35rem; }
+  .hero--sky .tagline { max-width: 46ch; font-size: 1.05rem; }
+  .wellbeing-quick { gap: 14px; }
+  .wellbeing-quick button { min-height: 126px; padding: 20px; }
+  .wellbeing-quick strong { font-size: 1rem; }
+  .wellbeing-suggestion, .wellbeing-checkin { min-height: 150px; }
+  .wellbeing-home > .card { margin: 0; }
+  .wellbeing-home .tools { gap: 14px; }
+  .wellbeing-support { max-width: 800px; }
+  .wellbeing-support .stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wellbeing-support .wellbeing-action { min-height: 160px; align-items: flex-start; }
+}
