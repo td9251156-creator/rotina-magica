@@ -72,14 +72,15 @@ function AppContent() {
 
   // O SOS e o registro de uso abrem sempre, mesmo antes do primeiro uso: crise não espera cadastro.
   // Com PIN, o SOS abre sem pedir o PIN (só esconde o que a pessoa escreveu); o resto pede.
+  // Ao rebloquear, descarta o estado da sessão privada nas telas que continuam acessíveis sem PIN.
   if (route.name === 'sos')
     return (
       <>
-        {general ? <WellbeingSupport locked={locked.on} onReturnToLock={home} /> : <SosScreen locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />}
+        {general ? <WellbeingSupport key={String(locked.on)} locked={locked.on} onReturnToLock={home} /> : <SosScreen key={String(locked.on)} locked={locked.on} onClose={home} onUsed={() => navigate('usei')} />}
         {!locked.on && <TabBar current="sos" />}
       </>
     );
-  if (route.name === 'usei') return <UsedFlow locked={locked.on} onDone={home} />;
+  if (route.name === 'usei') return <UsedFlow key={String(locked.on)} locked={locked.on} onDone={home} />;
   if (locked.on) return <LockScreen onUnlock={locked.unlock} />;
   void version;
   const done = repos.settings.get('onboardingDone', false);
