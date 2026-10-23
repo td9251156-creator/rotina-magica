@@ -94,12 +94,16 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
 
   const restore = async (f: File) => {
     try {
+      if (!window.confirm('Restaurar este backup vai substituir os dados atuais deste aparelho. Se quiser mantê-los, cancele e baixe um backup antes. Continuar?')) return;
       if (storage.failed) throw new Error('O armazenamento está indisponível. Não é seguro restaurar agora.');
       await restoreBackup(storage, await f.text(), password || undefined);
       if (storage.failed) throw new Error('O navegador não confirmou a gravação do backup. Não feche o app antes de baixar uma cópia dos dados.');
       window.location.reload();
     } catch (e) {
       setMsg((e as Error).message);
+    } finally {
+      // Permite escolher o mesmo arquivo depois de cancelar ou corrigir a senha.
+      if (file.current) file.current.value = '';
     }
   };
 

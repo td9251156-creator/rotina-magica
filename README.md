@@ -16,6 +16,10 @@ cansaço ou sobrecarga. Não é preciso estar bem, ter uma meta pronta ou recebe
 A demonstração usa dados descartáveis em memória. O app não tem conta, servidor de dados, analytics ou envio de
 relatos pessoais. Instale na tela inicial pelo navegador para voltar mais facilmente e usar offline após o primeiro carregamento.
 
+Use uma aba ou janela por vez para acessar seus registros. Se abrir outra, ela oferece uma Pausa temporária sem
+ler nem gravar seus dados e aguarda a anterior fechar. Essa proteção também vale entre a PWA instalada e uma aba
+da mesma origem. Mais detalhes em [proteção da sessão](docs/protecao-de-sessao.md).
+
 ## Um cuidado de cada vez
 
 - **Hoje:** sugestões pequenas para acalmar o corpo, dar espaço a pensamentos ou buscar companhia. Sem obrigação
