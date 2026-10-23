@@ -11,7 +11,11 @@ export function lazyScreen<M, K extends keyof M>(load: () => Promise<M>, name: K
   let loaded: C | undefined;
   const preload = () => load().then((m) => { loaded = m[name] as C; return loaded; });
   loaders.add(preload);
-  const Lazy = lazy(async () => ({ default: await preload() }));
+  // Se o download falhar (sem rede, versão nova publicada), a próxima tentativa baixa de novo.
+  const make = () => lazy(async () => {
+    try { return { default: await preload() }; } catch (error) { Lazy = make(); throw error; }
+  });
+  let Lazy = make();
   const Screen = (props: object) => createElement(loaded ?? Lazy, props);
   return Screen as M[K];
 }
