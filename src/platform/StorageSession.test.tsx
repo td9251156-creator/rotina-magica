@@ -7,26 +7,15 @@ import { StorageSession } from './StorageSession';
 const open = () => createLocalRepositories({ storage: localStorage, newId: () => crypto.randomUUID(), now: () => new Date() });
 const originalLocks = Object.getOwnPropertyDescriptor(navigator, 'locks');
 
-/** Mutex assíncrono com cancelamento, como navigator.locks entre documentos. */
+/** Posse exclusiva como navigator.locks entre documentos: `ifAvailable` não espera e `steal` toma a posse. */
 function locks() {
-  let held = false;
-  const queue: (() => void)[] = [];
-  const pump = () => { if (!held) queue.shift()?.(); };
-  return { request: vi.fn((_name: string, options: LockOptions, callback: () => Promise<void>) => new Promise<void>((resolve, reject) => {
-    const start = () => {
-      options.signal?.removeEventListener('abort', cancel);
-      if (options.signal?.aborted) { reject(new DOMException('Abortado', 'AbortError')); pump(); return; }
-      held = true;
-      Promise.resolve().then(callback).then(resolve, reject).finally(() => { held = false; pump(); });
-    };
-    const cancel = () => {
-      const index = queue.indexOf(start);
-      if (index >= 0) queue.splice(index, 1);
-      reject(new DOMException('Abortado', 'AbortError'));
-    };
-    options.signal?.addEventListener('abort', cancel, { once: true });
-    queue.push(start);
-    queueMicrotask(pump);
+  let holder: { reject: (error: unknown) => void } | null = null;
+  return { request: vi.fn((_name: string, options: LockOptions, callback: (lock: Lock | null) => Promise<void>) => new Promise<void>((resolve, reject) => {
+    if (holder && !options.steal) { Promise.resolve(callback(null)).then(resolve, reject); return; }
+    holder?.reject(new DOMException('Tomada por outra janela', 'AbortError'));
+    const me = { reject };
+    holder = me;
+    Promise.resolve().then(() => callback({ name: _name, mode: 'exclusive' } as Lock)).then(resolve, reject).finally(() => { if (holder === me) holder = null; });
   })) };
 }
 
@@ -49,39 +38,52 @@ afterEach(() => {
   else Reflect.deleteProperty(navigator, 'locks');
 });
 
-it('a segunda aba só carrega os registros depois de a primeira fechar', async () => {
+it('a janela aberta depois assume os registros e a anterior sai da tela', async () => {
   const user = userEvent.setup();
-  const a = render(<StorageSession><Editor /></StorageSession>);
+  const a = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   await within(a.container).findByRole('region', { name: 'Registros' });
-  const b = render(<StorageSession><Editor /></StorageSession>);
-  expect(within(b.container).queryByRole('region')).not.toBeInTheDocument();
   await user.click(within(a.container).getByRole('button', { name: 'Salvar carta' }));
-  a.unmount();
+  const b = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   expect(await within(b.container).findByText('Carta fictícia nova')).toBeInTheDocument();
+  expect(await within(a.container).findByRole('heading', { name: 'O app foi aberto em outra janela' })).toBeInTheDocument();
+  expect(within(a.container).queryByRole('region')).not.toBeInTheDocument();
+  expect(within(a.container).getByRole('button', { name: 'Usar aqui' })).toBeInTheDocument();
   await user.click(within(b.container).getByRole('button', { name: 'Mudar tema' }));
   expect(open().settings.get('letter', '')).toBe('Carta fictícia nova');
 });
 
-it('não deixa a aba que esperava remover o PIN criado pela primeira', async () => {
-  const user = userEvent.setup();
-  const a = render(<StorageSession><Editor /></StorageSession>);
+it('uma janela em segundo plano espera ficar visível para assumir', async () => {
+  const a = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   await within(a.container).findByRole('region');
-  const b = render(<StorageSession><Editor /></StorageSession>);
+  const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+  const b = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
+  await act(async () => { await new Promise((r) => setTimeout(r, 10)); });
+  expect(within(b.container).queryByRole('region')).not.toBeInTheDocument();
+  expect(within(a.container).getByRole('region')).toBeInTheDocument();
+  visibility.mockReturnValue('visible');
+  act(() => { document.dispatchEvent(new Event('visibilitychange')); });
+  expect(await within(b.container).findByRole('region')).toBeInTheDocument();
+  visibility.mockRestore();
+});
+
+it('não deixa a janela nova remover o PIN criado pela anterior', async () => {
+  const user = userEvent.setup();
+  const a = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
+  await within(a.container).findByRole('region');
   await user.click(within(a.container).getByRole('button', { name: 'Ativar PIN' }));
-  a.unmount();
+  const b = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   expect(await within(b.container).findByText('hash-ficticio')).toBeInTheDocument();
   await user.click(within(b.container).getByRole('button', { name: 'Mudar tema' }));
   expect(open().settings.get('pinHash', '')).toBe('hash-ficticio');
 });
 
-it('não ressuscita conteúdo apagado quando a aba que esperava assume', async () => {
+it('não ressuscita conteúdo apagado quando a janela nova assume', async () => {
   open().settings.set('letter', 'Texto fictício a apagar');
   const user = userEvent.setup();
-  const a = render(<StorageSession><Editor /></StorageSession>);
+  const a = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   await within(a.container).findByRole('region');
-  const b = render(<StorageSession><Editor /></StorageSession>);
   await user.click(within(a.container).getByRole('button', { name: 'Apagar dados' }));
-  a.unmount();
+  const b = render(<StorageSession graceMs={0}><Editor /></StorageSession>);
   expect(await within(b.container).findByText('Sem carta')).toBeInTheDocument();
   await user.click(within(b.container).getByRole('button', { name: 'Mudar tema' }));
   expect(open().settings.get('letter', null)).toBeNull();
@@ -92,7 +94,7 @@ it('oferece uma pausa temporária sem consultar ou alterar os dados pessoais', a
   const a = render(<StorageSession><Editor /></StorageSession>);
   await within(a.container).findByRole('region');
   const before = localStorage.getItem(STORAGE_KEY);
-  const b = render(<StorageSession><Editor /></StorageSession>);
+  const b = render(<StorageSession graceMs={60_000}><Editor /></StorageSession>);
   const user = userEvent.setup();
   await user.click(within(b.container).getByRole('button', { name: 'Preciso de uma pausa agora' }));
   expect(within(b.container).queryByText('Texto fictício privado')).not.toBeInTheDocument();
