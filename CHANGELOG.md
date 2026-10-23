@@ -11,6 +11,18 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 - CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.
 - Verificação explícita do primeiro commit de cada agente e relatório mensal de manutenção com dados públicos.
 
+### Corrigido
+
+- O app não fica mais preso em "Use uma aba por vez" quando uma janela antiga (PWA em segundo plano, aba esquecida
+  ou link de lembrete da agenda) segura os registros: a janela que a pessoa está vendo assume, e a anterior mostra
+  "Usar aqui" sem gravar mais nada.
+- Uma tela que não baixa (sem rede ou versão nova publicada) pode ser tentada de novo ou recarregada.
+
+### Desempenho
+
+- Pacote inicial cerca de 25% menor: jogos, vivências, primeiro uso e SOS antigo baixam sob demanda e são
+  adiantados quando o navegador fica ocioso.
+
 ### Segurança
 
 - O agente que altera código não recebe o token do GitHub e nunca mescla mudanças automaticamente.
