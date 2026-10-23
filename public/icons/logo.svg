@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">Rotina Mágica</title>
-  <desc id="desc">Um caminho dourado conduz ao sol nascente, sob uma estrela.</desc>
-  <defs>
-    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#192237"/><stop offset="1" stop-color="#0e1017"/></linearGradient>
-    <linearGradient id="sun" x2="0" y2="1"><stop stop-color="#fff0c4"/><stop offset="1" stop-color="#e8c77b"/></linearGradient>
-    <linearGradient id="road" x2="0" y2="1"><stop stop-color="#efd497"/><stop offset="1" stop-color="#c9a45c"/></linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#sky)"/>
-  <path d="M256 256m-108 0a108 108 0 1 1 216 0Z" fill="url(#sun)"/>
-  <path d="M0 258Q100 226 200 251T400 250L512 244V512H0Z" fill="#202c42"/>
-  <path d="M0 303Q130 270 256 265T512 300V512H0Z" fill="#0e1017"/>
-  <path d="M256 261C313 270 205 283 231 304S374 337 360 380C345 426 287 453 324 512H70C105 463 230 441 272 397C318 349 166 335 202 299C219 282 292 272 256 261Z" fill="url(#road)"/>
-  <path d="M374 76Q377 105 406 108Q377 111 374 140Q371 111 342 108Q371 105 374 76Z" fill="#efd497"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" aria-labelledby="title desc" role="img" viewBox="0 0 512 512"><title id="title">Rotina Mágica</title><desc id="desc">Um caminho dourado conduz ao sol nascente, sob uma estrela.</desc><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#192237"/><stop offset="1" stop-color="#0e1017"/></linearGradient><linearGradient id="sun" x2="0" y2="1"><stop stop-color="#fff0c4"/><stop offset="1" stop-color="#e8c77b"/></linearGradient><linearGradient id="road" x2="0" y2="1"><stop stop-color="#efd497"/><stop offset="1" stop-color="#c9a45c"/></linearGradient></defs><rect width="512" height="512" fill="url(#sky)" rx="112"/><path fill="url(#sun)" d="M256 256m-108 0a108 108 0 1 1 216 0Z"/><path fill="#202c42" d="M0 258Q100 226 200 251T400 250L512 244V512H0Z"/><path fill="#0e1017" d="M0 303Q130 270 256 265T512 300V512H0Z"/><path fill="url(#road)" d="M256 261C313 270 205 283 231 304S374 337 360 380C345 426 287 453 324 512H70C105 463 230 441 272 397C318 349 166 335 202 299C219 282 292 272 256 261Z"/><path fill="#efd497" d="M374 76Q377 105 406 108Q377 111 374 140Q371 111 342 108Q371 105 374 76Z"/></svg>

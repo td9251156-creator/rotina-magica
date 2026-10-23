@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <title>Rotina Mágica</title>
-  <rect width="32" height="32" rx="7" fill="#0e1017"/>
-  <path d="M8 15a8 8 0 0 1 16 0Z" fill="#f1e6cf"/>
-  <path d="M16 17c9 1-7 4-3 7s12 5 7 8H9c2-4 10-4 5-7s-9-4 2-8Z" fill="#c9a45c"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>Rotina Mágica</title><rect width="32" height="32" fill="#0e1017" rx="7"/><path fill="#f1e6cf" d="M8 15a8 8 0 0 1 16 0Z"/><path fill="#c9a45c" d="M16 17c9 1-7 4-3 7s12 5 7 8H9c2-4 10-4 5-7s-9-4 2-8Z"/></svg>
