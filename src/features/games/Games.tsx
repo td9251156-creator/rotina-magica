@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useData } from '@/data/provider';
 import type { Repositories } from '@/data/repositories/types';
 import { addDays, toLocalDate } from '@/domain/dates';
@@ -9,18 +9,21 @@ import { Icon } from '@/ui/icons';
 import { Screen } from '@/ui/Screen';
 import { symbolsOn, OCCULT_SIGNS } from '@/domain/games/symbols';
 import type { RoutineStyle } from '@/domain/routine';
-import { ArcanaGame } from './ArcanaGame';
-import { BlocksGame } from './BlocksGame';
-import { PairsGame } from './PairsGame';
 import { recordGame, type GameOutcome, type RecordedGame } from './record';
 import { GAME_ICON } from './icons';
 import { supportFocus } from '@/domain/support';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
-import { StoryGame } from './StoryGame';
-import { WaveGame } from './WaveGame';
 import { GameArt } from '@/ui/illustrations';
 import { GameGuide, GAME_GUIDES } from './GameGuide';
 import './games.css';
+import { lazyScreen } from '@/ui/lazy';
+
+// Cada jogo só é baixado quando abre; o service worker já guarda todos para uso offline.
+const ArcanaGame = lazyScreen(() => import('./ArcanaGame'), 'ArcanaGame');
+const BlocksGame = lazyScreen(() => import('./BlocksGame'), 'BlocksGame');
+const PairsGame = lazyScreen(() => import('./PairsGame'), 'PairsGame');
+const StoryGame = lazyScreen(() => import('./StoryGame'), 'StoryGame');
+const WaveGame = lazyScreen(() => import('./WaveGame'), 'WaveGame');
 
 export const HOW_TO: Record<GameId, string> = {
   blocos:
@@ -88,11 +91,13 @@ export function GameView({
   const { repos } = useData();
   const words = useMemo(() => (locked ? NO_WORDS : personalWords(repos)), [repos, locked]);
   const symbols = useSymbols(repos);
-  if (id === 'blocos') return <BlocksGame durationMs={durationMs} tree={symbols} startLevel={startLevel} onFinish={onFinish} />;
-  if (id === 'pares') return <PairsGame onFinish={onFinish} signs={symbols ? OCCULT_SIGNS : undefined} />;
-  if (id === 'arcanos') return <ArcanaGame onFinish={onFinish} />;
-  if (id === 'noite') return <StoryGame personal={words.story} onFinish={onFinish} />;
-  return <WaveGame onFinish={onFinish} />;
+  return <Suspense fallback={<p className="muted" role="status">Abrindo o jogo…</p>}>
+    {id === 'blocos' ? <BlocksGame durationMs={durationMs} tree={symbols} startLevel={startLevel} onFinish={onFinish} />
+      : id === 'pares' ? <PairsGame onFinish={onFinish} signs={symbols ? OCCULT_SIGNS : undefined} />
+      : id === 'arcanos' ? <ArcanaGame onFinish={onFinish} />
+      : id === 'noite' ? <StoryGame personal={words.story} onFinish={onFinish} />
+      : <WaveGame onFinish={onFinish} />}
+  </Suspense>;
 }
 
 export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onBack: () => void }) {

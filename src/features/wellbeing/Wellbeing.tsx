@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useData } from '@/data/provider';
 import { addDays, toLocalDate } from '@/domain/dates';
 import { periodFor } from '@/domain/routine';
@@ -10,8 +10,10 @@ import { Icon } from '@/ui/icons';
 import { SkyScene } from '@/ui/illustrations';
 import { Screen } from '@/ui/Screen';
 import { saveWellbeingCheckin } from '@/domain/support';
-import { TrainingSession } from '../training/Training';
 import './wellbeing.css';
+import { lazyScreen } from '@/ui/lazy';
+
+const TrainingSession = lazyScreen(() => import('../training/Training'), 'TrainingSession');
 
 const MOODS = ['Muito pesado', 'Pesado', 'Mais ou menos', 'Um pouco melhor', 'Bem'];
 const QUICK_CARES = [
@@ -132,7 +134,7 @@ export function WellbeingSupport({ locked, onReturnToLock }: { locked: boolean; 
   ];
   const saferActions = actions.filter((action) => !harder.has(action.id));
   const visibleActions = (saferActions.length >= 3 ? saferActions : actions).slice(0, 3);
-  if (exercise) return <TrainingSession key={exercise} id={exercise} onBack={() => setExercise(null)} onDone={() => { setExercise(null); setReturned(true); }} onMore={() => setExercise(null)} finishLabel="Voltar à ajuda" />;
+  if (exercise) return <Suspense fallback={<main className="screen" role="status">Abrindo…</main>}><TrainingSession key={exercise} id={exercise} onBack={() => setExercise(null)} onDone={() => { setExercise(null); setReturned(true); }} onMore={() => setExercise(null)} finishLabel="Voltar à ajuda" /></Suspense>;
   return <main className="screen screen--tabs wellbeing-support">
     <span className="wellbeing-support__icon"><Icon id="aba_ajuda" /></span>
       <p className="eyebrow">Pausa agora</p><h1>Vamos cuidar deste momento.</h1>

@@ -1,25 +1,28 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useData } from './data/provider';
-import { GamesHub, PlayGame } from './features/games/Games';
 import { LockScreen } from './features/lock/LockScreen';
-import { Onboarding } from './features/onboarding/Onboarding';
-import { SosScreen } from './features/sos/SosScreen';
-import { TrainingList, TrainingSession } from './features/training/Training';
 import { GAME_IDS, type GameId } from './domain/progression';
 import { navigate, readRoute, type Route } from './router';
 import { TabBar } from './ui/TabBar';
+import { lazyScreen, preloadScreens } from './ui/lazy';
 import { supportFocus } from './domain/support';
 import { WellbeingHome, WellbeingJournal, WellbeingProgress, WellbeingSupport } from './features/wellbeing/Wellbeing';
 
 const RELOCK_AFTER_MS = 2 * 60 * 1000;
-const Lab = lazy(async () => ({ default: (await import('./features/lab/Lab')).Lab }));
-const Settings = lazy(async () => ({ default: (await import('./features/settings/Settings')).Settings }));
-const Sounds = lazy(async () => ({ default: (await import('./features/sounds/Sounds')).Sounds }));
-const Journal = lazy(async () => ({ default: (await import('./features/journal/Journal')).Journal }));
-const Routine = lazy(async () => ({ default: (await import('./features/routine/Routine')).Routine }));
-const StepScreen = lazy(async () => ({ default: (await import('./features/routine/StepScreen')).StepScreen }));
-const Untangle = lazy(async () => ({ default: (await import('./features/thinking/Untangle')).Untangle }));
-const UsedFlow = lazy(async () => ({ default: (await import('./features/used/UsedFlow')).UsedFlow }));
+const Lab = lazyScreen(() => import('./features/lab/Lab'), 'Lab');
+const Settings = lazyScreen(() => import('./features/settings/Settings'), 'Settings');
+const Sounds = lazyScreen(() => import('./features/sounds/Sounds'), 'Sounds');
+const Journal = lazyScreen(() => import('./features/journal/Journal'), 'Journal');
+const Routine = lazyScreen(() => import('./features/routine/Routine'), 'Routine');
+const StepScreen = lazyScreen(() => import('./features/routine/StepScreen'), 'StepScreen');
+const Untangle = lazyScreen(() => import('./features/thinking/Untangle'), 'Untangle');
+const GamesHub = lazyScreen(() => import('./features/games/Games'), 'GamesHub');
+const PlayGame = lazyScreen(() => import('./features/games/Games'), 'PlayGame');
+const Onboarding = lazyScreen(() => import('./features/onboarding/Onboarding'), 'Onboarding');
+const SosScreen = lazyScreen(() => import('./features/sos/SosScreen'), 'SosScreen');
+const TrainingList = lazyScreen(() => import('./features/training/Training'), 'TrainingList');
+const TrainingSession = lazyScreen(() => import('./features/training/Training'), 'TrainingSession');
+const UsedFlow = lazyScreen(() => import('./features/used/UsedFlow'), 'UsedFlow');
 
 /** Trancado ao abrir e de novo depois de 2 minutos fora do app. */
 function useLock(hasPin: boolean) {
@@ -38,6 +41,13 @@ function useLock(hasPin: boolean) {
 }
 
 export function App() {
+  useEffect(() => {
+    // Primeiro mostra a tela; depois, com o navegador livre, adianta as outras para abrirem na hora.
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 1500));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const handle = idle(() => { void preloadScreens(); });
+    return () => cancel(handle);
+  }, []);
   return (
     <Suspense fallback={<main className="screen" role="status">Abrindo…</main>}>
       <AppContent />
