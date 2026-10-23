@@ -37,6 +37,7 @@ export function PwaUpdate() {
 
   if (!waiting) return null;
   return <aside className="pwa-update" role="status"><span>Uma atualização está pronta.</span><button type="button" className="btn btn--ghost" disabled={updating} onClick={() => {
+    if (!window.confirm('Atualizar vai reabrir o app e encerrar atividades e textos que ainda não foram guardados. Atualizar agora?')) return;
     setUpdating(true);
     // controllerchange recarrega somente depois deste pedido explícito.
     reloadOnChange.current = true;
