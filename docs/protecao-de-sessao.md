@@ -5,8 +5,13 @@ essas cópias ao mesmo tempo: uma cópia antiga poderia substituir registros nov
 exclusão recente.
 
 Antes de abrir os registros, a entrada do aplicativo solicita uma Web Lock exclusiva para a mesma origem. A
-sessão mantém essa posse até a janela fechar ou a árvore do aplicativo desmontar. A próxima janela só cria seus
-repositórios depois de conseguir a posse, lendo então o estado atual. O modo demonstração usa apenas memória e
+sessão mantém essa posse até a janela fechar, a árvore do aplicativo desmontar ou outra janela assumir. A próxima
+janela só cria seus repositórios depois de conseguir a posse, lendo então o estado atual.
+
+Se a posse estiver com outra janela, a nova espera meio segundo (tempo de uma recarga liberar) e então assume com
+`steal`, desde que esteja visível. Isso evita que uma PWA ou aba esquecida em segundo plano no celular, ou um link
+de lembrete aberto em nova aba, trave o app. A janela anterior perde a posse, desmonta os registros antes de gravar
+de novo e mostra "Usar aqui", que recarrega e assume outra vez. O modo demonstração usa apenas memória e
 não disputa o acesso aos registros.
 
 Na janela que aguarda, a Pausa continua acessível por um botão. Ela usa repositórios temporários vazios: não lê
@@ -33,9 +38,10 @@ atividade atual e deixa a atualização disponível. Reflexões temporárias nã
 
 ## Validação
 
-- Duas janelas da mesma origem: só a primeira abre os registros; a segunda oferece Pausa temporária.
-- Salve uma carta ou ative PIN na primeira. Feche-a e confira que a segunda abre o estado novo sem apagá-lo.
-- Apague dados na primeira e feche-a: a segunda não deve trazer o conteúdo antigo de volta.
+- Duas janelas da mesma origem: a segunda assume os registros; a primeira sai da tela e oferece "Usar aqui".
+- Salve uma carta ou ative PIN na primeira. Abra a segunda e confira que ela mostra o estado novo sem apagá-lo.
+- Apague dados na primeira e abra a segunda: ela não deve trazer o conteúdo antigo de volta.
+- Uma janela aberta em segundo plano não toma a posse até ficar visível.
 - Repita com PWA instalada e aba do navegador, offline e após encerramento inesperado de uma janela.
 - Cancele restauração e atualização: nenhum dado deve mudar e nenhuma recarga deve ocorrer.
 - Erre a senha do backup, corrija e escolha o mesmo arquivo novamente.

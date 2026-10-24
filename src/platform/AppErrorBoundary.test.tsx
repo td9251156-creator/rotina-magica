@@ -15,3 +15,10 @@ it('mantém uma pausa estática disponível quando a aplicação falha', async (
   expect(screen.getByText(/três coisas que consegue ver/)).toBeInTheDocument();
   expect(window.location.hash).toBe('#sos');
 });
+
+it('oferece recarregar quando uma tela não baixa (versão nova publicada)', () => {
+  function Stale(): ReactNode { throw new TypeError('Failed to fetch dynamically imported module: ./assets/Games-x.js'); }
+  render(<AppErrorBoundary><Stale /></AppErrorBoundary>);
+  expect(screen.getByRole('button', { name: 'Recarregar o app' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Tentar novamente' })).not.toBeInTheDocument();
+});
