@@ -21,7 +21,7 @@ it('rotina para dormir: quarto, soltar o corpo e som que some sozinho', async ()
   const start = vi.spyOn(binaural, 'startBinaural').mockImplementation(() => {});
   const stop = vi.spyOn(binaural, 'stopBinaural').mockImplementation(() => {});
   const { repos, user } = setup();
-  await user.click(screen.getByRole('button', { name: /Rotina para dormir/ }));
+  await user.click(screen.getByRole('button', { name: /Preparar para dormir/ }));
   expect(await screen.findByRole('heading', { name: 'Rotina para dormir' })).toBeInTheDocument();
   const light = screen.getByRole('button', { name: 'Luz baixa ou apagada' });
   await user.click(light);
@@ -30,7 +30,7 @@ it('rotina para dormir: quarto, soltar o corpo e som que some sozinho', async ()
   await user.click(screen.getByRole('button', { name: 'Começar' }));
   expect(screen.getByText('Preparar o corpo para dormir')).toBeInTheDocument();
   while (!screen.queryByRole('button', { name: 'Seguir para o som' })) {
-    await user.click(screen.getByRole('button', { name: /^(Continuar|Pular|Concluir)$/ }));
+    await user.click(screen.getByRole('button', { name: /^(Continuar|Pular a pausa|Concluir)$/ }));
   }
   expect(repos.practices.list().map((p) => p.techniqueId)).toContain('preparar_sono');
   await user.click(screen.getByRole('button', { name: 'Seguir para o som' }));

@@ -101,7 +101,10 @@ function AppContent() {
     return route.param ? (
       <TrainingSession key={route.param} id={route.param} onDone={home} onMore={() => navigate('treino')} onBack={() => navigate('treino')} />
     ) : (
-      <TrainingList onOpen={(id) => navigate('treino', id)} onBack={home} />
+      <>
+        <TrainingList onOpen={(id) => navigate('treino', id)} />
+        <TabBar current="treino" />
+      </>
     );
   if (route.name === 'jogos')
     return route.param && (GAME_IDS as readonly string[]).includes(route.param) ? (

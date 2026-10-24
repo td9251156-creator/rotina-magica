@@ -5,11 +5,15 @@ import { careForMood, careWeek, isBedtime, MOODS } from './wellbeing-home';
 describe('cuidado pelo humor', () => {
   it('sugere uma vivência geral existente para cada humor', () => {
     const general = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
-    MOODS.forEach((_, i) => {
+    MOODS.slice(0, 4).forEach((_, i) => {
       const care = careForMood(i + 1);
-      expect(general.has(care.techniqueId)).toBe(true);
-      expect(findTechnique(care.techniqueId)).toBeDefined();
+      expect(care.techniqueId && general.has(care.techniqueId)).toBe(true);
+      expect(findTechnique(care.techniqueId!)).toBeDefined();
     });
+  });
+
+  it('num dia muito bom, convida a guardar o que ajudou no Diário', () => {
+    expect(careForMood(5).techniqueId).toBeNull();
   });
 });
 

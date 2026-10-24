@@ -406,7 +406,7 @@ describe('terapias e vivências', () => {
     await user.click(screen.getByRole('button', { name: 'Eu mereço depois do dia que tive' }));
     await user.type(screen.getByRole('textbox'), 'Lá vem o "eu mereço"');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.click(screen.getByRole('button', { name: 'Pular' }));
+    await user.click(screen.getByRole('button', { name: 'Pular a pausa' }));
     await user.click(screen.getByRole('button', { name: 'Concluir' }));
     expect(repos.plan.list('resposta')[0]).toMatchObject({ text: 'Lá vem o "eu mereço"', extra: { thought: 'Eu mereço depois do dia que tive' } });
   });
@@ -425,7 +425,7 @@ describe('terapias e vivências', () => {
   it('a frase gentil fica guardada para os dias difíceis', async () => {
     const { repos, user } = open('#treino/amigo');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.click(screen.getByRole('button', { name: 'Pular' }));
+    await user.click(screen.getByRole('button', { name: 'Pular a pausa' }));
     await user.type(screen.getByRole('textbox'), 'Amanhã eu recomeço.');
     await user.click(screen.getByRole('button', { name: 'Concluir' }));
     expect(repos.plan.list('gentileza').map((i) => i.text)).toEqual(['Amanhã eu recomeço.']);

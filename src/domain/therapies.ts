@@ -105,26 +105,26 @@ export const APPROACHES: readonly Approach[] = [
 /** Autocuidado inspirado nessas abordagens; não equivale a oferecer psicoterapia pelo app. */
 export const GENERAL_APPROACHES: readonly Approach[] = [
   {
-    id: 'presenca', title: 'Acalmar e se orientar', name: 'Atenção ao presente e ao corpo',
-    what: 'Notar o ambiente e encontrar um pouco mais de conforto, no seu ritmo.',
+    id: 'presenca', title: 'Acalmar o corpo', name: 'Atenção ao presente e ao corpo',
+    what: 'Para quando o corpo está tenso ou agitado.',
     evidence: 'Práticas de atenção ao presente e orientação pelos sentidos. A resposta varia; você pode adaptar ou parar se não estiver confortável.',
     items: [t('ancorar_sentidos'), t('pausa_corpo'), t('preparar_sono'), { kind: 'atalho', route: 'dormir', title: 'Rotina para dormir', why: 'Preparar o quarto, soltar o corpo e deixar um som que some sozinho.' }, { kind: 'atalho', route: 'sons', title: 'Sons para relaxar', why: 'Uma opção de som, se isso for agradável para você.' }],
   },
   {
-    id: 'acolhimento', title: 'Acolher o que estou sentindo', name: 'Autocompaixão e aceitação',
-    what: 'Encontrar palavras gentis sem exigir que a tristeza ou o cansaço desapareçam.',
+    id: 'acolhimento', title: 'Atravessar um dia pesado', name: 'Autocompaixão e aceitação',
+    what: 'Palavras mais gentis e um fechamento sem cobrança.',
     evidence: 'Exercícios inspirados em autocompaixão e aceitação. São recursos de autocuidado, sem promessa de tratar um diagnóstico.',
     items: [t('acolher_momento'), t('revisao_gentil')],
   },
   {
-    id: 'clareza', title: 'Dar espaço e escolher um passo', name: 'TCC e terapia de aceitação e compromisso',
-    what: 'Observar pensamentos e diminuir o tamanho da próxima ação.',
+    id: 'clareza', title: 'Organizar a cabeça', name: 'TCC e terapia de aceitação e compromisso',
+    what: 'Para quando os pensamentos ocupam espaço demais.',
     evidence: 'Inspiração no registro de pensamentos da TCC e na desfusão da ACT. Um exercício breve não substitui o acompanhamento de um profissional.',
     items: [t('pensamento_distante'), t('proximo_passo'), { kind: 'atalho', route: 'pensamento', title: 'Desatar um pensamento', why: 'Olhar para corpo, emoção, pensamento e uma resposta mais justa.' }],
   },
   {
-    id: 'conexao', title: 'Buscar apoio e respeitar limites', name: 'Rede de apoio e comunicação',
-    what: 'Pedir companhia e cuidar dos seus limites com pessoas de confiança.',
+    id: 'conexao', title: 'Buscar apoio', name: 'Rede de apoio e comunicação',
+    what: 'Preparar um pedido e proteger seus limites.',
     evidence: 'Práticas de comunicação e construção de apoio. Procure relações seguras; conversar com alguém da família nem sempre é a melhor opção.',
     items: [t('pedir_apoio'), t('limites_cuidado')],
   },

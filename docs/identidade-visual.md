@@ -4,6 +4,29 @@ A marca usa um sol nascente e um caminho dourado que chega ao horizonte. A estre
 o sol e o caminho precisam continuar reconhecíveis quando o ícone é pequeno. Azul noturno, dourado e creme preservam
 a identidade discreta do app, sem imagens que revelem seu uso.
 
+## Identidade das telas (2026-10-24)
+
+Hoje, Diário, Pausa agora e Vivências seguem um protótipo de design entregue pelo autor. Três princípios:
+
+1. **Uma coisa por vez.** Cada tela começa com uma pergunta ou ação grande; o resto vem depois, com menos peso.
+2. **Ajuda no mesmo lugar.** "Pausa agora" fica no centro da barra (Hoje, Diário, Pausa, Vivências, Ajustes),
+   sempre com a mesma cor (`--sos-fill`). As cores `--sos*` só aparecem na pausa.
+3. **Luz sem cobrança.** Dourado (`--accent`) marca só o que se toca e o sol. Nunca nota ou falha; dias sem registro
+   são neutros (`--line`), sem vermelho.
+
+- **Tokens** no topo de `src/ui/styles.css`: cores (`--sos-fill`, `--sos-soft`, `--line`, `--idle`, `--sel`, `--nav`),
+  tipografia em `rem` (`--t-display` 34, `--t-title` 20, `--t-card` 16, `--t-quote` 17 itálico, `--t-body` 16,
+  `--t-small` 13, o mínimo), cantos `--r-sm/md/lg/pill` e `--tap` (alvo de toque de 48 px).
+- **Literata** (SIL OFL 1.1) para títulos e frases da pessoa; o resto usa a fonte do sistema. Os arquivos ficam em
+  `src/ui/fonts/` (latin 400, 600 e 400 itálico) e entram no build; o service worker os guarda pelo manifesto de
+  assets, então o app abre igual sem internet. Nada vem do Google Fonts (a CSP só aceita `font-src 'self'`).
+- **Humor como sol nascendo** (`.mood-list` + `<span class="sun" style="--i:n">`): a mesma lista no início e no
+  Diário. Ninguém escolhe "o sol baixo" como nota; é só a hora do dia. "Sua semana" usa o mesmo sol, acima do
+  horizonte nos dias com cuidado.
+- **Vivência**: fechar de 48 px, progresso em segmentos, anel da pausa com o sol no centro (em `pausa_corpo` e
+  `preparar_sono` o sol cresce e diminui a cada 4 s, parado com "reduzir movimento"), destino de cada campo escrito
+  (kit, Diário ou "não fica guardado"), folha "Sair por agora?" e o sol nascendo no fim.
+
 ## Arquivos e usos
 
 | Arquivo | Uso |

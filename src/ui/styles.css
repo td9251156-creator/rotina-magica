@@ -1,5 +1,11 @@
+/* Literata (SIL OFL 1.1, src/ui/fonts/OFL.txt): títulos e frases da pessoa iguais no Android e no iPhone, guardada para abrir sem internet. */
+@font-face { font-family: 'Literata'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/literata-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Literata'; font-style: normal; font-weight: 600; font-display: swap; src: url('./fonts/literata-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Literata'; font-style: italic; font-weight: 400; font-display: swap; src: url('./fonts/literata-latin-400-italic.woff2') format('woff2'); }
+/* Identidade revisada (docs/identidade-visual.md): paleta "Noite" do Lições do Dia no escuro e papel quente no claro.
+   --sos* só na pausa; dourado (--accent) só no que se toca e no sol. */
 :root {
-  /* Paleta "Noite" do Lições do Dia / Templo (td9251156-creator/licoes-do-dia, docs/templo/templo.css) */
+  color-scheme: dark;
   --bg: #0e1017;
   --surface: #161922;
   --raised: #1d212d;
@@ -9,70 +15,58 @@
   --accent: #c9a45c;
   --accent-text: #1a1610;
   --focus: #8ab4ff;
-  --sos: #e8705a;
+  --sos: #f0957f;          /* texto/ícone da pausa */
+  --sos-fill: #e8705a;     /* botão central da barra */
   --sos-text: #1a0e08;
+  --sos-soft: rgb(232 112 90 / 0.14);
   --ok: #67bb80;
   --calm: #6aa5ec;
   --danger: #f2a0a0;
   --border: #2a2f3c;
-  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Noto Serif', Georgia, serif;
-  --ceu:
-        radial-gradient(ellipse 120% 50% at 50% -8%, rgb(201 164 92 / 0.10), transparent 70%),
-        radial-gradient(1px 1px at 12% 18%, rgb(241 230 207 / 0.55), transparent 100%),
-        radial-gradient(1px 1px at 27% 62%, rgb(241 230 207 / 0.35), transparent 100%),
-        radial-gradient(1.5px 1.5px at 43% 9%, rgb(201 164 92 / 0.6), transparent 100%),
-        radial-gradient(1px 1px at 58% 41%, rgb(241 230 207 / 0.3), transparent 100%),
-        radial-gradient(1px 1px at 71% 15%, rgb(241 230 207 / 0.5), transparent 100%),
-        radial-gradient(1.5px 1.5px at 86% 33%, rgb(201 164 92 / 0.5), transparent 100%),
-        radial-gradient(1px 1px at 93% 72%, rgb(241 230 207 / 0.35), transparent 100%),
-        radial-gradient(1px 1px at 8% 84%, rgb(241 230 207 / 0.3), transparent 100%),
-        radial-gradient(1px 1px at 35% 90%, rgb(201 164 92 / 0.35), transparent 100%),
-        radial-gradient(1px 1px at 64% 80%, rgb(241 230 207 / 0.3), transparent 100%),
-        radial-gradient(1.5px 1.5px at 79% 55%, rgb(241 230 207 / 0.25), transparent 100%),
-        radial-gradient(1px 1px at 19% 40%, rgb(201 164 92 / 0.3), transparent 100%);
-  color-scheme: dark;
+  --line: #3a3f4d;         /* horizonte do sol do humor */
+  --idle: #232836;         /* barras e botões inativos */
+  --sel: rgb(201 164 92 / 0.12);
+  --nav: rgb(18 21 29 / 0.95);
+  --ceu: radial-gradient(ellipse 90% 60% at 75% 0%, rgb(201 164 92 / 0.16), transparent 70%);
+
+  --serif: 'Literata', 'Iowan Old Style', Palatino, Georgia, serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* tipografia: rem para respeitar o tamanho de fonte do aparelho */
+  --t-display: 400 2.125rem/1.15 var(--serif);   /* 34 — h1 de cada tela */
+  --t-title: 600 1.25rem/1.25 var(--serif);      /* 20 — h2 */
+  --t-card: 600 1rem/1.3 var(--serif);           /* 16 — título de cartão */
+  --t-quote: italic 400 1.0625rem/1.5 var(--serif); /* 17 — frases da pessoa */
+  --t-body: 400 1rem/1.55 var(--sans);           /* 16 */
+  --t-small: 400 0.8125rem/1.5 var(--sans);      /* 13 — mínimo */
+
+  --r-sm: 12px; --r-md: 16px; --r-lg: 20px; --r-pill: 999px;
+  --tap: 48px;
 }
-/* Claro (papel quente do Lições do Dia): segue o celular, a não ser que a pessoa escolha em Ajustes. */
+
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: #f3efe6;
-    --surface: #fbf8f2;
-    --raised: #efe9dc;
-    --text: #24252c;
-    --title: #1c1d23;
-    --muted: #5c5e69;
-    --accent: #7a5c22;
-    --accent-text: #fffaf0;
-    --focus: #1f5fae;
-    --sos: #b0392a;
-    --sos-text: #fffaf0;
-    --ok: #2d7a46;
-    --calm: #2d63ad;
-    --danger: #a23a3a;
-    --border: #dcd5c6;
-    --ceu: radial-gradient(ellipse 120% 50% at 50% -8%, rgb(122 92 34 / 0.08), transparent 70%);
     color-scheme: light;
+    --bg: #f3efe6; --surface: #fbf8f2; --raised: #efe9dc;
+    --text: #24252c; --title: #1c1d23; --muted: #5c5e69;
+    --accent: #7a5c22; --accent-text: #fffaf0; --focus: #1f5fae;
+    --sos: #b0392a; --sos-fill: #b0392a; --sos-text: #fffaf0; --sos-soft: rgb(176 57 42 / 0.10);
+    --ok: #2d7a46; --calm: #2d63ad; --danger: #a23a3a;
+    --border: #e3dccd; --line: #d6ccb6; --idle: #e6dfd0; --sel: #f4e8cc; --nav: rgb(251 248 242 / 0.95);
+    --ceu: radial-gradient(ellipse 90% 60% at 75% 0%, rgb(201 164 92 / 0.22), transparent 70%);
   }
 }
 :root[data-theme='light'] {
-  --bg: #f3efe6;
-  --surface: #fbf8f2;
-  --raised: #efe9dc;
-  --text: #24252c;
-  --title: #1c1d23;
-  --muted: #5c5e69;
-  --accent: #7a5c22;
-  --accent-text: #fffaf0;
-  --focus: #1f5fae;
-  --sos: #b0392a;
-  --sos-text: #fffaf0;
-  --ok: #2d7a46;
-  --calm: #2d63ad;
-  --danger: #a23a3a;
-  --border: #dcd5c6;
-  --ceu: radial-gradient(ellipse 120% 50% at 50% -8%, rgb(122 92 34 / 0.08), transparent 70%);
   color-scheme: light;
+  --bg: #f3efe6; --surface: #fbf8f2; --raised: #efe9dc;
+  --text: #24252c; --title: #1c1d23; --muted: #5c5e69;
+  --accent: #7a5c22; --accent-text: #fffaf0; --focus: #1f5fae;
+  --sos: #b0392a; --sos-fill: #b0392a; --sos-text: #fffaf0; --sos-soft: rgb(176 57 42 / 0.10);
+  --ok: #2d7a46; --calm: #2d63ad; --danger: #a23a3a;
+    --border: #e3dccd; --line: #d6ccb6; --idle: #e6dfd0; --sel: #f4e8cc; --nav: rgb(251 248 242 / 0.95);
+  --ceu: radial-gradient(ellipse 90% 60% at 75% 0%, rgb(201 164 92 / 0.22), transparent 70%);
 }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
 body {
@@ -111,7 +105,7 @@ p { margin: 0.4rem 0; }
   min-height: 44px;
   cursor: pointer;
 }
-.chip--on { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.chip--on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
 .field { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.9rem; }
 input, textarea {
   background: var(--surface);
@@ -128,17 +122,17 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visib
 .actions .btn { flex: 1; }
 .btn {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--accent-text);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
   min-height: 52px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
-.btn:disabled { opacity: 0.4; }
-.btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; }
-.link { background: none; border: 0; color: var(--accent); padding: 8px 0; cursor: pointer; align-self: flex-start; }
+.btn:disabled { background: var(--idle); color: var(--muted); cursor: default; }
+.btn--ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+.link { background: none; border: 0; color: var(--accent); font-weight: 600; padding: 8px 0; min-height: var(--tap); cursor: pointer; align-self: flex-start; }
 .link.center { align-self: center; }
 .card {
   background: var(--surface);
@@ -165,7 +159,7 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visib
 }
 .option--on { border-color: var(--accent); }
 .sos {
-  background: var(--sos);
+  background: var(--sos-fill);
   color: var(--sos-text);
   border: 0;
   border-radius: 20px;
@@ -408,7 +402,7 @@ h1, h2 { color: var(--title); }
 .next__row { display: flex; align-items: center; gap: 12px; }
 .period__head { width: 100%; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-align: left; min-height: 44px; }
 .period:not(.period--now) { background: var(--surface); border: 1px solid var(--border); padding: 4px 12px; }
-.sos { background: var(--sos); color: var(--sos-text); }
+.sos { background: var(--sos-fill); color: var(--sos-text); }
 .sos__main { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .sos__main svg { width: 28px; height: 28px; }
 .item--done .item__check { background: var(--ok); border-color: var(--ok); }
@@ -715,3 +709,31 @@ h1, h2 { color: var(--title); }
 @media (prefers-reduced-motion: reduce) {
   .sky__stars circle, .sky__glow, .sky__cloud, .sky__window, .sound-art__wave, .sprout { animation: none; }
 }
+
+/* ---- Identidade revisada (docs/identidade-visual.md) ---- */
+h1 { font: var(--t-display); letter-spacing: -0.01em; }
+h2 { font: var(--t-title); }
+.screen > h1 { margin: 0.25rem 0 0.25rem; }
+.card { border-radius: var(--r-md); }
+.chip { min-height: var(--tap); }
+.link { text-align: left; }
+.link.center { text-align: center; }
+
+/* Barra: cinco itens, a pausa no centro, sempre no mesmo lugar e com a mesma cor */
+.tabbar { display: grid; grid-template-columns: repeat(2, minmax(0, 120px)) minmax(0, 150px) repeat(2, minmax(0, 120px)); justify-content: center; align-items: end; background: var(--nav); backdrop-filter: blur(12px); padding: 6px 4px max(8px, env(safe-area-inset-bottom)); }
+.tabbar__item { max-width: none; min-width: 0; white-space: nowrap; min-height: 56px; justify-content: flex-end; gap: 4px; font-size: 0.75rem; font-weight: 500; padding: 4px 0 2px; }
+.tabbar__item .tabbar__icon { width: 52px; height: 30px; border-radius: 15px; }
+.tabbar__item.on { color: var(--title); font-weight: 600; }
+.tabbar__item.on .tabbar__icon { background: var(--sel); color: var(--accent); }
+.tabbar__item--sos, .tabbar__item--sos.on { color: var(--sos); font-weight: 600; }
+@media (max-width: 350px) { .tabbar__item { font-size: 0.6875rem; } }
+.tabbar__item--sos .tabbar__icon, .tabbar__item--sos.on .tabbar__icon { width: 56px; height: 56px; border-radius: 28px; margin-top: -22px; background: var(--sos-fill); color: var(--sos-text); box-shadow: 0 0 0 5px var(--bg); }
+.tabbar__item--sos .tabbar__icon svg { width: 26px; height: 26px; }
+
+/* Humor: o sol nasce no horizonte. Ninguém escolhe "o sol baixo" como nota: é só a hora do dia. */
+.mood-list { display: grid; gap: 8px; }
+.mood-list button { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 0 16px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--text); font: var(--t-body); text-align: left; cursor: pointer; }
+.mood-list button[aria-pressed='true'] { border: 2px solid var(--accent); padding: 0 15px; background: var(--sel); font-weight: 600; }
+.sun { position: relative; flex: none; width: 34px; height: 22px; overflow: hidden; border-bottom: 2px solid var(--line); }
+.sun::before { content: ''; position: absolute; left: 8px; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #f6dc9b, #c9a45c 70%); bottom: calc(-15px + var(--i, 0) * 4.25px); }
+@media (prefers-reduced-motion: no-preference) { .sun::before { transition: bottom .5s ease; } }
