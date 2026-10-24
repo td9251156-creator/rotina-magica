@@ -68,3 +68,29 @@
 }
 
 .wellbeing-home .tool--wide { grid-column: 1 / -1; }
+
+/* Check-in de um toque na tela inicial */
+.mood-picker { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.mood-picker__option { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 84px; padding: 10px 4px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); font-size: .74rem; line-height: 1.25; text-align: center; cursor: pointer; }
+.mood-picker__option[aria-pressed='true'] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); font-weight: 600; }
+.mood-picker__dot { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); }
+.mood-picker__option--1 .mood-picker__dot { opacity: .3; transform: scale(.7); }
+.mood-picker__option--2 .mood-picker__dot { opacity: .45; transform: scale(.8); }
+.mood-picker__option--3 .mood-picker__dot { opacity: .6; transform: scale(.9); }
+.mood-picker__option--4 .mood-picker__dot { opacity: .8; }
+.mood-picker__option--5 .mood-picker__dot { box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent); }
+.mood-care { margin-top: 12px; gap: 10px; }
+.mood-care p { margin: 0; }
+.mood-care .btn { width: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  .mood-care { animation: mood-care-in .25s ease-out; }
+}
+@keyframes mood-care-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* Sua semana */
+.care-week h2 { margin: 0 0 6px; }
+.care-week__days { list-style: none; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 6px 0 4px; padding: 0; }
+.care-week__days li { display: grid; place-items: center; aspect-ratio: 1; max-width: 44px; justify-self: center; width: 100%; border-radius: 50%; border: 1px dashed var(--border); color: var(--muted); font-size: .78rem; }
+.care-week__days li.is-cared { border: 0; background: var(--accent); color: var(--accent-text, #fff); font-weight: 600; }
+.care-week__days li:last-child { outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
+@media (max-width: 350px) { .mood-picker { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

@@ -10,12 +10,12 @@ import { Icon } from '@/ui/icons';
 import { SkyScene } from '@/ui/illustrations';
 import { Screen } from '@/ui/Screen';
 import { saveWellbeingCheckin } from '@/domain/support';
+import { careForMood, careWeek, isBedtime, MOODS } from '@/domain/wellbeing-home';
 import './wellbeing.css';
 import { lazyScreen } from '@/ui/lazy';
 
 const TrainingSession = lazyScreen(() => import('../training/Training'), 'TrainingSession');
 
-const MOODS = ['Muito pesado', 'Pesado', 'Mais ou menos', 'Um pouco melhor', 'Bem'];
 const QUICK_CARES = [
   { id: 'pausa_corpo', icon: 'passo_respirar' as const, title: 'Acalmar o corpo', detail: 'Uma pausa sem pressa' },
   { id: 'pensamento_distante', icon: 'ferr_pensamento' as const, title: 'Cabeça cheia', detail: 'Dar espaço aos pensamentos' },
@@ -23,6 +23,64 @@ const QUICK_CARES = [
   { id: 'proximo_passo', icon: 'feito' as const, title: 'Uma coisa de cada vez', detail: 'Escolher só o próximo passo' },
   { id: 'acolher_momento', icon: 'ter_aceitacao' as const, title: 'Dia pesado', detail: 'Encontrar palavras menos duras' },
 ];
+
+const WEEKDAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+const WEEKDAY_NAMES = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+
+/** Check-in de um toque: guarda o humor do dia e oferece um cuidado que combina com ele. */
+function MoodCheckin({ today }: { today: string }) {
+  const { repos, write } = useData();
+  const saved = repos.checkins.getByDate(today);
+  const mood = saved?.mood ?? null;
+  const [answered, setAnswered] = useState(false);
+  const care = mood !== null ? careForMood(mood) : null;
+  const technique = care ? findTechnique(care.techniqueId) : undefined;
+  const choose = (value: number) => {
+    write((r) => saveWellbeingCheckin(r, today, { mood: value, stress: saved?.stress ?? null, note: saved?.note ?? null }));
+    setAnswered(true);
+  };
+  return (
+    <section className="wellbeing-welcome" aria-labelledby="como-esta">
+      <h2 id="como-esta">Como está sendo para você?</h2>
+      <p className="muted">Um toque basta. Fica só neste aparelho e ajuda a escolher um cuidado.</p>
+      <div className="mood-picker" role="group" aria-label="Como está seu dia">
+        {MOODS.map((label, i) => <button key={label} type="button" className={`mood-picker__option mood-picker__option--${i + 1}`} aria-pressed={mood === i + 1} onClick={() => choose(i + 1)}><span className="mood-picker__dot" aria-hidden="true" />{label}</button>)}
+      </div>
+      {care && technique && (
+        <div className="card mood-care" role={answered ? 'status' : undefined}>
+          <p>{care.message}</p>
+          <button type="button" className="btn" onClick={() => navigate('treino', technique.id)}>{technique.title} · cerca de {techniqueMinutes(technique)} min</button>
+          <button type="button" className="link" onClick={() => navigate('diario')}>Escrever mais no diário →</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** Os últimos sete dias com algum cuidado. Sem sequência: um dia vazio não apaga os outros. */
+function CareWeek({ today }: { today: string }) {
+  const { repos } = useData();
+  const generalIds = new Set(GENERAL_TECHNIQUES.map((t) => t.id));
+  const dates = [
+    ...repos.practices.list().filter((p) => generalIds.has(p.techniqueId)).map((p) => p.date),
+    ...repos.checkins.listBetween(addDays(today, -6), today).filter((c) => c.mood !== null || c.stress !== null || c.note).map((c) => c.date),
+  ];
+  const week = careWeek(today, dates);
+  const count = week.filter((d) => d.cared).length;
+  return (
+    <section className="card care-week" aria-labelledby="sua-semana">
+      <h2 id="sua-semana">Sua semana</h2>
+      <ol className="care-week__days">
+        {week.map((d) => {
+          const day = new Date(`${d.date}T12:00:00`).getDay();
+          return <li key={d.date} className={d.cared ? 'is-cared' : ''} aria-label={`${WEEKDAY_NAMES[day]}${d.date === today ? ' (hoje)' : ''}: ${d.cared ? 'teve cuidado' : 'sem registro'}`}><span aria-hidden="true">{WEEKDAYS[day]}</span></li>;
+        })}
+      </ol>
+      <p className="small muted">{count === 0 ? 'Nenhum cuidado registrado nesta semana ainda. Tudo bem começar por um toque.' : `${count} ${count === 1 ? 'dia' : 'dias'} com algum cuidado nos últimos 7. Não há sequência para manter: cada dia conta por si.`}</p>
+      <button type="button" className="link" onClick={() => navigate('lab')}>Ver meus cuidados ao longo do tempo →</button>
+    </section>
+  );
+}
 
 export function WellbeingHome() {
   const { repos } = useData();
@@ -46,27 +104,29 @@ export function WellbeingHome() {
           <p className="tagline">Companhia e pequenos passos para atravessar dias difíceis.</p>
         </div></div>
       </header>
-      <section className="wellbeing-welcome">
-        <h2>Como está sendo para você?</h2>
-        <p className="muted">Você não precisa resolver tudo agora. Escolha um cuidado que caiba neste momento.</p>
-      </section>
       <button type="button" className="btn wellbeing-help" onClick={() => navigate('sos')}><Icon id="aba_ajuda" />Preciso de uma pausa agora</button>
-      <section className="wellbeing-quick" aria-label="Escolha um cuidado">
+      <MoodCheckin today={today} />
+      {/* Depois do check-in, o cuidado sugerido pelo humor substitui os atalhos. */}
+      {checkin?.mood == null && <section className="wellbeing-quick" aria-label="Escolha um cuidado">
         {visibleCares.map((care) => <button key={care.id} type="button" onClick={() => navigate('treino', care.id)}><Icon id={care.icon} /><strong>{care.title}</strong><span>{care.detail}</span></button>)}
-      </section>
-      <button type="button" className="next wellbeing-suggestion" onClick={() => navigate('treino', suggestion.id)}>
-        <span className="eyebrow">Um convite para hoje · cerca de {techniqueMinutes(suggestion)} min</span>
-        <strong>{suggestion.title}</strong><span className="muted small">{suggestion.why}</span>
-      </button>
+      </section>}
+      {isBedtime(new Date()) ? (
+        <button type="button" className="next wellbeing-suggestion" onClick={() => navigate('dormir')}>
+          <span className="eyebrow">Um convite para esta noite · cerca de 5 min</span>
+          <strong>Rotina para dormir</strong><span className="muted small">Preparar o quarto, soltar o corpo e deixar um som que some sozinho.</span>
+        </button>
+      ) : (
+        <button type="button" className="next wellbeing-suggestion" onClick={() => navigate('treino', suggestion.id)}>
+          <span className="eyebrow">Um convite para hoje · cerca de {techniqueMinutes(suggestion)} min</span>
+          <strong>{suggestion.title}</strong><span className="muted small">{suggestion.why}</span>
+        </button>
+      )}
       {personalPlan[0]?.extra?.firstStep != null && <section className="card"><p className="eyebrow">Uma ideia sua para hoje</p><p>{String(personalPlan[0].extra.firstStep)}</p><p className="small muted">Se couber, experimente. Você pode adaptar ou deixar para outro dia.</p></section>}
       <button type="button" className="wellbeing-checkin" onClick={() => navigate('diario')}>
         <span className="item__icon"><Icon id="aba_diario" /></span>
         <span><strong>{checkin?.note || checkin?.stress != null || checkin?.mood != null ? 'Seu registro de hoje' : 'Um espaço para você'}</strong><span className="muted small">Anote como está, sem dar uma nota para o seu valor.</span></span><Icon id="seta" />
       </button>
-      <section className="card">
-        <h2>No seu tempo</h2><p className="small muted">Não há obrigação de manter uma sequência nem de estar melhor ao terminar. Descansar e pedir ajuda também contam.</p>
-        <button type="button" className="link" onClick={() => navigate('lab')}>Ver meus cuidados ao longo do tempo →</button>
-      </section>
+      <CareWeek today={today} />
       <div className="tools">
         <button type="button" className="tool tool--wide" onClick={() => navigate('dormir')}><span className="item__icon"><Icon id="passo_fechar" /></span><strong>Rotina para dormir</strong><span className="muted small">Desacelerar antes de deitar</span></button>
         <button type="button" className="tool" onClick={() => navigate('treino')}><span className="item__icon"><Icon id="ferr_vivencias" /></span><strong>Vivências guiadas</strong><span className="muted small">Escolha pelo que precisa agora</span></button>
