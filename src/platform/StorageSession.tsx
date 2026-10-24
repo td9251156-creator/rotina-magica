@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { DataProvider } from '@/data/provider';
 import { createLocalRepositories, STORAGE_KEY } from '@/data/repositories/local';
 import { WellbeingSupport } from '@/features/wellbeing/Wellbeing';
+import { newId } from './ids';
 
 // Uma janela mantém a posse durante a sessão. A janela aberta por último assume os registros.
 export const STORAGE_SESSION_LOCK = `${STORAGE_KEY}:sessao`;
@@ -13,7 +14,7 @@ type Status = 'waiting' | 'active' | 'taken' | 'changed' | 'unavailable';
 function TemporaryPause({ onBack }: { onBack: () => void }) {
   const [repos] = useState(() => createLocalRepositories({
     storage: { getItem: () => null, setItem: () => {} },
-    newId: () => crypto.randomUUID(), now: () => new Date(),
+    newId, now: () => new Date(),
   }));
   return <DataProvider repos={repos}>
     <p className="storage-warning" role="status">Esta pausa não acessa seus registros e não salva respostas.</p>
@@ -46,7 +47,14 @@ export function StorageSession({ children, bypass = false, graceMs = GRACE_MS }:
 
   useEffect(() => {
     if (bypass) return;
-    if (!navigator.locks?.request) { setStatus('unavailable'); return; }
+    if (!navigator.locks?.request) {
+      // Sem Web Locks (navegador antigo ou página sem HTTPS) não há como coordenar janelas. Abrir os registros
+      // é melhor que travar o app; uma gravação de outra janela ainda tira esta da tela.
+      const changed = (event: StorageEvent) => { if (event.key === STORAGE_KEY || event.key === null) setStatus('changed'); };
+      window.addEventListener('storage', changed);
+      setStatus('active');
+      return () => window.removeEventListener('storage', changed);
+    }
     let disposed = false;
     let active = false;
     let release = () => {};

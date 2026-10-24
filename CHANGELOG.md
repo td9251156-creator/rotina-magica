@@ -13,6 +13,11 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 
 ### Corrigido
 
+- O app abre mesmo quando o endereço chega por http:// (domínio próprio sem HTTPS forçado): a página troca
+  para https:// antes de abrir os dados e, se isso não for possível, abre os registros sem a coordenação entre
+  janelas em vez de mostrar "Não foi possível abrir seus registros". PIN e backup avisam quando o endereço não
+  permite a criptografia.
+- O aviso "Uma atualização está pronta" aparece em qualquer tela, inclusive enquanto outra janela usa os registros.
 - O app não fica mais preso em "Use uma aba por vez" quando uma janela antiga (PWA em segundo plano, aba esquecida
   ou link de lembrete da agenda) segura os registros: a janela que a pessoa está vendo assume, e a anterior mostra
   "Usar aqui" sem gravar mais nada.

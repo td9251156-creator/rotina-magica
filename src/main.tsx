@@ -8,19 +8,24 @@ import { AppErrorBoundary } from './platform/AppErrorBoundary';
 import { StorageSession } from './platform/StorageSession';
 import './ui/styles.css';
 
+// Sem HTTPS o navegador desliga o que o app precisa (modo offline, PIN, backup, proteção entre janelas).
+// Um domínio que redireciona para http:// cai aqui: troca para https:// antes de abrir qualquer dado.
+const local = /^(localhost|127\.|\[::1\]|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(window.location.hostname);
+const toHttps = window.location.protocol === 'http:' && !local;
+if (toHttps) window.location.replace(`https://${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`);
+
 // `?demo`: dados de exemplo só na memória. Os dados reais do celular nem são lidos.
 const demo = isDemo(window.location.search);
 
-createRoot(document.getElementById('root')!).render(
+if (!toHttps) createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppErrorBoundary><StorageSession bypass={demo}><DataProvider repos={demo ? createDemoRepositories() : undefined}>
+    <AppErrorBoundary><PwaUpdate /><StorageSession bypass={demo}><DataProvider repos={demo ? createDemoRepositories() : undefined}>
       {demo && (
         <div className="demo-bar" role="status">
           <span>Demonstração com dados de exemplo. Nada é salvo.</span>
           <a href={window.location.pathname}>Sair</a>
         </div>
       )}
-      <PwaUpdate />
       <App />
     </DataProvider></StorageSession></AppErrorBoundary>
   </StrictMode>,
