@@ -22,6 +22,7 @@ const Onboarding = lazyScreen(() => import('./features/onboarding/Onboarding'), 
 const SosScreen = lazyScreen(() => import('./features/sos/SosScreen'), 'SosScreen');
 const TrainingList = lazyScreen(() => import('./features/training/Training'), 'TrainingList');
 const TrainingSession = lazyScreen(() => import('./features/training/Training'), 'TrainingSession');
+const Sleep = lazyScreen(() => import('./features/sleep/Sleep'), 'Sleep');
 const UsedFlow = lazyScreen(() => import('./features/used/UsedFlow'), 'UsedFlow');
 
 /** Trancado ao abrir e de novo depois de 2 minutos fora do app. */
@@ -110,6 +111,7 @@ function AppContent() {
     );
   if (route.name === 'lab') return general ? <WellbeingProgress onBack={home} /> : <Lab onBack={home} />;
   if (route.name === 'sons') return <Sounds onBack={() => (history.length > 1 ? history.back() : home())} />;
+  if (route.name === 'dormir') return <Sleep onBack={home} />;
   if (route.name === 'pensamento') return <Untangle onBack={() => (history.length > 1 ? history.back() : home())} />;
   if (route.name === 'rotina' && route.param) return <StepScreen id={route.param} onBack={home} />;
   const tab = route.name === 'ajustes' || route.name === 'diario' ? route.name : 'home';

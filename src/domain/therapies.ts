@@ -9,7 +9,7 @@ import type { SupportFocus } from './support';
 export type TherapyItem =
   | { kind: 'tecnica'; id: string }
   | { kind: 'pratica'; id: PracticeId }
-  | { kind: 'atalho'; route: 'pensamento' | 'jogos' | 'sons'; param?: string; title: string; why: string };
+  | { kind: 'atalho'; route: 'pensamento' | 'jogos' | 'sons' | 'dormir'; param?: string; title: string; why: string };
 
 export interface Approach {
   id: string;
@@ -108,7 +108,7 @@ export const GENERAL_APPROACHES: readonly Approach[] = [
     id: 'presenca', title: 'Acalmar e se orientar', name: 'Atenção ao presente e ao corpo',
     what: 'Notar o ambiente e encontrar um pouco mais de conforto, no seu ritmo.',
     evidence: 'Práticas de atenção ao presente e orientação pelos sentidos. A resposta varia; você pode adaptar ou parar se não estiver confortável.',
-    items: [t('ancorar_sentidos'), t('pausa_corpo'), { kind: 'atalho', route: 'sons', title: 'Sons para relaxar', why: 'Uma opção de som, se isso for agradável para você.' }],
+    items: [t('ancorar_sentidos'), t('pausa_corpo'), t('preparar_sono'), { kind: 'atalho', route: 'dormir', title: 'Rotina para dormir', why: 'Preparar o quarto, soltar o corpo e deixar um som que some sozinho.' }, { kind: 'atalho', route: 'sons', title: 'Sons para relaxar', why: 'Uma opção de som, se isso for agradável para você.' }],
   },
   {
     id: 'acolhimento', title: 'Acolher o que estou sentindo', name: 'Autocompaixão e aceitação',

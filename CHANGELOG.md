@@ -6,6 +6,8 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 
 ### Adicionado
 
+- Rotina para dormir: preparar o quarto, uma vivência curta para soltar o corpo e deixar as preocupações para
+  amanhã, e um som que desce devagar e some sozinho em 30 minutos.
 - Manutenção contínua por agentes em três papéis: Scout, Implementer e Reviewer.
 - Aprovação exclusiva do proprietário, PR em rascunho, limites de diff e bloqueio de arquivos sensíveis.
 - CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.

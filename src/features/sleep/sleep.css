@@ -1,0 +1,9 @@
+.sleep .card { gap: 10px; }
+.sleep .card h2 { margin: 0; }
+.sleep .card .eyebrow { margin: 0; }
+.sleep__sound { gap: 10px; display: grid; }
+.sleep__sound--on { box-shadow: 0 0 0 2px var(--accent), 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .sleep__sound--on { animation: sleep-breathe 8s ease-in-out infinite; }
+}
+@keyframes sleep-breathe { 50% { box-shadow: 0 0 0 2px var(--accent), 0 0 8px color-mix(in srgb, var(--accent) 15%, transparent); } }
