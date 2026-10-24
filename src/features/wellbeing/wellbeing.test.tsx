@@ -18,6 +18,19 @@ function setup(hash: string, locked = false, seed?: (repos: ReturnType<typeof cr
 }
 
 describe('vivências e acolhimento geral', () => {
+  it('um link antigo para registrar uso no foco geral abre a tela inicial', () => {
+    setup('#usei');
+    expect(screen.queryByRole('heading', { name: 'Registrar que usou' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Preciso de uma pausa agora' })).toBeInTheDocument();
+  });
+
+  it('um link direto para A noite no foco geral abre a lista de jogos, sem o ensaio de recaída', () => {
+    setup('#jogos/noite');
+    expect(screen.getByRole('heading', { name: 'Jogos' })).toBeInTheDocument();
+    expect(screen.queryByText(/cerveja/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /A noite/ })).not.toBeInTheDocument();
+  });
+
   it('mostra a nova proposta sem exigir registro de uso', async () => {
     const { user } = setup('');
     expect(screen.getByRole('button', { name: 'Preciso de uma pausa agora' })).toBeInTheDocument();

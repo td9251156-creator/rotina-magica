@@ -90,7 +90,8 @@ function AppContent() {
         {!locked.on && <TabBar current="sos" />}
       </>
     );
-  if (route.name === 'usei') return <UsedFlow key={String(locked.on)} locked={locked.on} onDone={home} />;
+  // O registro de uso é do foco em hábitos e substâncias; no foco geral um link antigo cai na tela inicial.
+  if (route.name === 'usei' && !general) return <UsedFlow key={String(locked.on)} locked={locked.on} onDone={home} />;
   if (locked.on) return <LockScreen onUnlock={locked.unlock} />;
   void version;
   const done = repos.settings.get('onboardingDone', false);
