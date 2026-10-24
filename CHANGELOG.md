@@ -16,8 +16,20 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 - CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.
 - Verificação explícita do primeiro commit de cada agente e relatório mensal de manutenção com dados públicos.
 
+### Alterado
+
+- Nova identidade nas telas Hoje, Diário, Pausa agora e Vivências, a partir do protótipo de design: uma pergunta
+  grande por tela, o humor como um sol que nasce no horizonte, peso do momento em barras de 0 a 10 e fonte Literata
+  (guardada no app, funciona sem internet).
+- A barra de baixo tem cinco itens, com "Pausa agora" no centro e sempre na mesma cor; Vivências virou aba.
+- Vivências: filtros numa linha, um convite do dia em destaque e cada grupo numa lista só, com "Feita hoje · pode
+  repetir". Na sessão: fechar de 48 px, progresso em segmentos, sol que respira na pausa, aviso de onde vai cada
+  texto escrito e confirmação em folha antes de sair com algo digitado.
+- No foco geral, escolher uma opção num passo é opcional, como escrever.
+
 ### Corrigido
 
+- Ao concluir uma vivência sem escrever a frase, o app não diz mais que ela "ficou no kit pessoal".
 - O app abre mesmo quando o endereço chega por http:// (domínio próprio sem HTTPS forçado): a página troca
   para https:// antes de abrir os dados e, se isso não for possível, abre os registros sem a coordenação entre
   janelas em vez de mostrar "Não foi possível abrir seus registros". PIN e backup avisam quando o endereço não

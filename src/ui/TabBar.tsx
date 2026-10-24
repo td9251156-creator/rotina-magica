@@ -6,12 +6,13 @@ import { supportFocus } from '@/domain/support';
 
 const TABS: { route: RouteName; label: string; icon: IconId }[] = [
   { route: 'home', label: 'Hoje', icon: 'aba_hoje' },
-  { route: 'sos', label: 'Ajuda agora', icon: 'aba_ajuda' },
   { route: 'diario', label: 'Diário', icon: 'aba_diario' },
+  { route: 'sos', label: 'Ajuda agora', icon: 'aba_ajuda' },
+  { route: 'treino', label: 'Vivências', icon: 'ferr_vivencias' },
   { route: 'ajustes', label: 'Ajustes', icon: 'aba_ajustes' },
 ];
 
-/** Barra de baixo: as quatro áreas do app, sempre a um toque. */
+/** Barra de baixo: cinco áreas, com a pausa no centro, ao alcance do polegar e sempre com a mesma cor. */
 export function TabBar({ current }: { current: RouteName }) {
   const { repos } = useData();
   const helpLabel = supportFocus(repos) === 'general' ? 'Pausa agora' : 'Ajuda agora';

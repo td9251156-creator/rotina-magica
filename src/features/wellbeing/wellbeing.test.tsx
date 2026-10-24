@@ -20,19 +20,19 @@ function setup(hash: string, locked = false, seed?: (repos: ReturnType<typeof cr
 describe('vivências e acolhimento geral', () => {
   it('check-in de um toque guarda o humor e oferece um cuidado que combina', async () => {
     const { repos, user } = setup('');
-    await user.click(screen.getByRole('button', { name: 'Pesado' }));
+    await user.click(screen.getByRole('button', { name: 'Difícil' }));
     const today = toLocalDate(new Date());
     expect(repos.checkins.getByDate(today)?.mood).toBe(2);
-    expect(screen.getByRole('status')).toHaveTextContent('Dia pesado');
-    await user.click(screen.getByRole('button', { name: /Dar uma pausa ao corpo · cerca de/ }));
-    expect(window.location.hash).toBe('#treino/pausa_corpo');
+    expect(screen.getByRole('status')).toHaveTextContent('Dias difíceis pedem menos');
+    await user.click(screen.getByRole('button', { name: /Ser gentil comigo agora · \d+ min/ }));
+    expect(window.location.hash).toBe('#treino/acolher_momento');
   });
 
   it('o check-in preserva a nota e o peso já escritos no diário', async () => {
     const today = toLocalDate(new Date());
     const { repos, user } = setup('', false, (r) => r.checkins.upsertForDate({ date: today, mood: 1, stress: 7, note: 'Nota fictícia', craving: null, used: null, alcohol: null, sleepQuality: null }));
-    expect(screen.getByRole('button', { name: 'Muito pesado' })).toHaveAttribute('aria-pressed', 'true');
-    await user.click(screen.getByRole('button', { name: 'Bem' }));
+    expect(screen.getByRole('button', { name: 'Muito difícil' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('button', { name: 'Muito bem' }));
     expect(repos.checkins.getByDate(today)).toMatchObject({ mood: 5, stress: 7, note: 'Nota fictícia' });
   });
 
@@ -41,13 +41,13 @@ describe('vivências e acolhimento geral', () => {
     setup('', false, (r) => r.practices.add('pausa_corpo', today));
     const week = screen.getByRole('region', { name: 'Sua semana' });
     expect(within(week).getAllByRole('listitem')).toHaveLength(7);
-    expect(within(week).getByText(/1 dia com algum cuidado/)).toBeInTheDocument();
+    expect(within(week).getByText('1 dia com cuidado')).toBeInTheDocument();
   });
 
   it('um link antigo para registrar uso no foco geral abre a tela inicial', () => {
     setup('#usei');
     expect(screen.queryByRole('heading', { name: 'Registrar que usou' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Preciso de uma pausa agora' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Como está sendo para você?' })).toBeInTheDocument();
   });
 
   it('um link direto para A noite no foco geral abre a lista de jogos, sem o ensaio de recaída', () => {
@@ -59,9 +59,8 @@ describe('vivências e acolhimento geral', () => {
 
   it('mostra a nova proposta sem exigir registro de uso', async () => {
     const { user } = setup('');
-    expect(screen.getByRole('button', { name: 'Preciso de uma pausa agora' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Usei' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Preciso de uma pausa agora' }));
+    await user.click(screen.getByRole('button', { name: 'Pausa agora' }));
     expect(await screen.findByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.queryByText(/188|CAPS|SAMU|192/)).not.toBeInTheDocument();
@@ -70,7 +69,7 @@ describe('vivências e acolhimento geral', () => {
   it('filtra vivências, preserva a resposta ao voltar e pede cuidado antes de descartar', async () => {
     const { repos, user } = setup('#treino');
     await user.click(screen.getByRole('button', { name: 'Cabeça cheia' }));
-    expect(screen.queryByRole('heading', { name: 'Acalmar e se orientar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Acalmar o corpo' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Uma coisa de cada vez/ }));
     await user.click(screen.getByRole('button', { name: 'Uma tarefa' }));
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
@@ -78,8 +77,8 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: 'Voltar' }));
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     expect(screen.getByRole('textbox')).toHaveValue('Fazer uma pausa e beber água.');
-    await user.click(screen.getByRole('button', { name: '← Voltar' }));
-    expect(screen.getByRole('alertdialog', { name: 'Sair da vivência?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Sair da vivência' }));
+    expect(screen.getByRole('alertdialog', { name: 'Sair por agora?' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Continuar aqui' }));
     expect(screen.getByRole('textbox')).toHaveValue('Fazer uma pausa e beber água.');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
@@ -109,9 +108,9 @@ describe('vivências e acolhimento geral', () => {
     await user.click(screen.getByRole('button', { name: /Voltar para o aqui e agora/ }));
     expect(screen.getByRole('progressbar', { name: 'Progresso da vivência' })).toBeInTheDocument();
     expect(screen.queryByText('Frase pessoal secreta')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '← Voltar' }));
+    await user.click(screen.getByRole('button', { name: 'Sair da vivência' }));
     await user.click(screen.getByRole('button', { name: 'Voltar para entrar com PIN' }));
-    expect(screen.getByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Digite seu PIN')).toBeInTheDocument();
   });
 
   it('pede retorno opcional e guarda a percepção junto da vivência', async () => {
@@ -127,13 +126,14 @@ describe('vivências e acolhimento geral', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Você pode mudar essa resposta');
   });
 
-  it('retira das recomendações uma vivência marcada como mais difícil', () => {
-    setup('', false, (repos) => {
+  it('retira das recomendações uma vivência marcada como mais difícil', async () => {
+    const { user } = setup('', false, (repos) => {
       const practice = repos.practices.add('pausa_corpo', toLocalDate(new Date()));
       repos.practices.setFeedback(practice.id, 'harder');
     });
-    expect(screen.queryByRole('button', { name: /Acalmar o corpo/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Uma coisa de cada vez/ })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Muito difícil' }));
+    expect(screen.queryByRole('button', { name: /Dar uma pausa ao corpo/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Ser gentil comigo agora · \d+ min/ })).toBeInTheDocument();
   });
 
   it('oferece na Pausa uma alternativa sem foco na respiração', () => {
@@ -202,7 +202,7 @@ describe('vivências e acolhimento geral', () => {
     const user = userEvent.setup();
     render(<DataProvider repos={repos}><App /></DataProvider>);
     await user.click(screen.getByRole('button', { name: 'Começar agora sem configurar' }));
-    expect(await screen.findByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Como está sendo para você?' })).toBeInTheDocument();
     expect(repos.settings.get('onboardingDone', false)).toBe(true);
     expect(repos.plan.list('plano_noite')).toHaveLength(0);
   });
@@ -217,8 +217,52 @@ describe('vivências e acolhimento geral', () => {
     expect(screen.getByText('2 de 2')).toBeInTheDocument();
     await user.type(screen.getByPlaceholderText('Outra coisa'), 'Sentar no quintal');
     await user.click(screen.getByRole('button', { name: 'Começar' }));
-    expect(await screen.findByRole('heading', { name: 'Rotina Mágica' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Como está sendo para você?' })).toBeInTheDocument();
     expect(repos.plan.list('atividade').map((item) => item.text)).toContain('Sentar no quintal');
+  });
+
+  it('a barra tem cinco itens com a pausa no centro e as vivências como aba', async () => {
+    const { user } = setup('');
+    const nav = screen.getByRole('navigation', { name: 'Navegação principal' });
+    expect(within(nav).getAllByRole('button').map((b) => b.textContent)).toEqual(['Hoje', 'Diário', 'Pausa agora', 'Vivências', 'Ajustes']);
+    expect(within(nav).getByRole('button', { name: 'Hoje' })).toHaveAttribute('aria-current', 'page');
+    await user.click(within(nav).getByRole('button', { name: 'Vivências' }));
+    expect(window.location.hash).toBe('#treino');
+    expect(await screen.findByRole('heading', { name: 'Do que você precisa agora?' })).toBeInTheDocument();
+    expect(within(screen.getByRole('navigation', { name: 'Navegação principal' })).getByRole('button', { name: 'Vivências' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('num dia muito bom, o convite é guardar no diário o que fez bem', async () => {
+    const { user } = setup('');
+    await user.click(screen.getByRole('button', { name: 'Muito bem' }));
+    await user.click(screen.getByRole('button', { name: 'Escrever no diário' }));
+    expect(window.location.hash).toBe('#diario');
+  });
+
+  it('no diário, o humor usa a mesma lista do início e o peso vai de 0 a 10', async () => {
+    const { repos, user } = setup('#diario');
+    const mood = screen.getByRole('group', { name: 'Como está seu dia?' });
+    await user.click(within(mood).getByRole('button', { name: 'Mais ou menos' }));
+    const weight = screen.getByRole('group', { name: 'Peso do momento, de 0 a 10' });
+    expect(within(weight).getAllByRole('button')).toHaveLength(11);
+    await user.click(within(weight).getByRole('button', { name: '4' }));
+    expect(within(weight).getByRole('button', { name: '4' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('button', { name: 'Guardar meu registro' }));
+    expect(repos.checkins.getByDate(toLocalDate(new Date()))).toMatchObject({ mood: 3, stress: 4 });
+  });
+
+  it('no foco geral, escolher uma opção não bloqueia o passo seguinte', async () => {
+    const { user } = setup('#treino/proximo_passo');
+    expect(screen.getByRole('button', { name: 'Continuar' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText('Opcional. Se escrever, fica no seu kit pessoal ao concluir.')).toBeInTheDocument();
+  });
+
+  it('sair sem ter escrito nada fecha a vivência sem perguntar', async () => {
+    const { user } = setup('#treino/pausa_corpo');
+    await user.click(screen.getByRole('button', { name: 'Sair da vivência' }));
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(window.location.hash).toBe('#treino');
   });
 
   it('um id inválido seguido de um válido não quebra a ordem dos hooks', () => {

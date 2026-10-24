@@ -60,7 +60,7 @@ it('esconde o rascunho da Pausa ao rebloquear e mantém a ajuda sem PIN', async 
   expect(repos.plan.list()).toHaveLength(0);
   await user.click(screen.getByRole('button', { name: /Dar espaço ao que passa/ }));
   expect(screen.getByRole('textbox')).toHaveValue('');
-  await user.click(screen.getByRole('button', { name: '← Voltar' }));
+  await user.click(screen.getByRole('button', { name: 'Sair da vivência' }));
   await user.click(screen.getByRole('button', { name: 'Voltar para entrar com PIN' }));
   expect(await screen.findByLabelText('Digite seu PIN')).toBeInTheDocument();
 });
