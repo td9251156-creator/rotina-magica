@@ -18,6 +18,32 @@ function setup(hash: string, locked = false, seed?: (repos: ReturnType<typeof cr
 }
 
 describe('vivências e acolhimento geral', () => {
+  it('check-in de um toque guarda o humor e oferece um cuidado que combina', async () => {
+    const { repos, user } = setup('');
+    await user.click(screen.getByRole('button', { name: 'Pesado' }));
+    const today = toLocalDate(new Date());
+    expect(repos.checkins.getByDate(today)?.mood).toBe(2);
+    expect(screen.getByRole('status')).toHaveTextContent('Dia pesado');
+    await user.click(screen.getByRole('button', { name: /Dar uma pausa ao corpo · cerca de/ }));
+    expect(window.location.hash).toBe('#treino/pausa_corpo');
+  });
+
+  it('o check-in preserva a nota e o peso já escritos no diário', async () => {
+    const today = toLocalDate(new Date());
+    const { repos, user } = setup('', false, (r) => r.checkins.upsertForDate({ date: today, mood: 1, stress: 7, note: 'Nota fictícia', craving: null, used: null, alcohol: null, sleepQuality: null }));
+    expect(screen.getByRole('button', { name: 'Muito pesado' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('button', { name: 'Bem' }));
+    expect(repos.checkins.getByDate(today)).toMatchObject({ mood: 5, stress: 7, note: 'Nota fictícia' });
+  });
+
+  it('sua semana marca os dias com cuidado, sem sequência', () => {
+    const today = toLocalDate(new Date());
+    setup('', false, (r) => r.practices.add('pausa_corpo', today));
+    const week = screen.getByRole('region', { name: 'Sua semana' });
+    expect(within(week).getAllByRole('listitem')).toHaveLength(7);
+    expect(within(week).getByText(/1 dia com algum cuidado/)).toBeInTheDocument();
+  });
+
   it('um link antigo para registrar uso no foco geral abre a tela inicial', () => {
     setup('#usei');
     expect(screen.queryByRole('heading', { name: 'Registrar que usou' })).not.toBeInTheDocument();

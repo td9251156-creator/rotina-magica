@@ -6,6 +6,9 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 
 ### Adicionado
 
+- Check-in de um toque na tela inicial: o humor do dia vai para o Diário e o app sugere um cuidado que combina.
+- "Sua semana": os dias em que você se cuidou nos últimos 7, sem sequência para quebrar.
+- À noite, o convite do dia passa a ser a Rotina para dormir.
 - Rotina para dormir: preparar o quarto, uma vivência curta para soltar o corpo e deixar as preocupações para
   amanhã, e um som que desce devagar e some sozinho em 30 minutos.
 - Manutenção contínua por agentes em três papéis: Scout, Implementer e Reviewer.
