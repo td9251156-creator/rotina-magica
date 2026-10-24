@@ -66,3 +66,5 @@
   .wellbeing-support .stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wellbeing-support .wellbeing-action { min-height: 160px; align-items: flex-start; }
 }
+
+.wellbeing-home .tool--wide { grid-column: 1 / -1; }

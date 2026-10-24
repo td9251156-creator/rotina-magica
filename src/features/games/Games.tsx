@@ -14,6 +14,7 @@ import { GAME_ICON } from './icons';
 import { supportFocus } from '@/domain/support';
 import { DEFAULT_ACTIONS } from '../sos/defaults';
 import { GameArt } from '@/ui/illustrations';
+import { navigate } from '@/router';
 import { GameGuide, GAME_GUIDES } from './GameGuide';
 import './games.css';
 import { lazyScreen } from '@/ui/lazy';
@@ -70,6 +71,13 @@ export function personalWords(repos: Repositories) {
 /** Com o PIN fechado, os jogos não mostram nada que a pessoa escreveu. */
 const NO_WORDS = { story: {} };
 
+/** O tarô só aparece para quem quer os símbolos; A noite (ensaio de recaída) só no foco em hábitos e substâncias. */
+export function visibleGameIds(repos: Repositories): GameId[] {
+  const symbols = symbolsOn(repos.settings.get<boolean | null>('gameSymbols', null), repos.settings.get<RoutineStyle | null>('routineStyle', null));
+  const general = supportFocus(repos) === 'general';
+  return GAME_IDS.filter((g) => (symbols || g !== 'arcanos') && (!general || g !== 'noite'));
+}
+
 /** Os símbolos do ocultismo estão ligados para esta pessoa? */
 export function useSymbols(repos: Repositories): boolean {
   return symbolsOn(repos.settings.get<boolean | null>('gameSymbols', null), repos.settings.get<RoutineStyle | null>('routineStyle', null));
@@ -105,8 +113,7 @@ export function GamesHub({ onOpen, onBack }: { onOpen: (id: GameId) => void; onB
   const general = supportFocus(repos) === 'general';
   const sessions = repos.games.list();
   const symbols = useSymbols(repos);
-  // O tarô só aparece para quem quer os símbolos; os outros jogos servem a todos.
-  const ids = GAME_IDS.filter((g) => (symbols || g !== 'arcanos') && (!general || g !== 'noite'));
+  const ids = visibleGameIds(repos);
   return (
     <Screen title="Jogos" onBack={onBack}>
       <p className="muted">{general ? 'Uma pausa para mudar o foco ou respirar com calma. Escolha o que combina com este momento, sem obrigação de fazer pontos.' : 'Cada jogo treina uma habilidade que segura a vontade. Jogue um por dia; na hora da vontade, Blocos é o mais rápido.'}</p>
@@ -175,7 +182,14 @@ export function GameResult({ id, score, result, onAgain, onBack }: { id: GameId;
   );
 }
 
-export function PlayGame({ id, onBack }: { id: GameId; onBack: () => void }) {
+/** Um link antigo ou digitado para um jogo escondido neste foco abre a lista de jogos. */
+export function PlayGame(props: { id: GameId; onBack: () => void }) {
+  const { repos } = useData();
+  if (!visibleGameIds(repos).includes(props.id)) return <GamesHub onOpen={(g) => navigate('jogos', g)} onBack={() => navigate('home')} />;
+  return <PlayGameScreen {...props} />;
+}
+
+function PlayGameScreen({ id, onBack }: { id: GameId; onBack: () => void }) {
   const { repos, write } = useData();
   const [stage, setStage] = useState<'intro' | 'play' | 'result'>('intro');
   const [fast, setFast] = useState(false);

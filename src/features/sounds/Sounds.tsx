@@ -3,6 +3,7 @@ import { useData } from '@/data/provider';
 import { BINAURAL_PRESETS, SAFETY_NOTE, type BinauralId } from '@/domain/binaural';
 import { canPlayBinaural, startBinaural, stopBinaural } from '@/platform/binaural';
 import { Screen } from '@/ui/Screen';
+import { navigate } from '@/router';
 import { SoundArt } from '@/ui/illustrations';
 
 /** Som que toca por baixo das práticas guiadas: o acorde de sempre ou uma faixa binaural. */
@@ -72,6 +73,7 @@ export function Sounds({ onBack }: { onBack: () => void }) {
             {on && <div className="sound__glow" aria-hidden="true" />}
             <p className="small">{p.when}</p>
             <p className="small muted evidence">Base: {p.evidence}</p>
+            {p.id === 'sono' && <button type="button" className="link" onClick={() => navigate('dormir')}>Fazer a rotina para dormir antes →</button>}
             <button type="button" className={on ? 'btn btn--ghost' : 'btn'} aria-pressed={on} disabled={!canPlayBinaural()} onClick={() => toggle(p.id, p.minutes)}>
               {on ? `Parar · faltam ${fmt(playing.until - now)}` : `Tocar ${p.minutes} min`}
             </button>

@@ -26,9 +26,9 @@ describe('acolhimento e compatibilidade', () => {
     expect(repos.checkins.getByDate('2026-10-19')?.used).toBe(true);
   });
 
-  it('oferece oito vivências gerais, com referências válidas e histórico separado', () => {
+  it('oferece nove vivências gerais, com referências válidas e histórico separado', () => {
     const ids = GENERAL_TECHNIQUES.map((t) => t.id);
-    expect(ids).toHaveLength(8);
+    expect(ids).toHaveLength(9);
     expect(new Set(ids).size).toBe(ids.length);
     expect(GENERAL_APPROACHES.flatMap(techniqueIds).sort()).toEqual([...ids].sort());
     expect(ids.some((id) => TECHNIQUES.some((t) => t.id === id))).toBe(false);

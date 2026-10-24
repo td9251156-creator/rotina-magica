@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { toLocalDate } from '@/domain/dates';
 import { createLocalRepositories, createResilientStorage, type ResilientStorage } from './repositories/local';
 import type { Repositories } from './repositories/types';
+import { newId } from '@/platform/ids';
 
 interface DataContextValue {
   repos: Repositories;
@@ -19,7 +20,7 @@ export function DataProvider({ children, repos: injected }: { children: ReactNod
   const [repos] = useState(() => {
     const r =
       injected ??
-      createLocalRepositories({ storage, newId: () => crypto.randomUUID(), now: () => new Date() });
+      createLocalRepositories({ storage, newId, now: () => new Date() });
     // O progresso conta a partir do primeiro uso do app.
     if (!r.settings.get<string | null>('trackingStartDate', null)) r.settings.set('trackingStartDate', toLocalDate(new Date()));
     return r;

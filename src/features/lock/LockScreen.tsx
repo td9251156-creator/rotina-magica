@@ -17,7 +17,15 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const ok = await verifyPin(pin, repos.settings.get('pinSalt', ''), repos.settings.get('pinHash', ''));
+    let ok = false;
+    try {
+      ok = await verifyPin(pin, repos.settings.get('pinSalt', ''), repos.settings.get('pinHash', ''));
+    } catch {
+      // Sem HTTPS o navegador não oferece a conferência segura do PIN.
+      setBusy(false);
+      setError('Não foi possível conferir o PIN neste endereço. Abra o app pelo link com https://.');
+      return;
+    }
     setBusy(false);
     if (ok) onUnlock();
     else {

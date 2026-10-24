@@ -68,6 +68,18 @@ export const GENERAL_TECHNIQUES: readonly Technique[] = [
     ],
   },
   {
+    id: 'preparar_sono', title: 'Preparar o corpo para dormir',
+    why: 'Soltar o corpo aos poucos e tirar as preocupações da cabeça antes de deitar, sem forçar o sono.',
+    steps: [
+      { text: 'Deite ou sente de um jeito confortável, com a luz baixa. Não precisa fazer o sono chegar; só vamos deixar o corpo mais à vontade.' },
+      { text: 'Leve a atenção aos pés e às pernas. Deixe que pesem um pouco mais sobre a cama, no seu ritmo.', pauseSeconds: 20 },
+      { text: 'Agora a barriga, as costas e os ombros. Solte o que der para soltar. Se algo continuar tenso, tudo bem.', pauseSeconds: 20 },
+      { text: 'Por fim, o rosto: a testa, os olhos e a mandíbula. Deixe a língua descansar e os dentes se afastarem um pouco.', pauseSeconds: 20 },
+      { text: 'Se alguma preocupação estiver rondando, deixe anotada para amanhã. Ela fica guardada aqui e não precisa ser resolvida agora.', reflect: { prompt: 'Fica para amanhã:', placeholder: 'Responder a mensagem do trabalho.' } },
+      { text: 'Se o sono não vier em uns 20 minutos, você pode levantar, fazer algo calmo com pouca luz e voltar quando sentir sono. Isso também é cuidar do sono.' },
+    ],
+  },
+  {
     id: 'revisao_gentil', title: 'Fechar o dia sem cobrança',
     why: 'Reconhecer como foi o dia e escolher um cuidado para amanhã, sem exigir um dia perfeito.',
     steps: [

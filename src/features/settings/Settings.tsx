@@ -112,7 +112,11 @@ export function Settings({ onEditPlans }: { onBack?: () => void; onEditPlans: ()
   const savePin = async () => {
     if (!isValidPin(pin) || pin !== pin2) return;
     const salt = randomBytes(16);
-    const hash = await hashPin(pin, salt);
+    let hash: string;
+    try { hash = await hashPin(pin, salt); } catch {
+      setMsg('Não foi possível criar o PIN neste endereço. Abra o app pelo link com https://.');
+      return;
+    }
     write((r) => {
       r.settings.set('pinSalt', toBase64(salt));
       r.settings.set('pinHash', hash);

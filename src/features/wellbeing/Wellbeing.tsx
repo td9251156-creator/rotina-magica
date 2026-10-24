@@ -68,6 +68,7 @@ export function WellbeingHome() {
         <button type="button" className="link" onClick={() => navigate('lab')}>Ver meus cuidados ao longo do tempo →</button>
       </section>
       <div className="tools">
+        <button type="button" className="tool tool--wide" onClick={() => navigate('dormir')}><span className="item__icon"><Icon id="passo_fechar" /></span><strong>Rotina para dormir</strong><span className="muted small">Desacelerar antes de deitar</span></button>
         <button type="button" className="tool" onClick={() => navigate('treino')}><span className="item__icon"><Icon id="ferr_vivencias" /></span><strong>Vivências guiadas</strong><span className="muted small">Escolha pelo que precisa agora</span></button>
         <button type="button" className="tool" onClick={() => navigate('jogos')}><span className="item__icon"><Icon id="ferr_jogos" /></span><strong>Jogos para uma pausa</strong><span className="muted small">Mudar o foco, sem cobrança</span></button>
       </div>

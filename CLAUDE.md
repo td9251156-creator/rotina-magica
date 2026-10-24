@@ -20,6 +20,7 @@ fraca, a mudança precisa ser simples, opcional e não pode atrapalhar o acesso 
 ## Decisões tomadas
 | Data | Decisão | Por quê |
 |---|---|---|
+| 2026-10-24 | "Rotina para dormir" (`#dormir`, `features/sleep/Sleep.tsx`): preparar o quarto (lista que não é guardada), vivência geral `preparar_sono` (soltar o corpo, anotar a preocupação para amanhã, levantar se o sono não vier em 20 min) e som delta 3 Hz que some sozinho em 30 min. Entra no início geral, em Sons para relaxar e em Terapias › Acalmar e se orientar | Escolha do autor entre quatro itens novos. Base em higiene do sono e controle de estímulos da TCC para insônia; o som segue opcional e sem promessa |
 | 2026-10-23 | A janela aberta por último (e visível) assume os registros com Web Locks `steal`, depois de 0,5 s de espera; a anterior sai da tela e oferece "Usar aqui". Telas pesadas (jogos, vivências, primeiro uso, SOS antigo) usam `lazyScreen` (`src/ui/lazy.ts`) e são adiantadas no ócio | A espera pela outra janela travava o app quando uma PWA ou aba antiga ficava em segundo plano no celular; pacote inicial menor abre mais rápido em aparelhos modestos |
 | 2026-10-22 | Uma sessão por origem abre os registros, coordenada por Web Locks antes de criar o DataProvider; outras janelas oferecem Pausa temporária sem dados pessoais. Restauração e atualização exigem confirmação de substituição/encerramento | Impedir sobrescritas entre abas, preservar exclusões e PIN e evitar descarte inesperado de dados ou rascunhos |
 | 2026-10-22 | Rebloqueio com PIN reinicia o estado das telas públicas de ajuda e registro de uso; registros já salvos permanecem. Regressões em `src/App.lock.test.tsx` | Evitar que respostas da sessão anterior continuem visíveis após o bloqueio, mantendo a ajuda acessível sem PIN |
@@ -84,7 +85,7 @@ fraca, a mudança precisa ser simples, opcional e não pode atrapalhar o acesso 
 ## Arquitetura
 ```
 index.html, src/main.tsx   entrada; registra o service worker (só em produção)
-src/App.tsx, src/router.ts navegação por hash + TabBar: '' (Hoje), #sos (Ajuda agora), #diario, #ajustes, #rotina/<passo>, #pensamento, #jogos[/id], #usei[/entender], #treino[/id], #lab, #sons, #ajustes, #primeiro-uso
+src/App.tsx, src/router.ts navegação por hash + TabBar: '' (Hoje), #sos (Ajuda agora), #diario, #ajustes, #rotina/<passo>, #pensamento, #jogos[/id], #usei[/entender], #treino[/id], #lab, #sons, #dormir, #ajustes, #primeiro-uso
 src/domain/routine.ts      a rotina (Manhã/Tarde/Noite), práticas guiadas (fases com tempo), compromisso padrão
 src/domain/thinking.ts     armadilhas do pensamento (TCC), dicas do corpo, contagem
 src/domain/forecast.ts     Clima de hoje: previsão de risco com os dados do aparelho

@@ -6,6 +6,8 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 
 ### Adicionado
 
+- Rotina para dormir: preparar o quarto, uma vivência curta para soltar o corpo e deixar as preocupações para
+  amanhã, e um som que desce devagar e some sozinho em 30 minutos.
 - Manutenção contínua por agentes em três papéis: Scout, Implementer e Reviewer.
 - Aprovação exclusiva do proprietário, PR em rascunho, limites de diff e bloqueio de arquivos sensíveis.
 - CODEOWNERS, roadmap orientado a problemas e formulário voluntário de feedback.
@@ -13,6 +15,13 @@ Este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/) a 
 
 ### Corrigido
 
+- O app abre mesmo quando o endereço chega por http:// (domínio próprio sem HTTPS forçado): a página troca
+  para https:// antes de abrir os dados e, se isso não for possível, abre os registros sem a coordenação entre
+  janelas em vez de mostrar "Não foi possível abrir seus registros". PIN e backup avisam quando o endereço não
+  permite a criptografia.
+- No foco geral, links diretos para A noite (ensaio de recaída), para Arcanos sem os símbolos ou para registrar
+  uso não abrem mais essas telas; levam à lista de jogos ou à tela inicial.
+- O aviso "Uma atualização está pronta" aparece em qualquer tela, inclusive enquanto outra janela usa os registros.
 - O app não fica mais preso em "Use uma aba por vez" quando uma janela antiga (PWA em segundo plano, aba esquecida
   ou link de lembrete da agenda) segura os registros: a janela que a pessoa está vendo assume, e a anterior mostra
   "Usar aqui" sem gravar mais nada.

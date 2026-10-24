@@ -112,13 +112,14 @@ it('retira os registros da tela se outra versão mudar ou apagar o armazenamento
   expect(screen.getByRole('button', { name: 'Reabrir o app' })).toBeInTheDocument();
 });
 
-it('mantém a pausa disponível se o navegador não oferece coordenação segura', async () => {
+it('abre os registros mesmo sem Web Locks (navegador antigo ou página sem HTTPS)', async () => {
   Object.defineProperty(navigator, 'locks', { configurable: true, value: undefined });
+  open().settings.set('letter', 'Texto fictício privado');
   render(<StorageSession><Editor /></StorageSession>);
+  expect(await screen.findByText('Texto fictício privado')).toBeInTheDocument();
+  act(() => { window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY })); });
   expect(screen.queryByRole('region')).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Preciso de uma pausa agora' }));
-  expect(screen.getByRole('heading', { name: 'Vamos cuidar deste momento.' })).toBeInTheDocument();
-  expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+  expect(screen.getByRole('button', { name: 'Reabrir o app' })).toBeInTheDocument();
 });
 
 it('cancela pedidos pendentes e libera a sessão no StrictMode', async () => {
