@@ -181,6 +181,9 @@ export function importData(storage: KeyValueStorage, json: string): void {
   // O PIN não volta com o backup: quem esqueceu o PIN apaga tudo e restaura sem ficar trancado de novo.
   const { pinHash: _h, pinSalt: _s, ...settings } = next.settings;
   storage.setItem(STORAGE_KEY, JSON.stringify({ ...next, settings }));
+  if ('failed' in storage && storage.failed) {
+    throw new Error('Não foi possível gravar o backup restaurado no armazenamento deste aparelho.');
+  }
 }
 
 const alive = <T extends { deletedAt: string | null }>(r: T) => r.deletedAt === null;

@@ -38,6 +38,25 @@ describe('repositórios locais', () => {
     expect(() => importData(storage, JSON.stringify({ app: 'rumo', data: { version: 1, settings: {}, journal: {} } }))).toThrow('danificado');
     expect(storage.getItem(STORAGE_KEY)).toBe(before);
   });
+  it('não confirma restauração quando a gravação final falha', () => {
+    const persisted = new Map<string, string>();
+    let failMainWrite = false;
+    const storage = createResilientStorage(() => ({
+      getItem: (key) => persisted.get(key) ?? null,
+      setItem: (key, value) => {
+        if (failMainWrite && key === STORAGE_KEY) throw new DOMException('Cheio', 'QuotaExceededError');
+        persisted.set(key, value);
+      },
+    }));
+    const original = JSON.stringify({ version: 1, settings: { workEndTime: '17:00' } });
+    persisted.set(STORAGE_KEY, original);
+    const backup = JSON.stringify({ app: 'rumo', data: { version: 1, settings: { workEndTime: '18:00' } } });
+    failMainWrite = true;
+
+    expect(() => importData(storage, backup)).toThrow('gravar o backup restaurado');
+    expect(persisted.get(STORAGE_KEY)).toBe(original);
+    expect(persisted.get(`${STORAGE_KEY}:antes-de-restaurar`)).toBe(original);
+  });
   it('mantém um check-in por dia e atualiza no lugar', () => {
     const repos = createTestRepositories();
     const first = repos.checkins.upsertForDate({ ...emptyCheckin, date: '2026-10-16', mood: 2 });
