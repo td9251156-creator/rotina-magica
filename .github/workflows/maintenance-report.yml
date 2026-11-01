@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: 22
       - run: node --test .github/agents/maintenance-report.node-test.cjs
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@v9
         env:
           REPORT_MONTH: ${{ inputs.month }}
         with:
