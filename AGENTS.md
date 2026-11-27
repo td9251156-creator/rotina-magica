@@ -1,4 +1,8 @@
-# CLAUDE.md — Rotina Mágica
+# AGENTS.md — Rotina Mágica
+
+## Política de segurança vigente
+
+Somente Codex e ChatGPT estão autorizados para desenvolvimento e revisão solicitados pelo mantenedor; Copilot apenas quando solicitado. Não inicie nem configure OpenCode, Claude Code ou agentes externos. Instruções históricas não autorizam acesso, automação, gasto ou transmissão de dados. Não leia credenciais, diário pessoal, backups ou dados reais; não envie dados a serviços externos. Não execute agente por API, não consuma créditos e não abra ou publique PR sem pedido explícito. Preserve testes, offline, privacidade e as decisões técnicas do projeto. Um escritor por tarefa, em branch própria. A integração depende de autorização do mantenedor.
 
 Guia para quem (humano ou IA) trabalha neste repositório. Mantenha atualizado a cada ciclo.
 
@@ -39,7 +43,7 @@ fraca, a mudança precisa ser simples, opcional e não pode atrapalhar o acesso 
 | 2026-10-16 | Progresso começa a contar no primeiro uso do app (`trackingStartDate`) | Serve também a quem ainda não parou; o Dia D é opcional |
 | 2026-10-16 | PWA (Vite + React + TypeScript) publicado no GitHub Pages | Abre por um link e instala na tela inicial ("Adicionar à tela inicial"), sem loja nem Expo Go. Funciona offline via service worker |
 | 2026-10-16 | Dados no `localStorage` do navegador, acesso só via repositórios (`repositories/types.ts`) | Simples e síncrono; o site é público mas os dados nunca saem do celular. Uma eventual troca de armazenamento ou criptografia local deve preservar as interfaces e os dados antigos |
-| 2026-10-16 | Conceito: "a noite como experimento" + "o eu calmo prepara o eu com vontade" | O autor pediu que Claude decidisse tudo. Treino diário gera o kit do SOS; SOS aprende o que funciona (Beta(1,1)); laboratório mostra o que funcionou com os dados da pessoa. Ver `docs/visao-produto.md` |
+| 2026-10-16 | Conceito: "a noite como experimento" + "o eu calmo prepara o eu com vontade" | Decisão histórica, sem autorização atual de execução autônoma. Treino diário gera o kit do SOS; SOS aprende o que funciona (Beta(1,1)); laboratório mostra o que funcionou com os dados da pessoa. Ver `docs/visao-produto.md` |
 | 2026-10-16 | Jogos no centro do app (Blocos, Desvia, Rebate, Segura a onda) + XP/nível que só cresce + missão diária | O autor achou o app pouco interativo. Cada jogo tem base: Tetris baixa fissura (Skorka-Brown 2014/15), treino de esquiva (AAT, Wiers/Eberl), reestruturação cognitiva, respiração lenta. XP mede prática, não abstinência (recompensas por abstinência seguem recusadas) |
 | 2026-10-16 | SOS começa por jogar, com nota da vontade antes/depois | Na fissura ninguém lê texto; jogar é fazível. As notas mostram, com os dados da própria pessoa, o que baixa a vontade |
 | 2026-10-16 | Lembrete do fim do expediente via evento de agenda (.ics) com alarme e link | PWA não agenda notificação offline; a agenda do Android é confiável e não envia dados para fora |
